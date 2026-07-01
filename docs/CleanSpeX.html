@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.31">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>CleanSpeX</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7c69b197886ae2a34062761d21e44731.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-209258432f336cc574c0f847bd0a7210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<meta name="shinylive:serviceworker_dir" content=".">
+<script src="site_libs/quarto-contrib/shinylive-0.10.12/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="site_libs/quarto-contrib/shinylive-0.10.12/shinylive/run-python-blocks.js" type="module"></script>
+<link href="site_libs/quarto-contrib/shinylive-0.10.12/shinylive/shinylive.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<style>
+  h1.title { display: none !important; }
+  body iframe {
+    width: 100% !important;
+    min-height: 500px;
+    transition: height .15s ease-out;
+    display: block;
+  }
+  @media (prefers-color-scheme: dark) {
+    html, body,
+    body .quarto-container, body main, body #quarto-content,
+    body .page-layout-full, body .container-fluid, body .container,
+    body #quarto-document-content, body .content,
+    body .cell, body .cell-output-display,
+    body .shinylive-wrapper, body iframe, body .bslib-page-fill {
+      background-color: #141A13 !important;
+      background: #141A13 !important;
+      color: #D8E8D5 !important;
+    }
+    body .cell, body .cell-output-display, body .shinylive-wrapper {
+      padding: 0 !important; margin: 0 !important; border: none !important;
+    }
+    body iframe { border: none !important; outline: none !important; }
+    body .navbar { background-color: #1E261D !important; }
+    body .navbar * { color: #A8C5A0 !important; }
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('iframe').forEach(function(f) {
+      f.style.background = 'transparent';
+    });
+  });
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'cleanspex-resize') {
+      document.querySelectorAll('iframe').forEach(function(f) {
+        if (f.contentWindow === event.source)
+          f.style.height = event.data.height + 'px';
+      });
+    }
+  });
+</script>
+
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">CleanSpeX</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="mailto:mauro.maver@univr.it"> <i class="bi bi-envelope-fill" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content column-page" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 500
+#| viewerWidth: "100%"
+
+suppressPackageStartupMessages(library(shiny))
+suppressPackageStartupMessages(library(bslib))
+
+# ── Palette ggsci npg (alpha 0.8) ────────────────────────────────────────────
+PAL_NPG &lt;- adjustcolor(c("#E64B35","#4DBBD5","#00A087","#3C5488","#F39B7F",
+                          "#8491B4","#91D1C2","#DC0000","#7E6148","#B09C85"),
+                        alpha.f = 0.8)
+
+# ── Dizionario bilingue ───────────────────────────────────────────────────────
+TR &lt;- list(
+  it = list(
+    app_subtitle   = "Pulizia e visualizzazione dati da",
+    privacy_title  = "100% locale — i tuoi dati non lasciano mai il browser",
+    privacy_body   = "Questa applicazione gira interamente nel tuo browser grazie a WebR. Nessun dato viene inviato a server esterni: il file che carichi viene elaborato solo sul tuo dispositivo.",
+    status_waiting = "In attesa", status_loaded = "✓ File caricato",
+    status_clean   = "✓ File pulito", status_chart = "✓ Grafico pronto",
+    status_error   = "✗ Errore",
+    step1          = "1 — Carica il file",
+    file_ph        = "Seleziona un CSV esportato da PlantEye…",
+    file_btn       = "Sfoglia",
+    file_info      = function(nr, np, nt, nd) paste0(nr, " misure · ", np, " piante · ", nt, " trattamenti · ", nd, " giorni"),
+    step2          = "2 — Parametri da includere",
+    sel_main       = "Solo parametri principali",
+    sel_all        = "Tutti (+ distribuzioni %)",
+    desel_all      = "Deseleziona tutte",
+    col_meta       = "parametri selezionati",
+    step3          = "3 — Elabora e scarica",
+    btn_process    = "Elabora",
+    btn_dl_clean   = "Scarica CSV pulito",
+    stat_plants    = "piante", stat_trts = "trattamenti",
+    stat_days      = "giorni", stat_params = "parametri",
+    stat_file      = "file",
+    step4          = "4 — Mappa spaziale del bench",
+    map_hint       = "Clicca sui vasi per escluderli dall'analisi (diventano grigi). Clicca di nuovo per riselezionarli.",
+    map_selected   = "selezionati",
+    map_excluded   = "esclusi",
+    btn_sel_all    = "Seleziona tutti",
+    btn_desel_all  = "Deseleziona tutti",
+    step5          = "5 — Grafico temporale",
+    chart_hint     = "Media giornaliera ± SE tra piante dello stesso trattamento (scansioni aggregate per giorno). Solo i vasi selezionati nella mappa vengono inclusi.",
+    chart_ylab     = "Valore medio",
+    chart_param_lbl= "Parametri da visualizzare:",
+    ribbon_label   = "Mostra banda ±SE",
+    ribbon_sub     = "Visualizza l'area di confidenza attorno alla curva media",
+    range_hint     = "Trascina i cursori per restringere l'intervallo di date visualizzato (di default tutto il periodo).",
+    range_start    = "Data inizio",
+    range_end      = "Data fine",
+    btn_chart      = "Genera grafico",
+    btn_dl_png     = "Scarica PNG",
+    btn_clear      = "Cancella grafico",
+    chart_no_trt   = "Seleziona almeno un vaso nella mappa per generare il grafico.",
+    box_title      = "5b — Boxplot su data singola",
+    box_hint       = "Seleziona un singolo giorno di scansione per visualizzare la distribuzione dei valori tra i vasi di ogni trattamento.",
+    box_date_lbl   = "Seleziona data",
+    btn_box_chart  = "Genera boxplot",
+    jitter_label   = "Mostra punti individuali (jitter)",
+    jitter_sub     = "Visualizza ogni singola misura come puntino, utile per individuare outlier",
+    btn_dl_box     = "Scarica PNG",
+    btn_clear_box  = "Cancella boxplot",
+    step6          = "6 — Export finale",
+    pivot_label    = "Formato long (parametri in una colonna)",
+    pivot_sub      = "Ogni riga avrà un parametro e il suo valore, invece di una colonna per parametro",
+    btn_final      = "Genera file finale",
+    btn_dl_final   = "Scarica CSV finale",
+    stat_rows      = "righe", stat_format = "formato",
+    final_preview  = "Anteprima file finale",
+    credits        = list(pre="Applicazione creata da ", bug=" · Segnala problemi su ", or=" o via ", mail="mail")
+  ),
+  en = list(
+    app_subtitle   = "Data cleaning and visualisation from",
+    privacy_title  = "100% local — your data never leaves the browser",
+    privacy_body   = "This application runs entirely in your browser using WebR. No data is sent to external servers: the file you upload is processed only on your device.",
+    status_waiting = "Waiting", status_loaded = "✓ File loaded",
+    status_clean   = "✓ File cleaned", status_chart = "✓ Chart ready",
+    status_error   = "✗ Error",
+    step1          = "1 — Load file",
+    file_ph        = "Select a CSV exported from PlantEye…",
+    file_btn       = "Browse",
+    file_info      = function(nr, np, nt, nd) paste0(nr, " measurements · ", np, " plants · ", nt, " treatments · ", nd, " days"),
+    step2          = "2 — Parameters to include",
+    sel_main       = "Main parameters only",
+    sel_all        = "All (+ distributions %)",
+    desel_all      = "Deselect all",
+    col_meta       = "parameters selected",
+    step3          = "3 — Process and download",
+    btn_process    = "Process",
+    btn_dl_clean   = "Download cleaned CSV",
+    stat_plants    = "plants", stat_trts = "treatments",
+    stat_days      = "days", stat_params = "parameters",
+    stat_file      = "file",
+    step4          = "4 — Bench spatial map",
+    map_hint       = "Click pots to exclude them from the analysis (they turn grey). Click again to re-include.",
+    map_selected   = "selected",
+    map_excluded   = "excluded",
+    btn_sel_all    = "Select all",
+    btn_desel_all  = "Deselect all",
+    step5          = "5 — Time-series chart",
+    chart_hint     = "Daily mean ± SE across plants of the same treatment (scans aggregated per day). Only pots selected in the map are included.",
+    chart_ylab     = "Mean value",
+    chart_param_lbl= "Parameters to display:",
+    ribbon_label   = "Show ±SE ribbon",
+    ribbon_sub     = "Display the confidence band around the mean curve",
+    range_hint     = "Drag the sliders to restrict the date range shown (default: full period).",
+    range_start    = "Start date",
+    range_end      = "End date",
+    btn_chart      = "Generate chart",
+    btn_dl_png     = "Download PNG",
+    btn_clear      = "Clear chart",
+    chart_no_trt   = "Select at least one pot in the map to generate the chart.",
+    box_title      = "5b — Boxplot for a single date",
+    box_hint       = "Select a single scan day to display the distribution of values across pots for each treatment.",
+    box_date_lbl   = "Select date",
+    btn_box_chart  = "Generate boxplot",
+    jitter_label   = "Show individual data points (jitter)",
+    jitter_sub     = "Overlay each measurement as a dot, useful to spot outliers",
+    btn_dl_box     = "Download PNG",
+    btn_clear_box  = "Clear boxplot",
+    step6          = "6 — Final export",
+    pivot_label    = "Long format (parameters in one column)",
+    pivot_sub      = "Each row will have one parameter and its value, instead of one column per parameter",
+    btn_final      = "Generate final file",
+    btn_dl_final   = "Download final CSV",
+    stat_rows      = "rows", stat_format = "format",
+    final_preview  = "Final file preview",
+    credits        = list(pre="Application developed by ", bug=" · Report issues on ", or=" or via ", mail="email")
+  )
+)
+
+# ── Parsing PlantEye ──────────────────────────────────────────────────────────
+parse_planteye &lt;- function(filepath) {
+  df &lt;- read.csv(filepath, check.names = FALSE, stringsAsFactors = FALSE,
+                 encoding = "UTF-8")
+  df$date &lt;- as.Date(substr(df$timestamp, 1, 10))
+  df$posX &lt;- as.integer(sapply(strsplit(df$unit, ":"), `[`, 2))
+  df$posY &lt;- as.integer(sapply(strsplit(df$unit, ":"), `[`, 3))
+  df
+}
+
+# ── Classificazione parametri ─────────────────────────────────────────────────
+classify_params &lt;- function(df) {
+  meta   &lt;- c("unit","timestamp","sensor","genotype","g_alias","treatment",
+               "date","posX","posY")
+  all_p  &lt;- setdiff(colnames(df), meta)
+  is_dist &lt;- grepl("\\[.+\\]", all_p)
+  list(main = all_p[!is_dist], dist = all_p[is_dist], all = all_p)
+}
+
+# ── Aggregazione giornaliera per pianta ───────────────────────────────────────
+daily_mean_per_plant &lt;- function(df, params) {
+  id_cols &lt;- c("unit","date","treatment","posX","posY","genotype","sensor")
+  id_cols &lt;- id_cols[id_cols %in% colnames(df)]
+  keep    &lt;- c(id_cols, params)
+  sub     &lt;- df[, keep[keep %in% colnames(df)], drop = FALSE]
+  for (p in params) sub[[p]] &lt;- suppressWarnings(as.numeric(sub[[p]]))
+  agg &lt;- aggregate(sub[, params, drop=FALSE],
+                   by = sub[, id_cols, drop=FALSE],
+                   FUN = mean, na.rm = TRUE)
+  agg
+}
+
+# ── Aggregazione media±SE per trattamento × giorno ───────────────────────────
+agg_trt_day &lt;- function(daily_df, params, selected_units) {
+  sub &lt;- daily_df[daily_df$unit %in% selected_units, , drop = FALSE]
+  if (!nrow(sub)) return(NULL)
+  result &lt;- list()
+  for (p in params) {
+    vals &lt;- suppressWarnings(as.numeric(sub[[p]]))
+    tmp  &lt;- sub; tmp$val &lt;- vals
+    m    &lt;- aggregate(val ~ date + treatment, data = tmp, FUN = mean, na.rm = TRUE)
+    s    &lt;- aggregate(val ~ date + treatment, data = tmp, FUN = function(x) {
+      n &lt;- sum(!is.na(x)); if (n &lt; 2) 0 else sd(x, na.rm=TRUE)/sqrt(n)
+    })
+    names(m)[3] &lt;- "mean"; names(s)[3] &lt;- "se"
+    merged &lt;- merge(m, s, by = c("date","treatment"))
+    merged$param &lt;- p
+    result[[p]] &lt;- merged
+  }
+  do.call(rbind, result)
+}
+
+# ── Colori trattamento (palette npg condivisa) ────────────────────────────────
+make_trt_colors &lt;- function(treatments) {
+  trts &lt;- sort(unique(as.character(treatments)))
+  setNames(PAL_NPG[seq_along(trts)], trts)
+}
+
+# ── Generazione SVG mappa bench ──────────────────────────────────────────────
+make_bench_svg &lt;- function(map_df, trt_colors, selected_units,
+                            cell_w = 60, cell_h = 60,
+                            pad_x = 52, pad_y = 44, legend_h = 40,
+                            is_dark = FALSE) {
+  fg     &lt;- if (is_dark) "#D8E8D5" else "#374151"
+  bg     &lt;- if (is_dark) "#1E261D" else "#FFFFFF"
+  n_col  &lt;- max(map_df$posX)
+  n_row  &lt;- max(map_df$posY)
+  svg_w  &lt;- n_col * cell_w + pad_x * 2
+  svg_h  &lt;- n_row * cell_h + pad_y + 16 + legend_h + 24
+  rx     &lt;- 10
+
+  cells &lt;- character(0)
+  # Etichette assi
+  for (x in seq_len(n_col)) {
+    cx &lt;- pad_x + (x-1)*cell_w + cell_w/2
+    cells &lt;- c(cells, sprintf(
+      '&lt;text x="%.0f" y="%.0f" text-anchor="middle" font-size="11" fill="%s" font-family="system-ui"&gt;%d&lt;/text&gt;',
+      cx, pad_y - 8, fg, x))
+  }
+  for (y in seq_len(n_row)) {
+    cy &lt;- pad_y + (y-1)*cell_h + cell_h/2 + 4
+    cells &lt;- c(cells, sprintf(
+      '&lt;text x="%.0f" y="%.0f" text-anchor="end" font-size="11" fill="%s" font-family="system-ui"&gt;%d&lt;/text&gt;',
+      pad_x - 6, cy, fg, y))
+  }
+
+  # Vasi
+  for (i in seq_len(nrow(map_df))) {
+    uid  &lt;- map_df$unit[i]
+    trt  &lt;- map_df$treatment[i]
+    sel  &lt;- uid %in% selected_units
+    col  &lt;- trt_colors[trt]
+    fill &lt;- if (sel) col else "#D1D5DB"
+    strk &lt;- if (sel) col else "#9CA3AF"
+    sdark_fill &lt;- if (sel) col else "#4A5568"
+    sdark_strk &lt;- if (sel) col else "#718096"
+    x_svg &lt;- pad_x + (map_df$posX[i]-1)*cell_w + 3
+    y_svg &lt;- pad_y + (map_df$posY[i]-1)*cell_h + 3
+    safe_id &lt;- gsub(":", "_", uid)
+    cells &lt;- c(cells, sprintf(
+      '&lt;rect class="vaso%s" id="v_%s" x="%.0f" y="%.0f" width="%.0f" height="%.0f"
+       rx="%d" fill="%s" stroke="%s" stroke-width="2.5" style="cursor:pointer;transition:all .12s;"
+       onclick="toggleVaso(\'%s\')"
+       data-unit="%s" data-trt="%s" data-sel="%s"&gt;
+         &lt;title&gt;%s&amp;#10;%s&lt;/title&gt;
+       &lt;/rect&gt;',
+      if (sel) " sel" else " excl",
+      safe_id, x_svg, y_svg, cell_w-6, cell_h-6,
+      rx, fill, strk,
+      safe_id, uid, trt, if (sel) "1" else "0",
+      uid, trt))
+    # Mini etichetta unit
+    cells &lt;- c(cells, sprintf(
+      '&lt;text x="%.0f" y="%.0f" text-anchor="middle" font-size="11"
+       fill="%s" font-family="system-ui" style="pointer-events:none;font-weight:600;"&gt;%s&lt;/text&gt;',
+      x_svg + (cell_w-6)/2, y_svg + (cell_h-6)/2 + 4,
+      if (sel) "#FFFFFF" else "#9CA3AF",
+      uid))
+  }
+
+  # Legenda trattamenti
+  trts    &lt;- names(trt_colors)
+  item_w  &lt;- 115
+  total_w &lt;- length(trts) * item_w
+  lx0     &lt;- max(4, (svg_w - total_w) / 2)
+  ly      &lt;- pad_y + n_row * cell_h + 14
+  for (i in seq_along(trts)) {
+    col &lt;- trt_colors[trts[i]]
+    lx  &lt;- lx0 + (i-1)*item_w
+    cells &lt;- c(cells, sprintf(
+      '&lt;rect x="%.0f" y="%.0f" width="14" height="14" rx="3" fill="%s"/&gt;
+       &lt;text x="%.0f" y="%.0f" font-size="13" font-weight="600" fill="%s" font-family="system-ui"&gt;%s&lt;/text&gt;',
+      lx, ly, col, lx+20, ly+11, fg, trts[i]))
+  }
+
+  sprintf('&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="100%%" preserveAspectRatio="xMidYMid meet" style="background:%s;border-radius:8px;display:block;"&gt;%s&lt;/svg&gt;',
+          svg_w, svg_h + 4, bg, paste(cells, collapse=""))
+}
+
+# ── Grafico temporale ─────────────────────────────────────────────────────────
+draw_time_chart &lt;- function(trt_day_df, params, trt_colors, show_ribbon = TRUE,
+                             ylab = "Mean value") {
+  n_p   &lt;- length(params)
+  n_col &lt;- 2; n_row &lt;- ceiling(n_p / n_col)
+  par(bg="#FFFFFF", col.axis="#1A1A1A", col.lab="#1A1A1A", col.main="#1A1A1A",
+      fg="#1A1A1A", font.main=2, cex.main=1.35, cex.lab=1.2, cex.axis=1.1)
+  if (n_p &gt; 1) {
+    par(mfrow=c(n_row, n_col), mar=c(7.5, 6, 3, 1.5), mgp=c(4, 0.9, 0))
+  } else {
+    par(mfrow=c(1,1), mar=c(7.5, 6, 3, 1.5), mgp=c(4, 0.9, 0))
+  }
+
+  trts      &lt;- intersect(names(trt_colors), unique(trt_day_df$treatment))
+  trts      &lt;- trts[order(trts)]
+  all_dates &lt;- sort(unique(trt_day_df$date))
+  date_ticks &lt;- seq(min(all_dates), max(all_dates), by = 7)
+
+  for (p in params) {
+    sub &lt;- trt_day_df[trt_day_df$param == p, , drop=FALSE]
+    if (!nrow(sub)) next
+
+    ylim &lt;- range(sub$mean + sub$se, sub$mean - sub$se, na.rm=TRUE)
+    ylim[1] &lt;- max(0, ylim[1])
+    ylim &lt;- ylim + diff(ylim) * c(-0.05, 0.08)
+
+    p_clean &lt;- gsub("\\s*$", "", p)
+    last_tok &lt;- regmatches(p_clean, regexpr("[^ ]+$", p_clean))
+    unit_m &lt;- if (length(last_tok) &amp;&amp; !grepl("^[[:digit:]%\\[]", last_tok)) last_tok else ""
+
+    plot.new()
+    plot.window(xlim=range(all_dates), ylim=ylim)
+    rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4],
+         col="#FFFFFF", border=NA)
+    abline(h=pretty(ylim), col="#E5E5E5", lwd=0.9)
+    abline(v=date_ticks, col="#F0F0F0", lwd=0.7)
+
+    for (trt in trts) {
+      d &lt;- sub[sub$treatment==trt, ]
+      if (!nrow(d)) next
+      d &lt;- d[order(d$date),]
+      col &lt;- trt_colors[trt]
+      if (show_ribbon) {
+        rib_col &lt;- adjustcolor(col, alpha.f=0.18)
+        polygon(c(d$date, rev(d$date)),
+                c(d$mean + d$se, rev(pmax(d$mean - d$se, 0))),
+                col=rib_col, border=NA)
+      }
+      lines(d$date, d$mean, col=col, lwd=2.2)
+    }
+
+    axis(2, las=1, cex.axis=1.1, col="#1A1A1A", col.axis="#1A1A1A",
+         mgp=c(4, 0.9, 0))
+    box(col="#1A1A1A", lwd=1)
+
+    # Etichette asse X ruotate di 30 gradi
+    usr &lt;- par("usr")
+    y_off &lt;- (usr[4] - usr[3]) * 0.03
+    text(x=date_ticks, y=usr[3] - y_off,
+         labels=format(date_ticks, "%d %b"),
+         srt=30, adj=c(1,1), xpd=TRUE, cex=1.0, col="#1A1A1A")
+
+    # Asse Y: nome parametro + unità
+    ylab_full &lt;- if (nchar(unit_m) &gt; 0) paste0(ylab, " [", trimws(unit_m), "]") else ylab
+    title(main=p, col.main="#1A1A1A")
+    title(ylab=ylab_full, col.lab="#1A1A1A")
+
+    # Legenda solo nel primo pannello, testo e simboli più grandi
+    if (p == params[1]) {
+      legend("topleft", legend=trts, col=trt_colors[trts], lwd=2.5,
+             bty="n", cex=1.05, pt.cex=1.5)
+    }
+  }
+  par(mfrow=c(1,1))
+}
+
+# ── Boxplot per data singola ──────────────────────────────────────────────────
+draw_boxplot_day &lt;- function(daily_df, params, trt_colors, selected_date,
+                              ylab = "Value", show_jitter = FALSE) {
+  sub &lt;- daily_df[daily_df$date == selected_date, , drop = FALSE]
+  if (!nrow(sub)) return(invisible(NULL))
+
+  n_p   &lt;- length(params)
+  n_col &lt;- 2; n_row &lt;- ceiling(n_p / n_col)
+  par(bg="#FFFFFF", col.axis="#1A1A1A", col.lab="#1A1A1A", col.main="#1A1A1A",
+      fg="#1A1A1A", font.main=2, cex.main=1.3, cex.lab=1.2, cex.axis=1.1)
+  if (n_p &gt; 1) {
+    par(mfrow=c(n_row, n_col), mar=c(7, 6, 3.5, 1.5), mgp=c(4, 0.9, 0))
+  } else {
+    par(mfrow=c(1,1), mar=c(7, 6, 3.5, 1.5), mgp=c(4, 0.9, 0))
+  }
+  trts &lt;- intersect(names(trt_colors), unique(sub$treatment))
+  trts &lt;- trts[order(trts)]
+
+  for (p in params) {
+    vals &lt;- suppressWarnings(as.numeric(sub[[p]]))
+    sub$val &lt;- vals
+    bp_data &lt;- lapply(trts, function(trt) {
+      v &lt;- sub$val[sub$treatment == trt]
+      v[!is.na(v)]
+    })
+    names(bp_data) &lt;- trts
+    non_empty &lt;- sapply(bp_data, length) &gt; 0
+    bp_data &lt;- bp_data[non_empty]
+    cols    &lt;- trt_colors[names(bp_data)]
+
+    p_clean  &lt;- gsub("\\s*$", "", p)
+    last_tok &lt;- regmatches(p_clean, regexpr("[^ ]+$", p_clean))
+    unit_m   &lt;- if (length(last_tok) &amp;&amp; !grepl("^[[:digit:]%\\[]", last_tok)) last_tok else ""
+    ylab_full &lt;- if (nchar(unit_m) &gt; 0) paste0(ylab, " [", trimws(unit_m), "]") else ylab
+
+    all_vals &lt;- unlist(bp_data); all_vals &lt;- all_vals[!is.na(all_vals)]
+    ylim &lt;- if (length(all_vals)) range(all_vals) * c(0.95, 1.05) else c(0,1)
+
+    plot.new()
+    plot.window(xlim=c(0.5, length(bp_data)+0.5), ylim=ylim)
+    rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4],
+         col="#FFFFFF", border=NA)
+    y_major &lt;- pretty(ylim)
+    y_major &lt;- y_major[y_major &gt;= ylim[1] &amp; y_major &lt;= ylim[2]]
+    abline(h=y_major, col="#E5E5E5", lwd=0.9)
+
+    bp_pos &lt;- seq_along(bp_data)
+    boxplot(bp_data, add=TRUE, at=bp_pos, col=cols,
+            border="#1A1A1A", lwd=1, axes=FALSE,
+            outline=TRUE, pch=19, cex=0.6,
+            whisklty=1, staplelwd=1.2, boxwex=0.55)
+
+    if (show_jitter) {
+      for (j in seq_along(bp_data)) {
+        vals_j &lt;- bp_data[[j]]
+        if (!length(vals_j)) next
+        jx &lt;- bp_pos[j] + runif(length(vals_j), -0.18, 0.18)
+        points(jx, vals_j, pch=21,
+               bg=adjustcolor("#1A1A1A", alpha.f=0.35),
+               col=adjustcolor("#1A1A1A", alpha.f=0.55),
+               cex=0.85, lwd=0.6)
+      }
+    }
+
+    usr &lt;- par("usr")
+    y_off &lt;- (usr[4] - usr[3]) * 0.04
+    text(x=bp_pos, y=usr[3] - y_off, labels=names(bp_data),
+         srt=30, adj=c(1,1), xpd=TRUE, cex=0.95, col="#1A1A1A")
+
+    axis(2, at=y_major, col="#1A1A1A", col.axis="#1A1A1A", cex.axis=1.1,
+         las=1, mgp=c(4,0.9,0))
+    box(col="#1A1A1A", lwd=1)
+    title(main=paste0(p, "  [", format(selected_date, "%d %b %Y"), "]"),
+          col.main="#1A1A1A")
+    title(ylab=ylab_full, col.lab="#1A1A1A")
+  }
+  par(mfrow=c(1,1))
+}
+
+# ── Pivot long ────────────────────────────────────────────────────────────────
+pivot_long_pe &lt;- function(df, params) {
+  id_cols    &lt;- c("unit","timestamp","date","treatment","sensor","genotype","posX","posY")
+  id_present &lt;- id_cols[id_cols %in% colnames(df)]
+  id_data    &lt;- df[, id_present, drop=FALSE]
+  long_rows  &lt;- do.call(rbind, lapply(params, function(p) {
+    tmp &lt;- id_data; tmp$parameter &lt;- p; tmp$value &lt;- suppressWarnings(as.numeric(df[[p]])); tmp
+  }))
+  long_rows[order(rep(seq_len(nrow(df)), length(params))),]
+}
+
+# ── Base64 encoder ────────────────────────────────────────────────────────────
+base64_encode_raw &lt;- function(raw_bytes) {
+  alphabet &lt;- strsplit("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/","")[[1]]
+  n &lt;- length(raw_bytes); pad &lt;- (3-n%%3)%%3
+  if (pad&gt;0) raw_bytes &lt;- c(raw_bytes, raw(pad))
+  m   &lt;- matrix(as.integer(raw_bytes), nrow=3)
+  idx &lt;- rbind(bitwShiftR(m[1,],2),
+               bitwOr(bitwShiftL(bitwAnd(m[1,],3L),4), bitwShiftR(m[2,],4)),
+               bitwOr(bitwShiftL(bitwAnd(m[2,],15L),2), bitwShiftR(m[3,],6)),
+               bitwAnd(m[3,],63L))
+  out &lt;- matrix(alphabet[idx+1], nrow=4)
+  if (pad&gt;=1) out[4,ncol(out)] &lt;- "="
+  if (pad==2) out[3,ncol(out)] &lt;- "="
+  paste(out, collapse="")
+}
+
+# ── Serializza vettore R in array JS (per slider date) ───────────────────────
+jsonlite_like_array_r &lt;- function(x) {
+  esc &lt;- gsub('"', '\\\\"', as.character(x))
+  paste0("[", paste0('"', esc, '"', collapse=","), "]")
+}
+
+df_to_csv_string &lt;- function(df, sep=",") {
+  con &lt;- textConnection("out","w"); write.table(df, con, sep=sep, row.names=FALSE, quote=FALSE, na="")
+  close(con); paste(out, collapse="\n")
+}
+
+get_available_chart_params &lt;- function(df, selected_params) {
+  cand &lt;- selected_params[selected_params %in% colnames(df)]
+  cand[vapply(cand, function(c) !all(is.na(suppressWarnings(as.numeric(df[[c]])))), logical(1))]
+}
+
+# ── UI ────────────────────────────────────────────────────────────────────────
+ui &lt;- page_fluid(
+  title = "CleanSpeX 🌿",
+  theme = bs_theme(version=5, base_font="system-ui", heading_font="system-ui",
+                   bg="#F7F9F7", fg="#1A1D23", primary="#2D6A4F",
+                   secondary="#B7D4C6", border_radius="6px"),
+
+  tags$head(tags$style(HTML("
+    html, body { padding:1rem 1.5rem !important; margin:0 !important; background:#F7F9F7 !important; }
+    @media (prefers-color-scheme: dark) { html, body { background:#141A13 !important; color:#D8E8D5 !important; } }
+    h1.title { display:none !important; }
+    .sx-card { background:#fff; border:1px solid #E2E6EA; border-radius:10px; padding:1.8rem 2.2rem; margin-bottom:1.4rem; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+    .privacy-banner { background:#F0F9FF; border:1px solid #BAE6FD; border-radius:10px; padding:1rem 1.4rem; margin-bottom:1.4rem; display:flex; align-items:flex-start; gap:.9rem; }
+    .privacy-icon { font-size:1.3rem; flex-shrink:0; line-height:1.5; }
+    .privacy-title { font-size:.82rem; font-weight:700; color:#0C4A6E; margin-bottom:.2rem; letter-spacing:.03em; text-transform:uppercase; }
+    .privacy-body  { font-size:.82rem; color:#075985; margin:0; line-height:1.55; }
+    .app-title    { font-size:1.6rem; font-weight:700; letter-spacing:-.3px; color:#1A1D23; margin-bottom:.2rem; }
+    .app-subtitle { font-size:.95rem; color:#6B7280; margin-bottom:0; }
+    .section-label { font-size:.8rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#6B7280; margin-bottom:.8rem; }
+    .section-divider { border:none; border-top:1px dashed #D1D5DB; margin:1.4rem 0; }
+    .lang-switcher { display:inline-flex; align-items:center; border:1.5px solid #D1D5DB; border-radius:6px; overflow:hidden; font-size:.85rem; font-weight:700; }
+    .lang-btn { padding:.35rem .8rem; cursor:pointer; background:#fff; color:#6B7280; border:none; border-right:1px solid #D1D5DB; transition:all .12s; user-select:none; }
+    .lang-btn:last-child { border-right:none; }
+    .lang-btn.active { background:#2D6A4F; color:#fff; }
+    .lang-btn:hover:not(.active) { background:#F3F4F6; }
+    .badge-idle  { background:#E9ECF0; color:#4B5563; }
+    .badge-ok    { background:#D1FAE5; color:#065F46; }
+    .badge-error { background:#FEE2E2; color:#991B1B; }
+    .status-badge { display:inline-block; font-size:.85rem; font-weight:600; padding:.3em .85em; border-radius:999px; }
+    .col-grid { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.9rem; }
+    .col-toggle { display:inline-flex; align-items:center; gap:.35rem; padding:.38rem .85rem; border-radius:999px; border:1.5px solid #D1D5DB; background:#fff; font-size:.85rem; font-weight:500; color:#374151; cursor:pointer; transition:all .12s; user-select:none; }
+    .col-toggle.active  { border-color:#2D6A4F; background:#EAF4EF; color:#1C4430; }
+    .col-toggle.active::before { content:'✓'; font-size:.78rem; color:#2D6A4F; font-weight:700; }
+    .col-toggle.excluded { border-color:#D1D5DB; background:#F9FAFB; color:#9CA3AF; text-decoration:line-through; }
+    .col-toggle.dist { border-style:dashed; }
+    .toggle-actions { display:flex; gap:.7rem; margin-bottom:.8rem; flex-wrap:wrap; }
+    .link-btn { background:none; border:none; padding:0; font-size:.85rem; color:#2D6A4F; font-weight:600; cursor:pointer; text-decoration:underline; }
+    .link-btn:hover { color:#1C4430; }
+    #clean_btn, #pivot_btn { border:none; color:#fff; font-weight:600; font-size:1rem; padding:.6rem 1.7rem; border-radius:6px; transition:background .15s; }
+    #clean_btn { background:#2D6A4F; } #clean_btn:hover { background:#245740; }
+    #pivot_btn { background:#7C3AED; } #pivot_btn:hover { background:#6D28D9; }
+    #chart_btn { border:none; color:#fff; font-weight:700; font-size:.95rem; padding:.58rem 1.6rem; border-radius:6px; background:#0E7490; transition:background .15s; }
+    #chart_btn:hover { background:#0C5E76; }
+    .dl-wrap .btn { border:1.5px solid #2D6A4F; color:#2D6A4F; background:transparent; font-weight:600; font-size:1rem; padding:.6rem 1.7rem; border-radius:6px; transition:all .15s; }
+    .dl-wrap .btn:hover { background:#EAF4EF; }
+    .stats-strip { display:flex; flex-wrap:wrap; gap:2rem; padding:1rem 1.4rem; background:#F0FBF5; border-radius:6px; border:1px solid #C6E8D6; margin-bottom:1.4rem; }
+    .stat-item { display:flex; flex-direction:column; }
+    .stat-val  { font-size:1.4rem; font-weight:700; color:#2D6A4F; line-height:1; }
+    .stat-lbl  { font-size:.78rem; color:#6B7280; margin-top:.25rem; }
+    .preview-wrap { overflow-x:auto; overflow-y:auto; max-height:320px; border-radius:6px; border:1px solid #E2E6EA; }
+    .preview-wrap thead th { background:#F3F4F6; font-weight:700; color:#374151; border-bottom:2px solid #D1D5DB; padding:.55rem .8rem; position:sticky; top:0; z-index:1; }
+    .preview-wrap table { font-size:.88rem !important; margin-bottom:0; white-space:nowrap; }
+    .preview-wrap tbody td { padding:.45rem .8rem; color:#4B5563; border-bottom:1px solid #F0F1F3; }
+    .map-wrap { width:100%; max-width:900px; margin:0 auto; padding:.5rem 0; }
+    .map-hint { font-size:.82rem; color:#6B7280; margin-bottom:.8rem; }
+    .map-stats { display:flex; gap:1.5rem; margin-top:.8rem; font-size:.85rem; }
+    .map-stat-sel  { color:#2D6A4F; font-weight:600; }
+    .map-stat-excl { color:#9CA3AF; }
+    .pivot-toggle { display:flex; align-items:center; gap:.85rem; padding:1rem 1.2rem; border-radius:8px; border:1.5px solid #E2E6EA; background:#FAFAFA; margin-bottom:1.2rem; cursor:pointer; transition:all .12s; }
+    .pivot-toggle:hover { border-color:#7C3AED; background:#F5F3FF; }
+    .pivot-toggle.on    { border-color:#7C3AED; background:#F5F3FF; }
+    .pivot-switch { width:2.6rem; height:1.4rem; border-radius:999px; background:#D1D5DB; position:relative; flex-shrink:0; transition:background .15s; }
+    .pivot-toggle.on .pivot-switch { background:#7C3AED; }
+    .pivot-switch::after { content:''; position:absolute; top:.18rem; left:.18rem; width:1.04rem; height:1.04rem; border-radius:50%; background:#fff; transition:left .15s; }
+    .pivot-toggle.on .pivot-switch::after { left:1.38rem; }
+    .pivot-label { font-size:.95rem; font-weight:600; color:#374151; }
+    .pivot-sub   { font-size:.82rem; color:#6B7280; margin-top:.15rem; }
+    .chart-param-grid { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:1rem; }
+    .chart-param-toggle { display:inline-flex; align-items:center; gap:.4rem; padding:.4rem .9rem; border-radius:999px; border:1.5px solid #C5D4C2; background:#fff; font-size:.85rem; font-weight:500; color:#374151; cursor:pointer; transition:all .12s; user-select:none; }
+    .chart-param-toggle.active { border-color:#0E7490; background:#E0F4F8; color:#0C4A5C; }
+    .chart-param-toggle.active::before { content:'✓'; font-size:.76rem; color:#0E7490; font-weight:700; }
+    .chart-param-toggle.excluded { border-color:#DDE5DB; background:#F9FAF9; color:#9CA3AF; }
+    .chart-wrap { background:#fff; border-radius:6px; border:1px solid #E2E6EA; padding:1rem; margin-top:1rem; }
+    .chart-wrap img { width:100%; height:auto; display:block; border-radius:4px; }
+    /* ── dark mode ── */
+    body.dark, body.dark html { background:#141A13 !important; color:#D8E8D5 !important; }
+    body.dark .sx-card { background:#1E261D; border-color:#334430; }
+    body.dark .app-title { color:#E8F4E5; }
+    body.dark .app-subtitle { color:#7A9975; }
+    body.dark .section-label { color:#7A9975; }
+    body.dark .section-divider { border-color:#334430; }
+    body.dark .badge-idle  { background:#253023; color:#7A9975; }
+    body.dark .badge-ok    { background:#1A3D22; color:#6FCF7F; }
+    body.dark .badge-error { background:#3D1A1A; color:#F87171; }
+    body.dark .lang-switcher { border-color:#334430; }
+    body.dark .lang-btn { background:#1E261D; color:#7A9975; border-color:#334430; }
+    body.dark .lang-btn.active { background:#3A6B35; color:#fff; }
+    body.dark .lang-btn:hover:not(.active) { background:#253023; color:#D8E8D5; }
+    body.dark .privacy-banner { background:#1A2D1A; border-color:#2A4A2A; }
+    body.dark .privacy-title { color:#6FCF7F; }
+    body.dark .privacy-body  { color:#7A9975; }
+    body.dark .col-toggle { background:#1E261D; border-color:#334430; color:#C5D8C2; }
+    body.dark .col-toggle.active { border-color:#5A9B55; background:#1E3A1A; color:#A8E0A0; }
+    body.dark .col-toggle.excluded { background:#161E15; color:#4A5E47; }
+    body.dark .link-btn { color:#6FCF7F; }
+    body.dark #clean_btn { background:#3A6B35; }
+    body.dark #chart_btn { background:#0E7490; }
+    body.dark .dl-wrap .btn { border-color:#5A9B55; color:#6FCF7F; }
+    body.dark .dl-wrap .btn:hover { background:#1E3A1A; }
+    body.dark .stats-strip { background:#1A2D1A; border-color:#2A4A2A; }
+    body.dark .stat-val { color:#6FCF7F; }
+    body.dark .stat-lbl { color:#7A9975; }
+    body.dark .preview-wrap { border-color:#334430; background:#1E261D; }
+    body.dark .preview-wrap thead th { background:#253023; color:#C5D8C2; border-color:#334430; }
+    body.dark .preview-wrap tbody td { background:#1E261D; color:#B8D0B5; border-color:#2A3528; }
+    body.dark .map-hint { color:#7A9975; }
+    body.dark .map-stat-sel  { color:#6FCF7F; }
+    body.dark .map-stat-excl { color:#5A6B58; }
+    body.dark .pivot-toggle { background:#1E261D; border-color:#334430; }
+    body.dark .pivot-toggle:hover, body.dark .pivot-toggle.on { border-color:#7C3AED; background:#1E1A2D; }
+    body.dark .pivot-switch { background:#334430; }
+    body.dark .pivot-label { color:#D8E8D5; }
+    body.dark .pivot-sub   { color:#7A9975; }
+    body.dark .chart-param-toggle { background:#1E261D; border-color:#334430; color:#C5D8C2; }
+    body.dark .chart-param-toggle.active { border-color:#22B8CF; background:#122A30; color:#67E8F9; }
+    body.dark .chart-param-toggle.excluded { background:#161E15; color:#4A5E47; }
+    body.dark .chart-wrap { background:#1E261D; border-color:#334430; }
+    body.dark .shiny-table-output table, body.dark table.table, body.dark table { background:#1E261D !important; color:#B8D0B5 !important; }
+    body.dark table.table &gt; :not(caption) &gt; * &gt; * { background:#1E261D !important; color:#B8D0B5 !important; }
+    body.dark .form-control, body.dark input[type=text] { background:#253023 !important; border-color:#334430 !important; color:#D8E8D5 !important; }
+  "))),
+
+  tags$script(HTML("
+    (function() {
+      function sendHeight() {
+        var h = document.body.scrollHeight;
+        window.parent.postMessage({type:'cleanspex-resize', height:h}, '*');
+      }
+      var ro = new ResizeObserver(function() { sendHeight(); });
+      ro.observe(document.body);
+      var mo = new MutationObserver(function() { sendHeight(); });
+      mo.observe(document.body, {childList:true, subtree:true, attributes:true});
+      sendHeight();
+      [100,300,600,1000,2000].forEach(function(ms){ setTimeout(sendHeight,ms); });
+    })();
+
+    (function() {
+      var mq = window.matchMedia('(prefers-color-scheme: dark)');
+      function applyDark(on) { document.body.classList.toggle('dark', on); }
+      applyDark(mq.matches);
+      mq.addEventListener('change', function(e) { applyDark(e.matches); });
+    })();
+
+    function setLang(lang) {
+      document.querySelectorAll('.lang-btn').forEach(function(b) {
+        b.classList.toggle('active', b.getAttribute('data-lang')===lang);
+      });
+      Shiny.setInputValue('ui_lang', lang, {priority:'event'});
+    }
+
+    function toggleCol(el) {
+      el.classList.toggle('active'); el.classList.toggle('excluded');
+      updateColMeta();
+    }
+    function setAllCols(mode) {
+      if (mode==='main') {
+        document.querySelectorAll('.col-toggle').forEach(function(el) {
+          var isDist = el.classList.contains('dist');
+          el.classList.toggle('active', !isDist);
+          el.classList.toggle('excluded', isDist);
+        });
+      } else if (mode==='all') {
+        document.querySelectorAll('.col-toggle').forEach(function(el) {
+          el.classList.add('active'); el.classList.remove('excluded');
+        });
+      } else {
+        document.querySelectorAll('.col-toggle').forEach(function(el) {
+          el.classList.remove('active'); el.classList.add('excluded');
+        });
+      }
+      updateColMeta();
+    }
+    function updateColMeta() {
+      var sel=[];
+      document.querySelectorAll('.col-toggle.active').forEach(function(t){ sel.push(t.getAttribute('data-col')); });
+      Shiny.setInputValue('selected_params', sel, {priority:'event'});
+      Shiny.setInputValue('active_col_count', sel.length, {priority:'event'});
+    }
+
+    function toggleVaso(safe_id) {
+      var el = document.getElementById('v_'+safe_id);
+      if (!el) return;
+      var cur = el.getAttribute('data-sel');
+      var newSel = cur==='1' ? '0' : '1';
+      el.setAttribute('data-sel', newSel);
+      var col = el.getAttribute('data-trt-col') || el.getAttribute('fill');
+      if (newSel==='1') {
+        el.setAttribute('fill', el.getAttribute('data-col')||el.getAttribute('fill'));
+        el.setAttribute('stroke', el.getAttribute('data-col')||el.getAttribute('fill'));
+        el.classList.remove('excl'); el.classList.add('sel');
+      } else {
+        el.setAttribute('fill', '#D1D5DB');
+        el.setAttribute('stroke', '#9CA3AF');
+        el.classList.remove('sel'); el.classList.add('excl');
+      }
+      var selected=[];
+      document.querySelectorAll('.vaso.sel').forEach(function(v){ selected.push(v.getAttribute('data-unit')); });
+      Shiny.setInputValue('selected_units', selected, {priority:'event'});
+      updateMapStats();
+    }
+    function selectAllVasos() {
+      document.querySelectorAll('.vaso').forEach(function(el) {
+        el.setAttribute('data-sel','1');
+        el.setAttribute('fill', el.getAttribute('data-col')||el.getAttribute('fill'));
+        el.setAttribute('stroke', el.getAttribute('data-col')||el.getAttribute('fill'));
+        el.classList.remove('excl'); el.classList.add('sel');
+      });
+      var selected=[];
+      document.querySelectorAll('.vaso.sel').forEach(function(v){ selected.push(v.getAttribute('data-unit')); });
+      Shiny.setInputValue('selected_units', selected, {priority:'event'});
+      updateMapStats();
+    }
+    function deselectAllVasos() {
+      document.querySelectorAll('.vaso').forEach(function(el) {
+        el.setAttribute('data-sel','0');
+        el.setAttribute('fill','#D1D5DB');
+        el.setAttribute('stroke','#9CA3AF');
+        el.classList.remove('sel'); el.classList.add('excl');
+      });
+      Shiny.setInputValue('selected_units', [], {priority:'event'});
+      updateMapStats();
+    }
+    function updateMapStats() {
+      var n_sel  = document.querySelectorAll('.vaso.sel').length;
+      var n_excl = document.querySelectorAll('.vaso.excl').length;
+      var el_sel  = document.getElementById('map-stat-sel');
+      var el_excl = document.getElementById('map-stat-excl');
+      if (el_sel)  el_sel.textContent  = n_sel;
+      if (el_excl) el_excl.textContent = n_excl;
+    }
+
+    function togglePivot() {
+      var el=document.getElementById('pivot-toggle');
+      var on=el.classList.toggle('on');
+      Shiny.setInputValue('pivot_long', on, {priority:'event'});
+    }
+    function toggleRibbon() {
+      var el=document.getElementById('ribbon-toggle');
+      var on=el.classList.toggle('on');
+      Shiny.setInputValue('show_ribbon', on, {priority:'event'});
+    }
+    function toggleJitterBox() {
+      var el=document.getElementById('jitter-box-toggle');
+      var on=el.classList.toggle('on');
+      Shiny.setInputValue('show_jitter_box', on, {priority:'event'});
+    }
+    function toggleChartParam(el) {
+      el.classList.toggle('active'); el.classList.toggle('excluded');
+      var sel=[];
+      document.querySelectorAll('.chart-param-toggle.active').forEach(function(t){ sel.push(t.getAttribute('data-param')); });
+      Shiny.setInputValue('chart_params', sel, {priority:'event'});
+    }
+
+    Shiny.addCustomMessageHandler('downloadCSV', function(msg) {
+      var blob=new Blob([msg.content],{type:'text/csv;charset=utf-8;'});
+      var link=document.createElement('a'); link.href=URL.createObjectURL(blob);
+      link.download=msg.filename; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    });
+    Shiny.addCustomMessageHandler('downloadPNG', function(msg) {
+      var link=document.createElement('a'); link.href='data:image/png;base64,'+msg.data;
+      link.download=msg.filename; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    });
+    Shiny.addCustomMessageHandler('initMapColors', function(msg) {
+      msg.units.forEach(function(item) {
+        var el=document.getElementById('v_'+item.id);
+        if (el) el.setAttribute('data-col', item.col);
+      });
+    });
+    $(document).on('shiny:value', function(e) {
+      if (e.name==='col_selector_panel') setTimeout(updateColMeta, 50);
+      if (e.name==='map_panel') setTimeout(updateMapStats, 100);
+    });
+  ")),
+
+  # ── Header ─────────────────────────────────────────────────────────────────
+  div(class="sx-card",
+    div(style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:.5rem;",
+      div(div(class="app-title","CleanSpeX 🌿"), uiOutput("app_subtitle")),
+      div(style="display:flex;align-items:center;gap:.8rem;",
+        uiOutput("status_badge"),
+        div(class="lang-switcher",
+          tags$button(class="lang-btn", `data-lang`="it", onclick="setLang('it')", "IT"),
+          tags$button(class="lang-btn active", `data-lang`="en", onclick="setLang('en')", "EN")
+        )
+      )
+    )
+  ),
+  uiOutput("privacy_banner"),
+  uiOutput("step1_panel"),
+  uiOutput("col_selector_panel"),
+  uiOutput("step3_panel"),
+  uiOutput("map_panel"),
+  uiOutput("chart_panel"),
+  uiOutput("box_panel"),
+  uiOutput("final_panel"),
+
+  hr(class="section-divider"),
+  div(style="text-align:center;font-size:.85rem;color:#6B7280;padding:.5rem 0 1.5rem;",
+    uiOutput("app_credits"))
+)
+
+# ── Server ────────────────────────────────────────────────────────────────────
+server &lt;- function(input, output, session) {
+  rv &lt;- reactiveValues(
+    df_raw=NULL, df_daily=NULL, df_final=NULL,
+    params=NULL, trt_colors=NULL, map_df=NULL,
+    error=NULL, base_name=NULL,
+    chart_png_b64=NULL, chart_png_range=NULL, chart_png_box=NULL
+  )
+
+  lang &lt;- reactive({ if (is.null(input$ui_lang)) "en" else input$ui_lang })
+  t    &lt;- reactive({ TR[[lang()]] })
+
+  output$app_subtitle &lt;- renderUI({
+    p(class="app-subtitle", t()$app_subtitle, " ", tags$strong("PlantEye"), ".")
+  })
+  output$privacy_banner &lt;- renderUI({
+    tx &lt;- t()
+    div(class="privacy-banner",
+      div(class="privacy-icon","🔒"),
+      div(div(class="privacy-title", tx$privacy_title),
+          p(class="privacy-body", tx$privacy_body)))
+  })
+  output$app_credits &lt;- renderUI({
+    cr &lt;- t()$credits
+    tagList(cr$pre,
+      tags$a(href="https://www.mauromaver.eu", target="_blank",
+             style="color:#2D6A4F;font-weight:700;text-decoration:underline;","Mauro Maver"),
+      cr$bug,
+      tags$a(href="https://github.com/Stramon1um", target="_blank",
+             style="color:#2D6A4F;font-weight:600;text-decoration:underline;","GitHub"),
+      cr$or,
+      tags$a(href="mailto:mauro.maver@univr.it",
+             style="color:#2D6A4F;font-weight:600;text-decoration:underline;", cr$mail),
+      " \U0001F60A")
+  })
+
+  # ── Step 1 ──────────────────────────────────────────────────────────────────
+  output$step1_panel &lt;- renderUI({
+    tx &lt;- t()
+    div(class="sx-card", p(class="section-label", tx$step1),
+      fileInput("file_in", label=NULL, accept=c(".csv","text/csv"),
+                placeholder=tx$file_ph, buttonLabel=tx$file_btn),
+      uiOutput("file_info_chip"))
+  })
+
+  observeEvent(input$file_in, {
+    rv$df_raw &lt;- rv$df_daily &lt;- rv$df_final &lt;- rv$params &lt;- rv$trt_colors &lt;-
+      rv$map_df &lt;- rv$error &lt;- rv$chart_png_b64 &lt;- rv$chart_png_range &lt;- rv$chart_png_box &lt;- NULL
+    tryCatch({
+      df &lt;- parse_planteye(input$file_in$datapath)
+      rv$df_raw   &lt;- df
+      rv$base_name &lt;- sub("\\.csv$","", input$file_in$name, ignore.case=TRUE)
+      p   &lt;- classify_params(df)
+      rv$params &lt;- p
+      rv$trt_colors &lt;- make_trt_colors(df$treatment)
+      rv$map_df &lt;- unique(df[, c("unit","treatment","posX","posY")])
+    }, error=function(e) rv$error &lt;- conditionMessage(e))
+  })
+
+  output$file_info_chip &lt;- renderUI({
+    req(rv$df_raw)
+    tx &lt;- t()
+    n_plants &lt;- length(unique(rv$df_raw$unit))
+    n_trts   &lt;- length(unique(rv$df_raw$treatment))
+    n_days   &lt;- length(unique(rv$df_raw$date))
+    div(class="file-chip" ,
+        style="display:inline-block;font-size:.78rem;background:#EAF4EF;border:1px solid #C6E8D6;border-radius:4px;padding:.2rem .6rem;color:#2D6A4F;font-weight:600;margin-top:.5rem;",
+        tx$file_info(nrow(rv$df_raw), n_plants, n_trts, n_days))
+  })
+
+  # ── Step 2: Selezione parametri ─────────────────────────────────────────────
+  output$col_selector_panel &lt;- renderUI({
+    req(rv$params)
+    tx &lt;- t()
+    p  &lt;- rv$params
+    pills_main &lt;- lapply(p$main, function(col)
+      tags$span(class="col-toggle active", `data-col`=col, onclick="toggleCol(this);", col))
+    pills_dist &lt;- lapply(p$dist, function(col)
+      tags$span(class="col-toggle dist excluded", `data-col`=col, onclick="toggleCol(this);", col))
+
+    div(class="sx-card", p(class="section-label", tx$step2),
+      div(class="toggle-actions",
+        tags$button(class="link-btn", onclick="setAllCols('main')", tx$sel_main),
+        tags$button(class="link-btn", onclick="setAllCols('all')",  tx$sel_all),
+        tags$button(class="link-btn", onclick="setAllCols('none')", tx$desel_all)
+      ),
+      div(class="col-grid", pills_main, pills_dist),
+      p(style="font-size:.82rem;color:#6B7280;margin-top:.3rem;",
+        span(id="col-count-active", length(p$main)), " / ",
+        length(p$all), " ", tx$col_meta)
+    )
+  })
+
+  # ── Step 3: Pulizia + riepilogo ─────────────────────────────────────────────
+  output$step3_panel &lt;- renderUI({
+    req(rv$df_raw)
+    tx &lt;- t()
+    div(class="sx-card", p(class="section-label", tx$step3),
+      div(style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;",
+        actionButton("clean_btn", tx$btn_process, icon=icon("gears"),
+          style="border:none;color:#fff;font-weight:600;font-size:1rem;padding:.6rem 1.7rem;border-radius:6px;background:#2D6A4F;"),
+        div(class="dl-wrap", uiOutput("dl_clean_ui"))
+      ),
+      uiOutput("summary_wrap")
+    )
+  })
+
+  observeEvent(input$clean_btn, {
+    req(rv$df_raw)
+    rv$df_daily &lt;- rv$df_final &lt;- rv$chart_png_b64 &lt;- rv$error &lt;- NULL
+    tryCatch({
+      sel &lt;- input$selected_params
+      if (is.null(sel)||!length(sel)) sel &lt;- rv$params$main
+      rv$df_daily &lt;- daily_mean_per_plant(rv$df_raw, sel)
+    }, error=function(e) rv$error &lt;- conditionMessage(e))
+  })
+
+  output$dl_clean_ui &lt;- renderUI({
+    req(rv$df_daily)
+    div(class="dl-wrap",
+      actionButton("dl_clean_btn", t()$btn_dl_clean, icon=icon("download")))
+  })
+  observeEvent(input$dl_clean_btn, {
+    req(rv$df_daily)
+    session$sendCustomMessage("downloadCSV", list(
+      filename=paste0(rv$base_name, "_clean.csv"),
+      content=df_to_csv_string(rv$df_daily)))
+  })
+
+  output$summary_wrap &lt;- renderUI({
+    req(rv$df_daily)
+    tx &lt;- t()
+    df &lt;- rv$df_daily
+    div(
+      hr(class="section-divider"),
+      div(class="stats-strip",
+        div(class="stat-item", span(class="stat-val", length(unique(df$unit))), span(class="stat-lbl", tx$stat_plants)),
+        div(class="stat-item", span(class="stat-val", length(unique(df$treatment))), span(class="stat-lbl", tx$stat_trts)),
+        div(class="stat-item", span(class="stat-val", length(unique(df$date))), span(class="stat-lbl", tx$stat_days)),
+        div(class="stat-item", span(class="stat-val", ncol(df)-6), span(class="stat-lbl", tx$stat_params)),
+        div(class="stat-item", span(class="stat-val", paste0(rv$base_name,"_clean.csv")), span(class="stat-lbl", tx$stat_file))
+      ),
+      div(class="preview-wrap", tableOutput("preview_tbl"))
+    )
+  })
+  output$preview_tbl &lt;- renderTable({
+    req(rv$df_daily)
+    df &lt;- rv$df_daily
+    disp_cols &lt;- c("unit","date","treatment","posX","posY",
+                   intersect(rv$params$main[1:min(4,length(rv$params$main))], colnames(df)))
+    df[, disp_cols[disp_cols %in% colnames(df)], drop=FALSE]
+  }, striped=FALSE, hover=TRUE, bordered=FALSE, spacing="xs", na="")
+
+  # ── Step 4: Mappa spaziale ──────────────────────────────────────────────────
+  output$map_panel &lt;- renderUI({
+    req(rv$map_df, rv$trt_colors)
+    tx    &lt;- t()
+    mdf   &lt;- rv$map_df
+    n_sel &lt;- nrow(mdf)
+    is_dark &lt;- isTRUE(input$dark_mode)
+    svg_html &lt;- make_bench_svg(mdf, rv$trt_colors,
+                                selected_units = mdf$unit,
+                                is_dark = is_dark)
+    init_js &lt;- tags$script(HTML(paste0(
+      "setTimeout(function(){\n",
+      paste(sprintf("  var e=document.getElementById('v_%s'); if(e) e.setAttribute('data-col','%s');",
+                    gsub(":","_",mdf$unit), rv$trt_colors[mdf$treatment]), collapse="\n"),
+      "\n  Shiny.setInputValue('selected_units',",
+      paste0("[", paste0('"', mdf$unit, '"', collapse=","), "]"),
+      ",{priority:'event'});\n}, 200);"
+    )))
+
+    div(class="sx-card",
+      p(class="section-label", tx$step4),
+      p(class="map-hint", tx$map_hint),
+      div(style="display:flex;gap:.8rem;",
+        tags$button(class="link-btn", onclick="selectAllVasos()",   tx$btn_sel_all),
+        tags$button(class="link-btn", onclick="deselectAllVasos()", tx$btn_desel_all)
+      ),
+      div(class="map-wrap", HTML(svg_html)),
+      init_js,
+      div(class="map-stats",
+        span(class="map-stat-sel", id="map-stat-sel", n_sel), " ", tx$map_selected, " · ",
+        span(class="map-stat-excl", id="map-stat-excl", "0"), " ", tx$map_excluded
+      )
+    )
+  })
+
+  # ── Step 5: Grafico temporale ───────────────────────────────────────────────
+  output$chart_panel &lt;- renderUI({
+    req(rv$df_daily, rv$trt_colors)
+    tx    &lt;- t()
+    df    &lt;- rv$df_daily
+    dates &lt;- sort(unique(df$date))
+    n     &lt;- length(dates)
+    avail &lt;- get_available_chart_params(df, rv$params$main)
+    if (!length(avail)) return(NULL)
+
+    pills &lt;- lapply(avail, function(p)
+      tags$span(class="chart-param-toggle active", `data-param`=p,
+                onclick="toggleChartParam(this);", p))
+
+    div(class="sx-card",
+      p(class="section-label", tx$step5),
+      p(style="font-size:.82rem;color:#6B7280;margin-bottom:1rem;", tx$chart_hint),
+      p(style="font-size:.82rem;color:#6B7280;font-weight:600;margin-bottom:.5rem;", tx$chart_param_lbl),
+      div(class="chart-param-grid", pills),
+      div(id="ribbon-toggle", class="pivot-toggle on", onclick="toggleRibbon();",
+        div(class="pivot-switch"),
+        div(div(class="pivot-label", tx$ribbon_label),
+            div(class="pivot-sub",   tx$ribbon_sub))
+      ),
+      # ── Slicer date integrato ─────────────────────────────────────────────
+      hr(class="section-divider", style="margin:.8rem 0;"),
+      p(style="font-size:.82rem;color:#6B7280;margin-bottom:.8rem;", tx$range_hint),
+      div(style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:.8rem;",
+        div(
+          tags$label(style="font-size:.8rem;font-weight:600;color:#6B7280;display:block;margin-bottom:.3rem;",
+                     tx$range_start),
+          tags$input(type="range", id="range_start_idx", min=1, max=n, value=1, step=1,
+                     style="width:100%;accent-color:#2D6A4F;", oninput="updateRangeLabel()")
+        ),
+        div(
+          tags$label(style="font-size:.8rem;font-weight:600;color:#6B7280;display:block;margin-bottom:.3rem;",
+                     tx$range_end),
+          tags$input(type="range", id="range_end_idx", min=1, max=n, value=n, step=1,
+                     style="width:100%;accent-color:#2D6A4F;", oninput="updateRangeLabel()")
+        )
+      ),
+      div(style="font-size:.85rem;color:#374151;margin-bottom:1rem;background:#F3F4F6;border-radius:6px;padding:.5rem 1rem;display:inline-block;",
+        span(id="range_label", paste(format(dates[1],"%d %b %Y"), "→", format(dates[n],"%d %b %Y")))
+      ),
+      tags$script(HTML(sprintf("
+        var _dates_range = %s;
+        function updateRangeLabel() {
+          var i0 = parseInt(document.getElementById('range_start_idx').value)-1;
+          var i1 = parseInt(document.getElementById('range_end_idx').value)-1;
+          if (i0 &gt; i1) { var tmp=i0; i0=i1; i1=tmp; }
+          document.getElementById('range_label').textContent =
+            _dates_range[i0] + ' \u2192 ' + _dates_range[i1];
+          Shiny.setInputValue('range_start_idx', i0+1, {priority:'event'});
+          Shiny.setInputValue('range_end_idx',   i1+1, {priority:'event'});
+        }
+        updateRangeLabel();
+      ", jsonlite_like_array_r(format(dates, "%d %b %Y"))))),
+      # ── Pulsanti ─────────────────────────────────────────────────────────
+      div(style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;",
+        actionButton("chart_btn", tx$btn_chart, icon=icon("chart-line"),
+          style="border:none;color:#fff;font-weight:600;font-size:1rem;padding:.6rem 1.7rem;border-radius:6px;background:#0E7490;"),
+        uiOutput("dl_png_ui"),
+        uiOutput("clear_chart_ui")
+      ),
+      uiOutput("chart_render_wrap")
+    )
+  })
+
+  observeEvent(input$chart_btn, {
+    req(rv$df_daily, rv$trt_colors)
+    rv$chart_png_b64 &lt;- rv$error &lt;- NULL
+    sel_units &lt;- input$selected_units
+    if (is.null(sel_units)||!length(sel_units)) { rv$error &lt;- t()$chart_no_trt; return() }
+    sel_params &lt;- input$chart_params
+    if (is.null(sel_params)||!length(sel_params))
+      sel_params &lt;- get_available_chart_params(rv$df_daily, rv$params$main)
+    if (!length(sel_params)) return()
+    tryCatch({
+      dates &lt;- sort(unique(rv$df_daily$date))
+      i0    &lt;- max(1, min(as.integer(input$range_start_idx %||% 1),         length(dates)))
+      i1    &lt;- max(1, min(as.integer(input$range_end_idx   %||% length(dates)), length(dates)))
+      if (i0 &gt; i1) { tmp &lt;- i0; i0 &lt;- i1; i1 &lt;- tmp }
+      sub &lt;- rv$df_daily[rv$df_daily$date %in% dates[i0:i1] &amp; rv$df_daily$unit %in% sel_units,]
+      trt_day &lt;- agg_trt_day(sub, sel_params, unique(sub$unit))
+      if (is.null(trt_day)||!nrow(trt_day)) return()
+      show_ribbon &lt;- if (is.null(input$show_ribbon)) TRUE else isTRUE(input$show_ribbon)
+      n_p &lt;- length(sel_params); n_col &lt;- if (n_p&gt;1) 2 else 1; n_row &lt;- ceiling(n_p/n_col)
+      tmpf &lt;- tempfile(fileext=".png")
+      png(tmpf, width=5.5*n_col, height=5*n_row, units="in", res=300)
+      draw_time_chart(trt_day, sel_params, rv$trt_colors, show_ribbon=show_ribbon, ylab=t()$chart_ylab)
+      dev.off()
+      raw_bytes &lt;- readBin(tmpf, "raw", file.info(tmpf)$size)
+      rv$chart_png_b64 &lt;- base64_encode_raw(raw_bytes)
+      unlink(tmpf)
+    }, error=function(e) rv$error &lt;- conditionMessage(e))
+  })
+
+  `%||%` &lt;- function(a, b) if (is.null(a)) b else a
+
+  output$chart_render_wrap &lt;- renderUI({
+    req(rv$chart_png_b64)
+    div(class="chart-wrap",
+      tags$img(src=paste0("data:image/png;base64,", rv$chart_png_b64)))
+  })
+  output$dl_png_ui &lt;- renderUI({
+    req(rv$chart_png_b64)
+    div(class="dl-wrap", actionButton("dl_png_btn", t()$btn_dl_png, icon=icon("image")))
+  })
+  output$clear_chart_ui &lt;- renderUI({
+    req(rv$chart_png_b64)
+    tags$button(class="link-btn", style="color:#9CA3AF;",
+      onclick="Shiny.setInputValue('clear_chart', Math.random(), {priority:'event'});",
+      icon("xmark"), " ", t()$btn_clear)
+  })
+  observeEvent(input$dl_png_btn, {
+    req(rv$chart_png_b64)
+    session$sendCustomMessage("downloadPNG", list(
+      filename=paste0(rv$base_name,"_chart.png"), data=rv$chart_png_b64))
+  })
+  observeEvent(input$clear_chart, { rv$chart_png_b64 &lt;- NULL })
+
+  # ── Step 5b: Boxplot su data singola ─────────────────────────────────────────
+  output$box_panel &lt;- renderUI({
+    req(rv$df_daily, rv$trt_colors)
+    tx    &lt;- t()
+    dates &lt;- sort(unique(rv$df_daily$date))
+    n     &lt;- length(dates)
+    mid   &lt;- ceiling(n/2)
+
+    div(class="sx-card",
+      p(class="section-label", tx$box_title),
+      p(style="font-size:.82rem;color:#6B7280;margin-bottom:1.2rem;", tx$box_hint),
+      div(style="margin-bottom:.8rem;",
+        tags$label(style="font-size:.8rem;font-weight:600;color:#6B7280;display:block;margin-bottom:.3rem;",
+                   tx$box_date_lbl),
+        tags$input(type="range", id="box_date_idx", min=1, max=n, value=mid, step=1,
+                   style="width:100%;max-width:500px;accent-color:#7C3AED;",
+                   oninput="updateBoxLabel()")
+      ),
+      div(style="font-size:.85rem;color:#374151;margin-bottom:1rem;background:#F3F4F6;border-radius:6px;padding:.5rem 1rem;display:inline-block;",
+        span(id="box_label", format(dates[mid], "%d %b %Y"))
+      ),
+      tags$script(HTML(sprintf("
+        var _dates_box = %s;
+        function updateBoxLabel() {
+          var i = parseInt(document.getElementById('box_date_idx').value)-1;
+          document.getElementById('box_label').textContent = _dates_box[i];
+          Shiny.setInputValue('box_date_idx', i+1, {priority:'event'});
+        }
+        updateBoxLabel();
+      ", jsonlite_like_array_r(format(dates, "%d %b %Y"))))),
+      div(id="jitter-box-toggle", class="pivot-toggle", onclick="toggleJitterBox();",
+        div(class="pivot-switch"),
+        div(div(class="pivot-label", tx$jitter_label),
+            div(class="pivot-sub",   tx$jitter_sub))
+      ),
+      div(style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;",
+        actionButton("box_chart_btn", tx$btn_box_chart, icon=icon("chart-bar"),
+          style="border:none;color:#fff;font-weight:600;font-size:1rem;padding:.6rem 1.7rem;border-radius:6px;background:#7C3AED;"),
+        uiOutput("dl_box_ui"),
+        uiOutput("clear_box_ui")
+      ),
+      uiOutput("box_chart_wrap")
+    )
+  })
+
+  observeEvent(input$box_chart_btn, {
+    req(rv$df_daily, rv$trt_colors)
+    rv$chart_png_box &lt;- rv$error &lt;- NULL
+    tryCatch({
+      dates &lt;- sort(unique(rv$df_daily$date))
+      idx   &lt;- max(1, min(as.integer(input$box_date_idx %||% ceiling(length(dates)/2)), length(dates)))
+      sel_date  &lt;- dates[idx]
+      sub       &lt;- rv$df_daily
+      sel_units &lt;- input$selected_units
+      if (!is.null(sel_units)&amp;&amp;length(sel_units)) sub &lt;- sub[sub$unit %in% sel_units,]
+      sel_params &lt;- input$chart_params
+      if (is.null(sel_params)||!length(sel_params))
+        sel_params &lt;- get_available_chart_params(rv$df_daily, rv$params$main)
+      n_p &lt;- length(sel_params); n_col &lt;- if (n_p&gt;1) 2 else 1; n_row &lt;- ceiling(n_p/n_col)
+      tmpf &lt;- tempfile(fileext=".png")
+      png(tmpf, width=5.5*n_col, height=5*n_row, units="in", res=300)
+      draw_boxplot_day(sub, sel_params, rv$trt_colors, selected_date=sel_date,
+                        ylab=t()$chart_ylab,
+                        show_jitter=isTRUE(input$show_jitter_box))
+      dev.off()
+      raw_bytes &lt;- readBin(tmpf, "raw", file.info(tmpf)$size)
+      rv$chart_png_box &lt;- base64_encode_raw(raw_bytes)
+      unlink(tmpf)
+    }, error=function(e) rv$error &lt;- conditionMessage(e))
+  })
+
+  output$dl_box_ui &lt;- renderUI({
+    req(rv$chart_png_box)
+    div(class="dl-wrap", actionButton("dl_box_btn", t()$btn_dl_box, icon=icon("image")))
+  })
+  output$clear_box_ui &lt;- renderUI({
+    req(rv$chart_png_box)
+    tags$button(class="link-btn", style="color:#9CA3AF;",
+      onclick="Shiny.setInputValue('clear_box', Math.random(), {priority:'event'});",
+      icon("xmark"), " ", t()$btn_clear_box)
+  })
+  observeEvent(input$dl_box_btn, {
+    req(rv$chart_png_box)
+    session$sendCustomMessage("downloadPNG", list(
+      filename=paste0(rv$base_name,"_boxplot.png"), data=rv$chart_png_box))
+  })
+  output$box_chart_wrap &lt;- renderUI({
+    req(rv$chart_png_box)
+    div(class="chart-wrap",
+      tags$img(src=paste0("data:image/png;base64,", rv$chart_png_box)))
+  })
+  observeEvent(input$clear_box, { rv$chart_png_box &lt;- NULL })
+
+  # ── Step 6: Export finale ────────────────────────────────────────────────────
+  output$final_panel &lt;- renderUI({
+    req(rv$df_daily)
+    tx &lt;- t()
+    div(class="sx-card", p(class="section-label", tx$step6),
+      div(id="pivot-toggle", class="pivot-toggle", onclick="togglePivot();",
+        div(class="pivot-switch"),
+        div(div(class="pivot-label", tx$pivot_label),
+            div(class="pivot-sub",   tx$pivot_sub))
+      ),
+      div(style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;",
+        actionButton("pivot_btn", tx$btn_final, icon=icon("file-csv"),
+          style="border:none;color:#fff;font-weight:700;font-size:.95rem;padding:.58rem 1.6rem;border-radius:6px;background:#7C3AED;"),
+        div(class="dl-wrap", uiOutput("dl_final_ui"))
+      ),
+      uiOutput("final_preview_wrap")
+    )
+  })
+
+  observeEvent(input$pivot_btn, {
+    req(rv$df_daily)
+    rv$df_final &lt;- rv$error &lt;- NULL
+    tryCatch({
+      sel_units &lt;- input$selected_units
+      df &lt;- if (!is.null(sel_units)&amp;&amp;length(sel_units))
+              rv$df_daily[rv$df_daily$unit %in% sel_units,]
+            else rv$df_daily
+      sel_params &lt;- if (!is.null(input$selected_params)&amp;&amp;length(input$selected_params))
+                      input$selected_params else rv$params$main
+      sel_params &lt;- sel_params[sel_params %in% colnames(df)]
+      rv$df_final &lt;- if (isTRUE(input$pivot_long)) pivot_long_pe(df, sel_params) else df
+    }, error=function(e) rv$error &lt;- conditionMessage(e))
+  })
+
+  output$dl_final_ui &lt;- renderUI({
+    req(rv$df_final)
+    div(class="dl-wrap", actionButton("dl_final_btn", t()$btn_dl_final, icon=icon("download")))
+  })
+  observeEvent(input$dl_final_btn, {
+    req(rv$df_final)
+    session$sendCustomMessage("downloadCSV", list(
+      filename=paste0(rv$base_name,"_final.csv"),
+      content=df_to_csv_string(rv$df_final)))
+  })
+
+  output$final_preview_wrap &lt;- renderUI({
+    req(rv$df_final)
+    tx &lt;- t()
+    tagList(
+      hr(class="section-divider"),
+      div(class="stats-strip",
+        div(class="stat-item", span(class="stat-val", nrow(rv$df_final)), span(class="stat-lbl", tx$stat_rows)),
+        div(class="stat-item", span(class="stat-val", ncol(rv$df_final)), span(class="stat-lbl", tx$stat_params)),
+        div(class="stat-item", span(class="stat-val", if(isTRUE(input$pivot_long))"long" else "wide"), span(class="stat-lbl", tx$stat_format))
+      ),
+      p(class="section-label", tx$final_preview),
+      div(class="preview-wrap", tableOutput("final_preview_tbl"))
+    )
+  })
+  output$final_preview_tbl &lt;- renderTable({
+    req(rv$df_final); rv$df_final
+  }, striped=FALSE, hover=TRUE, bordered=FALSE, spacing="xs", na="")
+
+  # ── Badge stato ──────────────────────────────────────────────────────────────
+  output$status_badge &lt;- renderUI({
+    tx &lt;- t()
+    if (!is.null(rv$error))         div(class="status-badge badge-error", tx$status_error)
+    else if (!is.null(rv$df_final)) div(class="status-badge badge-ok",   tx$status_chart)
+    else if (!is.null(rv$chart_png_b64)) div(class="status-badge badge-ok", tx$status_chart)
+    else if (!is.null(rv$df_daily)) div(class="status-badge badge-ok",   tx$status_clean)
+    else if (!is.null(rv$df_raw))   div(class="status-badge badge-ok",   tx$status_loaded)
+    else                             div(class="status-badge badge-idle", tx$status_waiting)
+  })
+}
+
+shinyApp(ui, server)</code></pre>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

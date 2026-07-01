@@ -1,0 +1,30 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "CleanSpeX"
+  search: false
+  page-navigation: false
+  back-to-top-navigation: false
+  bread-crumbs: false
+  navbar:
+    right:
+      - icon: envelope-fill
+        href: mailto:mauro.maver@univr.it
+    background: primary
+
+format:
+  html:
+    smooth-scroll: true
+    theme: Minty
+    toc: false
+    embed-resources: false
+
+filters:
+  - shinylive
+
+execute:
+  freeze: auto
+
+editor: source

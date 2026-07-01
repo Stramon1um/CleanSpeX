@@ -1,0 +1,1304 @@
+---
+pagetitle: "CleanSpeX"
+engine: knitr
+format:
+  html:
+    page-layout: full
+    include-in-header:
+      text: |
+        <style>
+          h1.title { display: none !important; }
+          body iframe {
+            width: 100% !important;
+            min-height: 500px;
+            transition: height .15s ease-out;
+            display: block;
+          }
+          @media (prefers-color-scheme: dark) {
+            html, body,
+            body .quarto-container, body main, body #quarto-content,
+            body .page-layout-full, body .container-fluid, body .container,
+            body #quarto-document-content, body .content,
+            body .cell, body .cell-output-display,
+            body .shinylive-wrapper, body iframe, body .bslib-page-fill {
+              background-color: #141A13 !important;
+              background: #141A13 !important;
+              color: #D8E8D5 !important;
+            }
+            body .cell, body .cell-output-display, body .shinylive-wrapper {
+              padding: 0 !important; margin: 0 !important; border: none !important;
+            }
+            body iframe { border: none !important; outline: none !important; }
+            body .navbar { background-color: #1E261D !important; }
+            body .navbar * { color: #A8C5A0 !important; }
+          }
+        </style>
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('iframe').forEach(function(f) {
+              f.style.background = 'transparent';
+            });
+          });
+          window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'cleanspex-resize') {
+              document.querySelectorAll('iframe').forEach(function(f) {
+                if (f.contentWindow === event.source)
+                  f.style.height = event.data.height + 'px';
+              });
+            }
+          });
+        </script>
+filters:
+  - shinylive
+---
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 500
+#| viewerWidth: "100%"
+
+suppressPackageStartupMessages(library(shiny))
+suppressPackageStartupMessages(library(bslib))
+
+# ── Palette ggsci npg (alpha 0.8) ────────────────────────────────────────────
+PAL_NPG <- adjustcolor(c("#E64B35","#4DBBD5","#00A087","#3C5488","#F39B7F",
+                          "#8491B4","#91D1C2","#DC0000","#7E6148","#B09C85"),
+                        alpha.f = 0.8)
+
+# ── Dizionario bilingue ───────────────────────────────────────────────────────
+TR <- list(
+  it = list(
+    app_subtitle   = "Pulizia e visualizzazione dati da",
+    privacy_title  = "100% locale — i tuoi dati non lasciano mai il browser",
+    privacy_body   = "Questa applicazione gira interamente nel tuo browser grazie a WebR. Nessun dato viene inviato a server esterni: il file che carichi viene elaborato solo sul tuo dispositivo.",
+    status_waiting = "In attesa", status_loaded = "✓ File caricato",
+    status_clean   = "✓ File pulito", status_chart = "✓ Grafico pronto",
+    status_error   = "✗ Errore",
+    step1          = "1 — Carica il file",
+    file_ph        = "Seleziona un CSV esportato da PlantEye…",
+    file_btn       = "Sfoglia",
+    file_info      = function(nr, np, nt, nd) paste0(nr, " misure · ", np, " piante · ", nt, " trattamenti · ", nd, " giorni"),
+    step2          = "2 — Parametri da includere",
+    sel_main       = "Solo parametri principali",
+    sel_all        = "Tutti (+ distribuzioni %)",
+    desel_all      = "Deseleziona tutte",
+    col_meta       = "parametri selezionati",
+    step3          = "3 — Elabora e scarica",
+    btn_process    = "Elabora",
+    btn_dl_clean   = "Scarica CSV pulito",
+    stat_plants    = "piante", stat_trts = "trattamenti",
+    stat_days      = "giorni", stat_params = "parametri",
+    stat_file      = "file",
+    step4          = "4 — Mappa spaziale del bench",
+    map_hint       = "Clicca sui vasi per escluderli dall'analisi (diventano grigi). Clicca di nuovo per riselezionarli.",
+    map_selected   = "selezionati",
+    map_excluded   = "esclusi",
+    btn_sel_all    = "Seleziona tutti",
+    btn_desel_all  = "Deseleziona tutti",
+    step5          = "5 — Grafico temporale",
+    chart_hint     = "Media giornaliera ± SE tra piante dello stesso trattamento (scansioni aggregate per giorno). Solo i vasi selezionati nella mappa vengono inclusi.",
+    chart_ylab     = "Valore medio",
+    chart_param_lbl= "Parametri da visualizzare:",
+    ribbon_label   = "Mostra banda ±SE",
+    ribbon_sub     = "Visualizza l'area di confidenza attorno alla curva media",
+    range_hint     = "Trascina i cursori per restringere l'intervallo di date visualizzato (di default tutto il periodo).",
+    range_start    = "Data inizio",
+    range_end      = "Data fine",
+    btn_chart      = "Genera grafico",
+    btn_dl_png     = "Scarica PNG",
+    btn_clear      = "Cancella grafico",
+    chart_no_trt   = "Seleziona almeno un vaso nella mappa per generare il grafico.",
+    box_title      = "5b — Boxplot su data singola",
+    box_hint       = "Seleziona un singolo giorno di scansione per visualizzare la distribuzione dei valori tra i vasi di ogni trattamento.",
+    box_date_lbl   = "Seleziona data",
+    btn_box_chart  = "Genera boxplot",
+    jitter_label   = "Mostra punti individuali (jitter)",
+    jitter_sub     = "Visualizza ogni singola misura come puntino, utile per individuare outlier",
+    btn_dl_box     = "Scarica PNG",
+    btn_clear_box  = "Cancella boxplot",
+    step6          = "6 — Export finale",
+    pivot_label    = "Formato long (parametri in una colonna)",
+    pivot_sub      = "Ogni riga avrà un parametro e il suo valore, invece di una colonna per parametro",
+    btn_final      = "Genera file finale",
+    btn_dl_final   = "Scarica CSV finale",
+    stat_rows      = "righe", stat_format = "formato",
+    final_preview  = "Anteprima file finale",
+    credits        = list(pre="Applicazione creata da ", bug=" · Segnala problemi su ", or=" o via ", mail="mail")
+  ),
+  en = list(
+    app_subtitle   = "Data cleaning and visualisation from",
+    privacy_title  = "100% local — your data never leaves the browser",
+    privacy_body   = "This application runs entirely in your browser using WebR. No data is sent to external servers: the file you upload is processed only on your device.",
+    status_waiting = "Waiting", status_loaded = "✓ File loaded",
+    status_clean   = "✓ File cleaned", status_chart = "✓ Chart ready",
+    status_error   = "✗ Error",
+    step1          = "1 — Load file",
+    file_ph        = "Select a CSV exported from PlantEye…",
+    file_btn       = "Browse",
+    file_info      = function(nr, np, nt, nd) paste0(nr, " measurements · ", np, " plants · ", nt, " treatments · ", nd, " days"),
+    step2          = "2 — Parameters to include",
+    sel_main       = "Main parameters only",
+    sel_all        = "All (+ distributions %)",
+    desel_all      = "Deselect all",
+    col_meta       = "parameters selected",
+    step3          = "3 — Process and download",
+    btn_process    = "Process",
+    btn_dl_clean   = "Download cleaned CSV",
+    stat_plants    = "plants", stat_trts = "treatments",
+    stat_days      = "days", stat_params = "parameters",
+    stat_file      = "file",
+    step4          = "4 — Bench spatial map",
+    map_hint       = "Click pots to exclude them from the analysis (they turn grey). Click again to re-include.",
+    map_selected   = "selected",
+    map_excluded   = "excluded",
+    btn_sel_all    = "Select all",
+    btn_desel_all  = "Deselect all",
+    step5          = "5 — Time-series chart",
+    chart_hint     = "Daily mean ± SE across plants of the same treatment (scans aggregated per day). Only pots selected in the map are included.",
+    chart_ylab     = "Mean value",
+    chart_param_lbl= "Parameters to display:",
+    ribbon_label   = "Show ±SE ribbon",
+    ribbon_sub     = "Display the confidence band around the mean curve",
+    range_hint     = "Drag the sliders to restrict the date range shown (default: full period).",
+    range_start    = "Start date",
+    range_end      = "End date",
+    btn_chart      = "Generate chart",
+    btn_dl_png     = "Download PNG",
+    btn_clear      = "Clear chart",
+    chart_no_trt   = "Select at least one pot in the map to generate the chart.",
+    box_title      = "5b — Boxplot for a single date",
+    box_hint       = "Select a single scan day to display the distribution of values across pots for each treatment.",
+    box_date_lbl   = "Select date",
+    btn_box_chart  = "Generate boxplot",
+    jitter_label   = "Show individual data points (jitter)",
+    jitter_sub     = "Overlay each measurement as a dot, useful to spot outliers",
+    btn_dl_box     = "Download PNG",
+    btn_clear_box  = "Clear boxplot",
+    step6          = "6 — Final export",
+    pivot_label    = "Long format (parameters in one column)",
+    pivot_sub      = "Each row will have one parameter and its value, instead of one column per parameter",
+    btn_final      = "Generate final file",
+    btn_dl_final   = "Download final CSV",
+    stat_rows      = "rows", stat_format = "format",
+    final_preview  = "Final file preview",
+    credits        = list(pre="Application developed by ", bug=" · Report issues on ", or=" or via ", mail="email")
+  )
+)
+
+# ── Parsing PlantEye ──────────────────────────────────────────────────────────
+parse_planteye <- function(filepath) {
+  df <- read.csv(filepath, check.names = FALSE, stringsAsFactors = FALSE,
+                 encoding = "UTF-8")
+  df$date <- as.Date(substr(df$timestamp, 1, 10))
+  df$posX <- as.integer(sapply(strsplit(df$unit, ":"), `[`, 2))
+  df$posY <- as.integer(sapply(strsplit(df$unit, ":"), `[`, 3))
+  df
+}
+
+# ── Classificazione parametri ─────────────────────────────────────────────────
+classify_params <- function(df) {
+  meta   <- c("unit","timestamp","sensor","genotype","g_alias","treatment",
+               "date","posX","posY")
+  all_p  <- setdiff(colnames(df), meta)
+  is_dist <- grepl("\\[.+\\]", all_p)
+  list(main = all_p[!is_dist], dist = all_p[is_dist], all = all_p)
+}
+
+# ── Aggregazione giornaliera per pianta ───────────────────────────────────────
+daily_mean_per_plant <- function(df, params) {
+  id_cols <- c("unit","date","treatment","posX","posY","genotype","sensor")
+  id_cols <- id_cols[id_cols %in% colnames(df)]
+  keep    <- c(id_cols, params)
+  sub     <- df[, keep[keep %in% colnames(df)], drop = FALSE]
+  for (p in params) sub[[p]] <- suppressWarnings(as.numeric(sub[[p]]))
+  agg <- aggregate(sub[, params, drop=FALSE],
+                   by = sub[, id_cols, drop=FALSE],
+                   FUN = mean, na.rm = TRUE)
+  agg
+}
+
+# ── Aggregazione media±SE per trattamento × giorno ───────────────────────────
+agg_trt_day <- function(daily_df, params, selected_units) {
+  sub <- daily_df[daily_df$unit %in% selected_units, , drop = FALSE]
+  if (!nrow(sub)) return(NULL)
+  result <- list()
+  for (p in params) {
+    vals <- suppressWarnings(as.numeric(sub[[p]]))
+    tmp  <- sub; tmp$val <- vals
+    m    <- aggregate(val ~ date + treatment, data = tmp, FUN = mean, na.rm = TRUE)
+    s    <- aggregate(val ~ date + treatment, data = tmp, FUN = function(x) {
+      n <- sum(!is.na(x)); if (n < 2) 0 else sd(x, na.rm=TRUE)/sqrt(n)
+    })
+    names(m)[3] <- "mean"; names(s)[3] <- "se"
+    merged <- merge(m, s, by = c("date","treatment"))
+    merged$param <- p
+    result[[p]] <- merged
+  }
+  do.call(rbind, result)
+}
+
+# ── Colori trattamento (palette npg condivisa) ────────────────────────────────
+make_trt_colors <- function(treatments) {
+  trts <- sort(unique(as.character(treatments)))
+  setNames(PAL_NPG[seq_along(trts)], trts)
+}
+
+# ── Generazione SVG mappa bench ──────────────────────────────────────────────
+make_bench_svg <- function(map_df, trt_colors, selected_units,
+                            cell_w = 60, cell_h = 60,
+                            pad_x = 52, pad_y = 44, legend_h = 40,
+                            is_dark = FALSE) {
+  fg     <- if (is_dark) "#D8E8D5" else "#374151"
+  bg     <- if (is_dark) "#1E261D" else "#FFFFFF"
+  n_col  <- max(map_df$posX)
+  n_row  <- max(map_df$posY)
+  svg_w  <- n_col * cell_w + pad_x * 2
+  svg_h  <- n_row * cell_h + pad_y + 16 + legend_h + 24
+  rx     <- 10
+
+  cells <- character(0)
+  # Etichette assi
+  for (x in seq_len(n_col)) {
+    cx <- pad_x + (x-1)*cell_w + cell_w/2
+    cells <- c(cells, sprintf(
+      '<text x="%.0f" y="%.0f" text-anchor="middle" font-size="11" fill="%s" font-family="system-ui">%d</text>',
+      cx, pad_y - 8, fg, x))
+  }
+  for (y in seq_len(n_row)) {
+    cy <- pad_y + (y-1)*cell_h + cell_h/2 + 4
+    cells <- c(cells, sprintf(
+      '<text x="%.0f" y="%.0f" text-anchor="end" font-size="11" fill="%s" font-family="system-ui">%d</text>',
+      pad_x - 6, cy, fg, y))
+  }
+
+  # Vasi
+  for (i in seq_len(nrow(map_df))) {
+    uid  <- map_df$unit[i]
+    trt  <- map_df$treatment[i]
+    sel  <- uid %in% selected_units
+    col  <- trt_colors[trt]
+    fill <- if (sel) col else "#D1D5DB"
+    strk <- if (sel) col else "#9CA3AF"
+    sdark_fill <- if (sel) col else "#4A5568"
+    sdark_strk <- if (sel) col else "#718096"
+    x_svg <- pad_x + (map_df$posX[i]-1)*cell_w + 3
+    y_svg <- pad_y + (map_df$posY[i]-1)*cell_h + 3
+    safe_id <- gsub(":", "_", uid)
+    cells <- c(cells, sprintf(
+      '<rect class="vaso%s" id="v_%s" x="%.0f" y="%.0f" width="%.0f" height="%.0f"
+       rx="%d" fill="%s" stroke="%s" stroke-width="2.5" style="cursor:pointer;transition:all .12s;"
+       onclick="toggleVaso(\'%s\')"
+       data-unit="%s" data-trt="%s" data-sel="%s">
+         <title>%s&#10;%s</title>
+       </rect>',
+      if (sel) " sel" else " excl",
+      safe_id, x_svg, y_svg, cell_w-6, cell_h-6,
+      rx, fill, strk,
+      safe_id, uid, trt, if (sel) "1" else "0",
+      uid, trt))
+    # Mini etichetta unit
+    cells <- c(cells, sprintf(
+      '<text x="%.0f" y="%.0f" text-anchor="middle" font-size="11"
+       fill="%s" font-family="system-ui" style="pointer-events:none;font-weight:600;">%s</text>',
+      x_svg + (cell_w-6)/2, y_svg + (cell_h-6)/2 + 4,
+      if (sel) "#FFFFFF" else "#9CA3AF",
+      uid))
+  }
+
+  # Legenda trattamenti
+  trts    <- names(trt_colors)
+  item_w  <- 115
+  total_w <- length(trts) * item_w
+  lx0     <- max(4, (svg_w - total_w) / 2)
+  ly      <- pad_y + n_row * cell_h + 14
+  for (i in seq_along(trts)) {
+    col <- trt_colors[trts[i]]
+    lx  <- lx0 + (i-1)*item_w
+    cells <- c(cells, sprintf(
+      '<rect x="%.0f" y="%.0f" width="14" height="14" rx="3" fill="%s"/>
+       <text x="%.0f" y="%.0f" font-size="13" font-weight="600" fill="%s" font-family="system-ui">%s</text>',
+      lx, ly, col, lx+20, ly+11, fg, trts[i]))
+  }
+
+  sprintf('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="100%%" preserveAspectRatio="xMidYMid meet" style="background:%s;border-radius:8px;display:block;">%s</svg>',
+          svg_w, svg_h + 4, bg, paste(cells, collapse=""))
+}
+
+# ── Grafico temporale ─────────────────────────────────────────────────────────
+draw_time_chart <- function(trt_day_df, params, trt_colors, show_ribbon = TRUE,
+                             ylab = "Mean value") {
+  n_p   <- length(params)
+  n_col <- 2; n_row <- ceiling(n_p / n_col)
+  par(bg="#FFFFFF", col.axis="#1A1A1A", col.lab="#1A1A1A", col.main="#1A1A1A",
+      fg="#1A1A1A", font.main=2, cex.main=1.35, cex.lab=1.2, cex.axis=1.1)
+  if (n_p > 1) {
+    par(mfrow=c(n_row, n_col), mar=c(7.5, 6, 3, 1.5), mgp=c(4, 0.9, 0))
+  } else {
+    par(mfrow=c(1,1), mar=c(7.5, 6, 3, 1.5), mgp=c(4, 0.9, 0))
+  }
+
+  trts      <- intersect(names(trt_colors), unique(trt_day_df$treatment))
+  trts      <- trts[order(trts)]
+  all_dates <- sort(unique(trt_day_df$date))
+  date_ticks <- seq(min(all_dates), max(all_dates), by = 7)
+
+  for (p in params) {
+    sub <- trt_day_df[trt_day_df$param == p, , drop=FALSE]
+    if (!nrow(sub)) next
+
+    ylim <- range(sub$mean + sub$se, sub$mean - sub$se, na.rm=TRUE)
+    ylim[1] <- max(0, ylim[1])
+    ylim <- ylim + diff(ylim) * c(-0.05, 0.08)
+
+    p_clean <- gsub("\\s*$", "", p)
+    last_tok <- regmatches(p_clean, regexpr("[^ ]+$", p_clean))
+    unit_m <- if (length(last_tok) && !grepl("^[[:digit:]%\\[]", last_tok)) last_tok else ""
+
+    plot.new()
+    plot.window(xlim=range(all_dates), ylim=ylim)
+    rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4],
+         col="#FFFFFF", border=NA)
+    abline(h=pretty(ylim), col="#E5E5E5", lwd=0.9)
+    abline(v=date_ticks, col="#F0F0F0", lwd=0.7)
+
+    for (trt in trts) {
+      d <- sub[sub$treatment==trt, ]
+      if (!nrow(d)) next
+      d <- d[order(d$date),]
+      col <- trt_colors[trt]
+      if (show_ribbon) {
+        rib_col <- adjustcolor(col, alpha.f=0.18)
+        polygon(c(d$date, rev(d$date)),
+                c(d$mean + d$se, rev(pmax(d$mean - d$se, 0))),
+                col=rib_col, border=NA)
+      }
+      lines(d$date, d$mean, col=col, lwd=2.2)
+    }
+
+    axis(2, las=1, cex.axis=1.1, col="#1A1A1A", col.axis="#1A1A1A",
+         mgp=c(4, 0.9, 0))
+    box(col="#1A1A1A", lwd=1)
+
+    # Etichette asse X ruotate di 30 gradi
+    usr <- par("usr")
+    y_off <- (usr[4] - usr[3]) * 0.03
+    text(x=date_ticks, y=usr[3] - y_off,
+         labels=format(date_ticks, "%d %b"),
+         srt=30, adj=c(1,1), xpd=TRUE, cex=1.0, col="#1A1A1A")
+
+    # Asse Y: nome parametro + unità
+    ylab_full <- if (nchar(unit_m) > 0) paste0(ylab, " [", trimws(unit_m), "]") else ylab
+    title(main=p, col.main="#1A1A1A")
+    title(ylab=ylab_full, col.lab="#1A1A1A")
+
+    # Legenda solo nel primo pannello, testo e simboli più grandi
+    if (p == params[1]) {
+      legend("topleft", legend=trts, col=trt_colors[trts], lwd=2.5,
+             bty="n", cex=1.05, pt.cex=1.5)
+    }
+  }
+  par(mfrow=c(1,1))
+}
+
+# ── Boxplot per data singola ──────────────────────────────────────────────────
+draw_boxplot_day <- function(daily_df, params, trt_colors, selected_date,
+                              ylab = "Value", show_jitter = FALSE) {
+  sub <- daily_df[daily_df$date == selected_date, , drop = FALSE]
+  if (!nrow(sub)) return(invisible(NULL))
+
+  n_p   <- length(params)
+  n_col <- 2; n_row <- ceiling(n_p / n_col)
+  par(bg="#FFFFFF", col.axis="#1A1A1A", col.lab="#1A1A1A", col.main="#1A1A1A",
+      fg="#1A1A1A", font.main=2, cex.main=1.3, cex.lab=1.2, cex.axis=1.1)
+  if (n_p > 1) {
+    par(mfrow=c(n_row, n_col), mar=c(7, 6, 3.5, 1.5), mgp=c(4, 0.9, 0))
+  } else {
+    par(mfrow=c(1,1), mar=c(7, 6, 3.5, 1.5), mgp=c(4, 0.9, 0))
+  }
+  trts <- intersect(names(trt_colors), unique(sub$treatment))
+  trts <- trts[order(trts)]
+
+  for (p in params) {
+    vals <- suppressWarnings(as.numeric(sub[[p]]))
+    sub$val <- vals
+    bp_data <- lapply(trts, function(trt) {
+      v <- sub$val[sub$treatment == trt]
+      v[!is.na(v)]
+    })
+    names(bp_data) <- trts
+    non_empty <- sapply(bp_data, length) > 0
+    bp_data <- bp_data[non_empty]
+    cols    <- trt_colors[names(bp_data)]
+
+    p_clean  <- gsub("\\s*$", "", p)
+    last_tok <- regmatches(p_clean, regexpr("[^ ]+$", p_clean))
+    unit_m   <- if (length(last_tok) && !grepl("^[[:digit:]%\\[]", last_tok)) last_tok else ""
+    ylab_full <- if (nchar(unit_m) > 0) paste0(ylab, " [", trimws(unit_m), "]") else ylab
+
+    all_vals <- unlist(bp_data); all_vals <- all_vals[!is.na(all_vals)]
+    ylim <- if (length(all_vals)) range(all_vals) * c(0.95, 1.05) else c(0,1)
+
+    plot.new()
+    plot.window(xlim=c(0.5, length(bp_data)+0.5), ylim=ylim)
+    rect(par("usr")[1], par("usr")[3], par("usr")[2], par("usr")[4],
+         col="#FFFFFF", border=NA)
+    y_major <- pretty(ylim)
+    y_major <- y_major[y_major >= ylim[1] & y_major <= ylim[2]]
+    abline(h=y_major, col="#E5E5E5", lwd=0.9)
+
+    bp_pos <- seq_along(bp_data)
+    boxplot(bp_data, add=TRUE, at=bp_pos, col=cols,
+            border="#1A1A1A", lwd=1, axes=FALSE,
+            outline=TRUE, pch=19, cex=0.6,
+            whisklty=1, staplelwd=1.2, boxwex=0.55)
+
+    if (show_jitter) {
+      for (j in seq_along(bp_data)) {
+        vals_j <- bp_data[[j]]
+        if (!length(vals_j)) next
+        jx <- bp_pos[j] + runif(length(vals_j), -0.18, 0.18)
+        points(jx, vals_j, pch=21,
+               bg=adjustcolor("#1A1A1A", alpha.f=0.35),
+               col=adjustcolor("#1A1A1A", alpha.f=0.55),
+               cex=0.85, lwd=0.6)
+      }
+    }
+
+    usr <- par("usr")
+    y_off <- (usr[4] - usr[3]) * 0.04
+    text(x=bp_pos, y=usr[3] - y_off, labels=names(bp_data),
+         srt=30, adj=c(1,1), xpd=TRUE, cex=0.95, col="#1A1A1A")
+
+    axis(2, at=y_major, col="#1A1A1A", col.axis="#1A1A1A", cex.axis=1.1,
+         las=1, mgp=c(4,0.9,0))
+    box(col="#1A1A1A", lwd=1)
+    title(main=paste0(p, "  [", format(selected_date, "%d %b %Y"), "]"),
+          col.main="#1A1A1A")
+    title(ylab=ylab_full, col.lab="#1A1A1A")
+  }
+  par(mfrow=c(1,1))
+}
+
+# ── Pivot long ────────────────────────────────────────────────────────────────
+pivot_long_pe <- function(df, params) {
+  id_cols    <- c("unit","timestamp","date","treatment","sensor","genotype","posX","posY")
+  id_present <- id_cols[id_cols %in% colnames(df)]
+  id_data    <- df[, id_present, drop=FALSE]
+  long_rows  <- do.call(rbind, lapply(params, function(p) {
+    tmp <- id_data; tmp$parameter <- p; tmp$value <- suppressWarnings(as.numeric(df[[p]])); tmp
+  }))
+  long_rows[order(rep(seq_len(nrow(df)), length(params))),]
+}
+
+# ── Base64 encoder ────────────────────────────────────────────────────────────
+base64_encode_raw <- function(raw_bytes) {
+  alphabet <- strsplit("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/","")[[1]]
+  n <- length(raw_bytes); pad <- (3-n%%3)%%3
+  if (pad>0) raw_bytes <- c(raw_bytes, raw(pad))
+  m   <- matrix(as.integer(raw_bytes), nrow=3)
+  idx <- rbind(bitwShiftR(m[1,],2),
+               bitwOr(bitwShiftL(bitwAnd(m[1,],3L),4), bitwShiftR(m[2,],4)),
+               bitwOr(bitwShiftL(bitwAnd(m[2,],15L),2), bitwShiftR(m[3,],6)),
+               bitwAnd(m[3,],63L))
+  out <- matrix(alphabet[idx+1], nrow=4)
+  if (pad>=1) out[4,ncol(out)] <- "="
+  if (pad==2) out[3,ncol(out)] <- "="
+  paste(out, collapse="")
+}
+
+# ── Serializza vettore R in array JS (per slider date) ───────────────────────
+jsonlite_like_array_r <- function(x) {
+  esc <- gsub('"', '\\\\"', as.character(x))
+  paste0("[", paste0('"', esc, '"', collapse=","), "]")
+}
+
+df_to_csv_string <- function(df, sep=",") {
+  con <- textConnection("out","w"); write.table(df, con, sep=sep, row.names=FALSE, quote=FALSE, na="")
+  close(con); paste(out, collapse="\n")
+}
+
+get_available_chart_params <- function(df, selected_params) {
+  cand <- selected_params[selected_params %in% colnames(df)]
+  cand[vapply(cand, function(c) !all(is.na(suppressWarnings(as.numeric(df[[c]])))), logical(1))]
+}
+
+# ── UI ────────────────────────────────────────────────────────────────────────
+ui <- page_fluid(
+  title = "CleanSpeX 🌿",
+  theme = bs_theme(version=5, base_font="system-ui", heading_font="system-ui",
+                   bg="#F7F9F7", fg="#1A1D23", primary="#2D6A4F",
+                   secondary="#B7D4C6", border_radius="6px"),
+
+  tags$head(tags$style(HTML("
+    html, body { padding:1rem 1.5rem !important; margin:0 !important; background:#F7F9F7 !important; }
+    @media (prefers-color-scheme: dark) { html, body { background:#141A13 !important; color:#D8E8D5 !important; } }
+    h1.title { display:none !important; }
+    .sx-card { background:#fff; border:1px solid #E2E6EA; border-radius:10px; padding:1.8rem 2.2rem; margin-bottom:1.4rem; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+    .privacy-banner { background:#F0F9FF; border:1px solid #BAE6FD; border-radius:10px; padding:1rem 1.4rem; margin-bottom:1.4rem; display:flex; align-items:flex-start; gap:.9rem; }
+    .privacy-icon { font-size:1.3rem; flex-shrink:0; line-height:1.5; }
+    .privacy-title { font-size:.82rem; font-weight:700; color:#0C4A6E; margin-bottom:.2rem; letter-spacing:.03em; text-transform:uppercase; }
+    .privacy-body  { font-size:.82rem; color:#075985; margin:0; line-height:1.55; }
+    .app-title    { font-size:1.6rem; font-weight:700; letter-spacing:-.3px; color:#1A1D23; margin-bottom:.2rem; }
+    .app-subtitle { font-size:.95rem; color:#6B7280; margin-bottom:0; }
+    .section-label { font-size:.8rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#6B7280; margin-bottom:.8rem; }
+    .section-divider { border:none; border-top:1px dashed #D1D5DB; margin:1.4rem 0; }
+    .lang-switcher { display:inline-flex; align-items:center; border:1.5px solid #D1D5DB; border-radius:6px; overflow:hidden; font-size:.85rem; font-weight:700; }
+    .lang-btn { padding:.35rem .8rem; cursor:pointer; background:#fff; color:#6B7280; border:none; border-right:1px solid #D1D5DB; transition:all .12s; user-select:none; }
+    .lang-btn:last-child { border-right:none; }
+    .lang-btn.active { background:#2D6A4F; color:#fff; }
+    .lang-btn:hover:not(.active) { background:#F3F4F6; }
+    .badge-idle  { background:#E9ECF0; color:#4B5563; }
+    .badge-ok    { background:#D1FAE5; color:#065F46; }
+    .badge-error { background:#FEE2E2; color:#991B1B; }
+    .status-badge { display:inline-block; font-size:.85rem; font-weight:600; padding:.3em .85em; border-radius:999px; }
+    .col-grid { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.9rem; }
+    .col-toggle { display:inline-flex; align-items:center; gap:.35rem; padding:.38rem .85rem; border-radius:999px; border:1.5px solid #D1D5DB; background:#fff; font-size:.85rem; font-weight:500; color:#374151; cursor:pointer; transition:all .12s; user-select:none; }
+    .col-toggle.active  { border-color:#2D6A4F; background:#EAF4EF; color:#1C4430; }
+    .col-toggle.active::before { content:'✓'; font-size:.78rem; color:#2D6A4F; font-weight:700; }
+    .col-toggle.excluded { border-color:#D1D5DB; background:#F9FAFB; color:#9CA3AF; text-decoration:line-through; }
+    .col-toggle.dist { border-style:dashed; }
+    .toggle-actions { display:flex; gap:.7rem; margin-bottom:.8rem; flex-wrap:wrap; }
+    .link-btn { background:none; border:none; padding:0; font-size:.85rem; color:#2D6A4F; font-weight:600; cursor:pointer; text-decoration:underline; }
+    .link-btn:hover { color:#1C4430; }
+    #clean_btn, #pivot_btn { border:none; color:#fff; font-weight:600; font-size:1rem; padding:.6rem 1.7rem; border-radius:6px; transition:background .15s; }
+    #clean_btn { background:#2D6A4F; } #clean_btn:hover { background:#245740; }
+    #pivot_btn { background:#7C3AED; } #pivot_btn:hover { background:#6D28D9; }
+    #chart_btn { border:none; color:#fff; font-weight:700; font-size:.95rem; padding:.58rem 1.6rem; border-radius:6px; background:#0E7490; transition:background .15s; }
+    #chart_btn:hover { background:#0C5E76; }
+    .dl-wrap .btn { border:1.5px solid #2D6A4F; color:#2D6A4F; background:transparent; font-weight:600; font-size:1rem; padding:.6rem 1.7rem; border-radius:6px; transition:all .15s; }
+    .dl-wrap .btn:hover { background:#EAF4EF; }
+    .stats-strip { display:flex; flex-wrap:wrap; gap:2rem; padding:1rem 1.4rem; background:#F0FBF5; border-radius:6px; border:1px solid #C6E8D6; margin-bottom:1.4rem; }
+    .stat-item { display:flex; flex-direction:column; }
+    .stat-val  { font-size:1.4rem; font-weight:700; color:#2D6A4F; line-height:1; }
+    .stat-lbl  { font-size:.78rem; color:#6B7280; margin-top:.25rem; }
+    .preview-wrap { overflow-x:auto; overflow-y:auto; max-height:320px; border-radius:6px; border:1px solid #E2E6EA; }
+    .preview-wrap thead th { background:#F3F4F6; font-weight:700; color:#374151; border-bottom:2px solid #D1D5DB; padding:.55rem .8rem; position:sticky; top:0; z-index:1; }
+    .preview-wrap table { font-size:.88rem !important; margin-bottom:0; white-space:nowrap; }
+    .preview-wrap tbody td { padding:.45rem .8rem; color:#4B5563; border-bottom:1px solid #F0F1F3; }
+    .map-wrap { width:100%; max-width:900px; margin:0 auto; padding:.5rem 0; }
+    .map-hint { font-size:.82rem; color:#6B7280; margin-bottom:.8rem; }
+    .map-stats { display:flex; gap:1.5rem; margin-top:.8rem; font-size:.85rem; }
+    .map-stat-sel  { color:#2D6A4F; font-weight:600; }
+    .map-stat-excl { color:#9CA3AF; }
+    .pivot-toggle { display:flex; align-items:center; gap:.85rem; padding:1rem 1.2rem; border-radius:8px; border:1.5px solid #E2E6EA; background:#FAFAFA; margin-bottom:1.2rem; cursor:pointer; transition:all .12s; }
+    .pivot-toggle:hover { border-color:#7C3AED; background:#F5F3FF; }
+    .pivot-toggle.on    { border-color:#7C3AED; background:#F5F3FF; }
+    .pivot-switch { width:2.6rem; height:1.4rem; border-radius:999px; background:#D1D5DB; position:relative; flex-shrink:0; transition:background .15s; }
+    .pivot-toggle.on .pivot-switch { background:#7C3AED; }
+    .pivot-switch::after { content:''; position:absolute; top:.18rem; left:.18rem; width:1.04rem; height:1.04rem; border-radius:50%; background:#fff; transition:left .15s; }
+    .pivot-toggle.on .pivot-switch::after { left:1.38rem; }
+    .pivot-label { font-size:.95rem; font-weight:600; color:#374151; }
+    .pivot-sub   { font-size:.82rem; color:#6B7280; margin-top:.15rem; }
+    .chart-param-grid { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:1rem; }
+    .chart-param-toggle { display:inline-flex; align-items:center; gap:.4rem; padding:.4rem .9rem; border-radius:999px; border:1.5px solid #C5D4C2; background:#fff; font-size:.85rem; font-weight:500; color:#374151; cursor:pointer; transition:all .12s; user-select:none; }
+    .chart-param-toggle.active { border-color:#0E7490; background:#E0F4F8; color:#0C4A5C; }
+    .chart-param-toggle.active::before { content:'✓'; font-size:.76rem; color:#0E7490; font-weight:700; }
+    .chart-param-toggle.excluded { border-color:#DDE5DB; background:#F9FAF9; color:#9CA3AF; }
+    .chart-wrap { background:#fff; border-radius:6px; border:1px solid #E2E6EA; padding:1rem; margin-top:1rem; }
+    .chart-wrap img { width:100%; height:auto; display:block; border-radius:4px; }
+    /* ── dark mode ── */
+    body.dark, body.dark html { background:#141A13 !important; color:#D8E8D5 !important; }
+    body.dark .sx-card { background:#1E261D; border-color:#334430; }
+    body.dark .app-title { color:#E8F4E5; }
+    body.dark .app-subtitle { color:#7A9975; }
+    body.dark .section-label { color:#7A9975; }
+    body.dark .section-divider { border-color:#334430; }
+    body.dark .badge-idle  { background:#253023; color:#7A9975; }
+    body.dark .badge-ok    { background:#1A3D22; color:#6FCF7F; }
+    body.dark .badge-error { background:#3D1A1A; color:#F87171; }
+    body.dark .lang-switcher { border-color:#334430; }
+    body.dark .lang-btn { background:#1E261D; color:#7A9975; border-color:#334430; }
+    body.dark .lang-btn.active { background:#3A6B35; color:#fff; }
+    body.dark .lang-btn:hover:not(.active) { background:#253023; color:#D8E8D5; }
+    body.dark .privacy-banner { background:#1A2D1A; border-color:#2A4A2A; }
+    body.dark .privacy-title { color:#6FCF7F; }
+    body.dark .privacy-body  { color:#7A9975; }
+    body.dark .col-toggle { background:#1E261D; border-color:#334430; color:#C5D8C2; }
+    body.dark .col-toggle.active { border-color:#5A9B55; background:#1E3A1A; color:#A8E0A0; }
+    body.dark .col-toggle.excluded { background:#161E15; color:#4A5E47; }
+    body.dark .link-btn { color:#6FCF7F; }
+    body.dark #clean_btn { background:#3A6B35; }
+    body.dark #chart_btn { background:#0E7490; }
+    body.dark .dl-wrap .btn { border-color:#5A9B55; color:#6FCF7F; }
+    body.dark .dl-wrap .btn:hover { background:#1E3A1A; }
+    body.dark .stats-strip { background:#1A2D1A; border-color:#2A4A2A; }
+    body.dark .stat-val { color:#6FCF7F; }
+    body.dark .stat-lbl { color:#7A9975; }
+    body.dark .preview-wrap { border-color:#334430; background:#1E261D; }
+    body.dark .preview-wrap thead th { background:#253023; color:#C5D8C2; border-color:#334430; }
+    body.dark .preview-wrap tbody td { background:#1E261D; color:#B8D0B5; border-color:#2A3528; }
+    body.dark .map-hint { color:#7A9975; }
+    body.dark .map-stat-sel  { color:#6FCF7F; }
+    body.dark .map-stat-excl { color:#5A6B58; }
+    body.dark .pivot-toggle { background:#1E261D; border-color:#334430; }
+    body.dark .pivot-toggle:hover, body.dark .pivot-toggle.on { border-color:#7C3AED; background:#1E1A2D; }
+    body.dark .pivot-switch { background:#334430; }
+    body.dark .pivot-label { color:#D8E8D5; }
+    body.dark .pivot-sub   { color:#7A9975; }
+    body.dark .chart-param-toggle { background:#1E261D; border-color:#334430; color:#C5D8C2; }
+    body.dark .chart-param-toggle.active { border-color:#22B8CF; background:#122A30; color:#67E8F9; }
+    body.dark .chart-param-toggle.excluded { background:#161E15; color:#4A5E47; }
+    body.dark .chart-wrap { background:#1E261D; border-color:#334430; }
+    body.dark .shiny-table-output table, body.dark table.table, body.dark table { background:#1E261D !important; color:#B8D0B5 !important; }
+    body.dark table.table > :not(caption) > * > * { background:#1E261D !important; color:#B8D0B5 !important; }
+    body.dark .form-control, body.dark input[type=text] { background:#253023 !important; border-color:#334430 !important; color:#D8E8D5 !important; }
+  "))),
+
+  tags$script(HTML("
+    (function() {
+      function sendHeight() {
+        var h = document.body.scrollHeight;
+        window.parent.postMessage({type:'cleanspex-resize', height:h}, '*');
+      }
+      var ro = new ResizeObserver(function() { sendHeight(); });
+      ro.observe(document.body);
+      var mo = new MutationObserver(function() { sendHeight(); });
+      mo.observe(document.body, {childList:true, subtree:true, attributes:true});
+      sendHeight();
+      [100,300,600,1000,2000].forEach(function(ms){ setTimeout(sendHeight,ms); });
+    })();
+
+    (function() {
+      var mq = window.matchMedia('(prefers-color-scheme: dark)');
+      function applyDark(on) { document.body.classList.toggle('dark', on); }
+      applyDark(mq.matches);
+      mq.addEventListener('change', function(e) { applyDark(e.matches); });
+    })();
+
+    function setLang(lang) {
+      document.querySelectorAll('.lang-btn').forEach(function(b) {
+        b.classList.toggle('active', b.getAttribute('data-lang')===lang);
+      });
+      Shiny.setInputValue('ui_lang', lang, {priority:'event'});
+    }
+
+    function toggleCol(el) {
+      el.classList.toggle('active'); el.classList.toggle('excluded');
+      updateColMeta();
+    }
+    function setAllCols(mode) {
+      if (mode==='main') {
+        document.querySelectorAll('.col-toggle').forEach(function(el) {
+          var isDist = el.classList.contains('dist');
+          el.classList.toggle('active', !isDist);
+          el.classList.toggle('excluded', isDist);
+        });
+      } else if (mode==='all') {
+        document.querySelectorAll('.col-toggle').forEach(function(el) {
+          el.classList.add('active'); el.classList.remove('excluded');
+        });
+      } else {
+        document.querySelectorAll('.col-toggle').forEach(function(el) {
+          el.classList.remove('active'); el.classList.add('excluded');
+        });
+      }
+      updateColMeta();
+    }
+    function updateColMeta() {
+      var sel=[];
+      document.querySelectorAll('.col-toggle.active').forEach(function(t){ sel.push(t.getAttribute('data-col')); });
+      Shiny.setInputValue('selected_params', sel, {priority:'event'});
+      Shiny.setInputValue('active_col_count', sel.length, {priority:'event'});
+    }
+
+    function toggleVaso(safe_id) {
+      var el = document.getElementById('v_'+safe_id);
+      if (!el) return;
+      var cur = el.getAttribute('data-sel');
+      var newSel = cur==='1' ? '0' : '1';
+      el.setAttribute('data-sel', newSel);
+      var col = el.getAttribute('data-trt-col') || el.getAttribute('fill');
+      if (newSel==='1') {
+        el.setAttribute('fill', el.getAttribute('data-col')||el.getAttribute('fill'));
+        el.setAttribute('stroke', el.getAttribute('data-col')||el.getAttribute('fill'));
+        el.classList.remove('excl'); el.classList.add('sel');
+      } else {
+        el.setAttribute('fill', '#D1D5DB');
+        el.setAttribute('stroke', '#9CA3AF');
+        el.classList.remove('sel'); el.classList.add('excl');
+      }
+      var selected=[];
+      document.querySelectorAll('.vaso.sel').forEach(function(v){ selected.push(v.getAttribute('data-unit')); });
+      Shiny.setInputValue('selected_units', selected, {priority:'event'});
+      updateMapStats();
+    }
+    function selectAllVasos() {
+      document.querySelectorAll('.vaso').forEach(function(el) {
+        el.setAttribute('data-sel','1');
+        el.setAttribute('fill', el.getAttribute('data-col')||el.getAttribute('fill'));
+        el.setAttribute('stroke', el.getAttribute('data-col')||el.getAttribute('fill'));
+        el.classList.remove('excl'); el.classList.add('sel');
+      });
+      var selected=[];
+      document.querySelectorAll('.vaso.sel').forEach(function(v){ selected.push(v.getAttribute('data-unit')); });
+      Shiny.setInputValue('selected_units', selected, {priority:'event'});
+      updateMapStats();
+    }
+    function deselectAllVasos() {
+      document.querySelectorAll('.vaso').forEach(function(el) {
+        el.setAttribute('data-sel','0');
+        el.setAttribute('fill','#D1D5DB');
+        el.setAttribute('stroke','#9CA3AF');
+        el.classList.remove('sel'); el.classList.add('excl');
+      });
+      Shiny.setInputValue('selected_units', [], {priority:'event'});
+      updateMapStats();
+    }
+    function updateMapStats() {
+      var n_sel  = document.querySelectorAll('.vaso.sel').length;
+      var n_excl = document.querySelectorAll('.vaso.excl').length;
+      var el_sel  = document.getElementById('map-stat-sel');
+      var el_excl = document.getElementById('map-stat-excl');
+      if (el_sel)  el_sel.textContent  = n_sel;
+      if (el_excl) el_excl.textContent = n_excl;
+    }
+
+    function togglePivot() {
+      var el=document.getElementById('pivot-toggle');
+      var on=el.classList.toggle('on');
+      Shiny.setInputValue('pivot_long', on, {priority:'event'});
+    }
+    function toggleRibbon() {
+      var el=document.getElementById('ribbon-toggle');
+      var on=el.classList.toggle('on');
+      Shiny.setInputValue('show_ribbon', on, {priority:'event'});
+    }
+    function toggleJitterBox() {
+      var el=document.getElementById('jitter-box-toggle');
+      var on=el.classList.toggle('on');
+      Shiny.setInputValue('show_jitter_box', on, {priority:'event'});
+    }
+    function toggleChartParam(el) {
+      el.classList.toggle('active'); el.classList.toggle('excluded');
+      var sel=[];
+      document.querySelectorAll('.chart-param-toggle.active').forEach(function(t){ sel.push(t.getAttribute('data-param')); });
+      Shiny.setInputValue('chart_params', sel, {priority:'event'});
+    }
+
+    Shiny.addCustomMessageHandler('downloadCSV', function(msg) {
+      var blob=new Blob([msg.content],{type:'text/csv;charset=utf-8;'});
+      var link=document.createElement('a'); link.href=URL.createObjectURL(blob);
+      link.download=msg.filename; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    });
+    Shiny.addCustomMessageHandler('downloadPNG', function(msg) {
+      var link=document.createElement('a'); link.href='data:image/png;base64,'+msg.data;
+      link.download=msg.filename; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    });
+    Shiny.addCustomMessageHandler('initMapColors', function(msg) {
+      msg.units.forEach(function(item) {
+        var el=document.getElementById('v_'+item.id);
+        if (el) el.setAttribute('data-col', item.col);
+      });
+    });
+    $(document).on('shiny:value', function(e) {
+      if (e.name==='col_selector_panel') setTimeout(updateColMeta, 50);
+      if (e.name==='map_panel') setTimeout(updateMapStats, 100);
+    });
+  ")),
+
+  # ── Header ─────────────────────────────────────────────────────────────────
+  div(class="sx-card",
+    div(style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:.5rem;",
+      div(div(class="app-title","CleanSpeX 🌿"), uiOutput("app_subtitle")),
+      div(style="display:flex;align-items:center;gap:.8rem;",
+        uiOutput("status_badge"),
+        div(class="lang-switcher",
+          tags$button(class="lang-btn", `data-lang`="it", onclick="setLang('it')", "IT"),
+          tags$button(class="lang-btn active", `data-lang`="en", onclick="setLang('en')", "EN")
+        )
+      )
+    )
+  ),
+  uiOutput("privacy_banner"),
+  uiOutput("step1_panel"),
+  uiOutput("col_selector_panel"),
+  uiOutput("step3_panel"),
+  uiOutput("map_panel"),
+  uiOutput("chart_panel"),
+  uiOutput("box_panel"),
+  uiOutput("final_panel"),
+
+  hr(class="section-divider"),
+  div(style="text-align:center;font-size:.85rem;color:#6B7280;padding:.5rem 0 1.5rem;",
+    uiOutput("app_credits"))
+)
+
+# ── Server ────────────────────────────────────────────────────────────────────
+server <- function(input, output, session) {
+  rv <- reactiveValues(
+    df_raw=NULL, df_daily=NULL, df_final=NULL,
+    params=NULL, trt_colors=NULL, map_df=NULL,
+    error=NULL, base_name=NULL,
+    chart_png_b64=NULL, chart_png_range=NULL, chart_png_box=NULL
+  )
+
+  lang <- reactive({ if (is.null(input$ui_lang)) "en" else input$ui_lang })
+  t    <- reactive({ TR[[lang()]] })
+
+  output$app_subtitle <- renderUI({
+    p(class="app-subtitle", t()$app_subtitle, " ", tags$strong("PlantEye"), ".")
+  })
+  output$privacy_banner <- renderUI({
+    tx <- t()
+    div(class="privacy-banner",
+      div(class="privacy-icon","🔒"),
+      div(div(class="privacy-title", tx$privacy_title),
+          p(class="privacy-body", tx$privacy_body)))
+  })
+  output$app_credits <- renderUI({
+    cr <- t()$credits
+    tagList(cr$pre,
+      tags$a(href="https://www.mauromaver.eu", target="_blank",
+             style="color:#2D6A4F;font-weight:700;text-decoration:underline;","Mauro Maver"),
+      cr$bug,
+      tags$a(href="https://github.com/Stramon1um", target="_blank",
+             style="color:#2D6A4F;font-weight:600;text-decoration:underline;","GitHub"),
+      cr$or,
+      tags$a(href="mailto:mauro.maver@univr.it",
+             style="color:#2D6A4F;font-weight:600;text-decoration:underline;", cr$mail),
+      " \U0001F60A")
+  })
+
+  # ── Step 1 ──────────────────────────────────────────────────────────────────
+  output$step1_panel <- renderUI({
+    tx <- t()
+    div(class="sx-card", p(class="section-label", tx$step1),
+      fileInput("file_in", label=NULL, accept=c(".csv","text/csv"),
+                placeholder=tx$file_ph, buttonLabel=tx$file_btn),
+      uiOutput("file_info_chip"))
+  })
+
+  observeEvent(input$file_in, {
+    rv$df_raw <- rv$df_daily <- rv$df_final <- rv$params <- rv$trt_colors <-
+      rv$map_df <- rv$error <- rv$chart_png_b64 <- rv$chart_png_range <- rv$chart_png_box <- NULL
+    tryCatch({
+      df <- parse_planteye(input$file_in$datapath)
+      rv$df_raw   <- df
+      rv$base_name <- sub("\\.csv$","", input$file_in$name, ignore.case=TRUE)
+      p   <- classify_params(df)
+      rv$params <- p
+      rv$trt_colors <- make_trt_colors(df$treatment)
+      rv$map_df <- unique(df[, c("unit","treatment","posX","posY")])
+    }, error=function(e) rv$error <- conditionMessage(e))
+  })
+
+  output$file_info_chip <- renderUI({
+    req(rv$df_raw)
+    tx <- t()
+    n_plants <- length(unique(rv$df_raw$unit))
+    n_trts   <- length(unique(rv$df_raw$treatment))
+    n_days   <- length(unique(rv$df_raw$date))
+    div(class="file-chip" ,
+        style="display:inline-block;font-size:.78rem;background:#EAF4EF;border:1px solid #C6E8D6;border-radius:4px;padding:.2rem .6rem;color:#2D6A4F;font-weight:600;margin-top:.5rem;",
+        tx$file_info(nrow(rv$df_raw), n_plants, n_trts, n_days))
+  })
+
+  # ── Step 2: Selezione parametri ─────────────────────────────────────────────
+  output$col_selector_panel <- renderUI({
+    req(rv$params)
+    tx <- t()
+    p  <- rv$params
+    pills_main <- lapply(p$main, function(col)
+      tags$span(class="col-toggle active", `data-col`=col, onclick="toggleCol(this);", col))
+    pills_dist <- lapply(p$dist, function(col)
+      tags$span(class="col-toggle dist excluded", `data-col`=col, onclick="toggleCol(this);", col))
+
+    div(class="sx-card", p(class="section-label", tx$step2),
+      div(class="toggle-actions",
+        tags$button(class="link-btn", onclick="setAllCols('main')", tx$sel_main),
+        tags$button(class="link-btn", onclick="setAllCols('all')",  tx$sel_all),
+        tags$button(class="link-btn", onclick="setAllCols('none')", tx$desel_all)
+      ),
+      div(class="col-grid", pills_main, pills_dist),
+      p(style="font-size:.82rem;color:#6B7280;margin-top:.3rem;",
+        span(id="col-count-active", length(p$main)), " / ",
+        length(p$all), " ", tx$col_meta)
+    )
+  })
+
+  # ── Step 3: Pulizia + riepilogo ─────────────────────────────────────────────
+  output$step3_panel <- renderUI({
+    req(rv$df_raw)
+    tx <- t()
+    div(class="sx-card", p(class="section-label", tx$step3),
+      div(style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;",
+        actionButton("clean_btn", tx$btn_process, icon=icon("gears"),
+          style="border:none;color:#fff;font-weight:600;font-size:1rem;padding:.6rem 1.7rem;border-radius:6px;background:#2D6A4F;"),
+        div(class="dl-wrap", uiOutput("dl_clean_ui"))
+      ),
+      uiOutput("summary_wrap")
+    )
+  })
+
+  observeEvent(input$clean_btn, {
+    req(rv$df_raw)
+    rv$df_daily <- rv$df_final <- rv$chart_png_b64 <- rv$error <- NULL
+    tryCatch({
+      sel <- input$selected_params
+      if (is.null(sel)||!length(sel)) sel <- rv$params$main
+      rv$df_daily <- daily_mean_per_plant(rv$df_raw, sel)
+    }, error=function(e) rv$error <- conditionMessage(e))
+  })
+
+  output$dl_clean_ui <- renderUI({
+    req(rv$df_daily)
+    div(class="dl-wrap",
+      actionButton("dl_clean_btn", t()$btn_dl_clean, icon=icon("download")))
+  })
+  observeEvent(input$dl_clean_btn, {
+    req(rv$df_daily)
+    session$sendCustomMessage("downloadCSV", list(
+      filename=paste0(rv$base_name, "_clean.csv"),
+      content=df_to_csv_string(rv$df_daily)))
+  })
+
+  output$summary_wrap <- renderUI({
+    req(rv$df_daily)
+    tx <- t()
+    df <- rv$df_daily
+    div(
+      hr(class="section-divider"),
+      div(class="stats-strip",
+        div(class="stat-item", span(class="stat-val", length(unique(df$unit))), span(class="stat-lbl", tx$stat_plants)),
+        div(class="stat-item", span(class="stat-val", length(unique(df$treatment))), span(class="stat-lbl", tx$stat_trts)),
+        div(class="stat-item", span(class="stat-val", length(unique(df$date))), span(class="stat-lbl", tx$stat_days)),
+        div(class="stat-item", span(class="stat-val", ncol(df)-6), span(class="stat-lbl", tx$stat_params)),
+        div(class="stat-item", span(class="stat-val", paste0(rv$base_name,"_clean.csv")), span(class="stat-lbl", tx$stat_file))
+      ),
+      div(class="preview-wrap", tableOutput("preview_tbl"))
+    )
+  })
+  output$preview_tbl <- renderTable({
+    req(rv$df_daily)
+    df <- rv$df_daily
+    disp_cols <- c("unit","date","treatment","posX","posY",
+                   intersect(rv$params$main[1:min(4,length(rv$params$main))], colnames(df)))
+    df[, disp_cols[disp_cols %in% colnames(df)], drop=FALSE]
+  }, striped=FALSE, hover=TRUE, bordered=FALSE, spacing="xs", na="")
+
+  # ── Step 4: Mappa spaziale ──────────────────────────────────────────────────
+  output$map_panel <- renderUI({
+    req(rv$map_df, rv$trt_colors)
+    tx    <- t()
+    mdf   <- rv$map_df
+    n_sel <- nrow(mdf)
+    is_dark <- isTRUE(input$dark_mode)
+    svg_html <- make_bench_svg(mdf, rv$trt_colors,
+                                selected_units = mdf$unit,
+                                is_dark = is_dark)
+    init_js <- tags$script(HTML(paste0(
+      "setTimeout(function(){\n",
+      paste(sprintf("  var e=document.getElementById('v_%s'); if(e) e.setAttribute('data-col','%s');",
+                    gsub(":","_",mdf$unit), rv$trt_colors[mdf$treatment]), collapse="\n"),
+      "\n  Shiny.setInputValue('selected_units',",
+      paste0("[", paste0('"', mdf$unit, '"', collapse=","), "]"),
+      ",{priority:'event'});\n}, 200);"
+    )))
+
+    div(class="sx-card",
+      p(class="section-label", tx$step4),
+      p(class="map-hint", tx$map_hint),
+      div(style="display:flex;gap:.8rem;",
+        tags$button(class="link-btn", onclick="selectAllVasos()",   tx$btn_sel_all),
+        tags$button(class="link-btn", onclick="deselectAllVasos()", tx$btn_desel_all)
+      ),
+      div(class="map-wrap", HTML(svg_html)),
+      init_js,
+      div(class="map-stats",
+        span(class="map-stat-sel", id="map-stat-sel", n_sel), " ", tx$map_selected, " · ",
+        span(class="map-stat-excl", id="map-stat-excl", "0"), " ", tx$map_excluded
+      )
+    )
+  })
+
+  # ── Step 5: Grafico temporale ───────────────────────────────────────────────
+  output$chart_panel <- renderUI({
+    req(rv$df_daily, rv$trt_colors)
+    tx    <- t()
+    df    <- rv$df_daily
+    dates <- sort(unique(df$date))
+    n     <- length(dates)
+    avail <- get_available_chart_params(df, rv$params$main)
+    if (!length(avail)) return(NULL)
+
+    pills <- lapply(avail, function(p)
+      tags$span(class="chart-param-toggle active", `data-param`=p,
+                onclick="toggleChartParam(this);", p))
+
+    div(class="sx-card",
+      p(class="section-label", tx$step5),
+      p(style="font-size:.82rem;color:#6B7280;margin-bottom:1rem;", tx$chart_hint),
+      p(style="font-size:.82rem;color:#6B7280;font-weight:600;margin-bottom:.5rem;", tx$chart_param_lbl),
+      div(class="chart-param-grid", pills),
+      div(id="ribbon-toggle", class="pivot-toggle on", onclick="toggleRibbon();",
+        div(class="pivot-switch"),
+        div(div(class="pivot-label", tx$ribbon_label),
+            div(class="pivot-sub",   tx$ribbon_sub))
+      ),
+      # ── Slicer date integrato ─────────────────────────────────────────────
+      hr(class="section-divider", style="margin:.8rem 0;"),
+      p(style="font-size:.82rem;color:#6B7280;margin-bottom:.8rem;", tx$range_hint),
+      div(style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:.8rem;",
+        div(
+          tags$label(style="font-size:.8rem;font-weight:600;color:#6B7280;display:block;margin-bottom:.3rem;",
+                     tx$range_start),
+          tags$input(type="range", id="range_start_idx", min=1, max=n, value=1, step=1,
+                     style="width:100%;accent-color:#2D6A4F;", oninput="updateRangeLabel()")
+        ),
+        div(
+          tags$label(style="font-size:.8rem;font-weight:600;color:#6B7280;display:block;margin-bottom:.3rem;",
+                     tx$range_end),
+          tags$input(type="range", id="range_end_idx", min=1, max=n, value=n, step=1,
+                     style="width:100%;accent-color:#2D6A4F;", oninput="updateRangeLabel()")
+        )
+      ),
+      div(style="font-size:.85rem;color:#374151;margin-bottom:1rem;background:#F3F4F6;border-radius:6px;padding:.5rem 1rem;display:inline-block;",
+        span(id="range_label", paste(format(dates[1],"%d %b %Y"), "→", format(dates[n],"%d %b %Y")))
+      ),
+      tags$script(HTML(sprintf("
+        var _dates_range = %s;
+        function updateRangeLabel() {
+          var i0 = parseInt(document.getElementById('range_start_idx').value)-1;
+          var i1 = parseInt(document.getElementById('range_end_idx').value)-1;
+          if (i0 > i1) { var tmp=i0; i0=i1; i1=tmp; }
+          document.getElementById('range_label').textContent =
+            _dates_range[i0] + ' \u2192 ' + _dates_range[i1];
+          Shiny.setInputValue('range_start_idx', i0+1, {priority:'event'});
+          Shiny.setInputValue('range_end_idx',   i1+1, {priority:'event'});
+        }
+        updateRangeLabel();
+      ", jsonlite_like_array_r(format(dates, "%d %b %Y"))))),
+      # ── Pulsanti ─────────────────────────────────────────────────────────
+      div(style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;",
+        actionButton("chart_btn", tx$btn_chart, icon=icon("chart-line"),
+          style="border:none;color:#fff;font-weight:600;font-size:1rem;padding:.6rem 1.7rem;border-radius:6px;background:#0E7490;"),
+        uiOutput("dl_png_ui"),
+        uiOutput("clear_chart_ui")
+      ),
+      uiOutput("chart_render_wrap")
+    )
+  })
+
+  observeEvent(input$chart_btn, {
+    req(rv$df_daily, rv$trt_colors)
+    rv$chart_png_b64 <- rv$error <- NULL
+    sel_units <- input$selected_units
+    if (is.null(sel_units)||!length(sel_units)) { rv$error <- t()$chart_no_trt; return() }
+    sel_params <- input$chart_params
+    if (is.null(sel_params)||!length(sel_params))
+      sel_params <- get_available_chart_params(rv$df_daily, rv$params$main)
+    if (!length(sel_params)) return()
+    tryCatch({
+      dates <- sort(unique(rv$df_daily$date))
+      i0    <- max(1, min(as.integer(input$range_start_idx %||% 1),         length(dates)))
+      i1    <- max(1, min(as.integer(input$range_end_idx   %||% length(dates)), length(dates)))
+      if (i0 > i1) { tmp <- i0; i0 <- i1; i1 <- tmp }
+      sub <- rv$df_daily[rv$df_daily$date %in% dates[i0:i1] & rv$df_daily$unit %in% sel_units,]
+      trt_day <- agg_trt_day(sub, sel_params, unique(sub$unit))
+      if (is.null(trt_day)||!nrow(trt_day)) return()
+      show_ribbon <- if (is.null(input$show_ribbon)) TRUE else isTRUE(input$show_ribbon)
+      n_p <- length(sel_params); n_col <- if (n_p>1) 2 else 1; n_row <- ceiling(n_p/n_col)
+      tmpf <- tempfile(fileext=".png")
+      png(tmpf, width=5.5*n_col, height=5*n_row, units="in", res=300)
+      draw_time_chart(trt_day, sel_params, rv$trt_colors, show_ribbon=show_ribbon, ylab=t()$chart_ylab)
+      dev.off()
+      raw_bytes <- readBin(tmpf, "raw", file.info(tmpf)$size)
+      rv$chart_png_b64 <- base64_encode_raw(raw_bytes)
+      unlink(tmpf)
+    }, error=function(e) rv$error <- conditionMessage(e))
+  })
+
+  `%||%` <- function(a, b) if (is.null(a)) b else a
+
+  output$chart_render_wrap <- renderUI({
+    req(rv$chart_png_b64)
+    div(class="chart-wrap",
+      tags$img(src=paste0("data:image/png;base64,", rv$chart_png_b64)))
+  })
+  output$dl_png_ui <- renderUI({
+    req(rv$chart_png_b64)
+    div(class="dl-wrap", actionButton("dl_png_btn", t()$btn_dl_png, icon=icon("image")))
+  })
+  output$clear_chart_ui <- renderUI({
+    req(rv$chart_png_b64)
+    tags$button(class="link-btn", style="color:#9CA3AF;",
+      onclick="Shiny.setInputValue('clear_chart', Math.random(), {priority:'event'});",
+      icon("xmark"), " ", t()$btn_clear)
+  })
+  observeEvent(input$dl_png_btn, {
+    req(rv$chart_png_b64)
+    session$sendCustomMessage("downloadPNG", list(
+      filename=paste0(rv$base_name,"_chart.png"), data=rv$chart_png_b64))
+  })
+  observeEvent(input$clear_chart, { rv$chart_png_b64 <- NULL })
+
+  # ── Step 5b: Boxplot su data singola ─────────────────────────────────────────
+  output$box_panel <- renderUI({
+    req(rv$df_daily, rv$trt_colors)
+    tx    <- t()
+    dates <- sort(unique(rv$df_daily$date))
+    n     <- length(dates)
+    mid   <- ceiling(n/2)
+
+    div(class="sx-card",
+      p(class="section-label", tx$box_title),
+      p(style="font-size:.82rem;color:#6B7280;margin-bottom:1.2rem;", tx$box_hint),
+      div(style="margin-bottom:.8rem;",
+        tags$label(style="font-size:.8rem;font-weight:600;color:#6B7280;display:block;margin-bottom:.3rem;",
+                   tx$box_date_lbl),
+        tags$input(type="range", id="box_date_idx", min=1, max=n, value=mid, step=1,
+                   style="width:100%;max-width:500px;accent-color:#7C3AED;",
+                   oninput="updateBoxLabel()")
+      ),
+      div(style="font-size:.85rem;color:#374151;margin-bottom:1rem;background:#F3F4F6;border-radius:6px;padding:.5rem 1rem;display:inline-block;",
+        span(id="box_label", format(dates[mid], "%d %b %Y"))
+      ),
+      tags$script(HTML(sprintf("
+        var _dates_box = %s;
+        function updateBoxLabel() {
+          var i = parseInt(document.getElementById('box_date_idx').value)-1;
+          document.getElementById('box_label').textContent = _dates_box[i];
+          Shiny.setInputValue('box_date_idx', i+1, {priority:'event'});
+        }
+        updateBoxLabel();
+      ", jsonlite_like_array_r(format(dates, "%d %b %Y"))))),
+      div(id="jitter-box-toggle", class="pivot-toggle", onclick="toggleJitterBox();",
+        div(class="pivot-switch"),
+        div(div(class="pivot-label", tx$jitter_label),
+            div(class="pivot-sub",   tx$jitter_sub))
+      ),
+      div(style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;",
+        actionButton("box_chart_btn", tx$btn_box_chart, icon=icon("chart-bar"),
+          style="border:none;color:#fff;font-weight:600;font-size:1rem;padding:.6rem 1.7rem;border-radius:6px;background:#7C3AED;"),
+        uiOutput("dl_box_ui"),
+        uiOutput("clear_box_ui")
+      ),
+      uiOutput("box_chart_wrap")
+    )
+  })
+
+  observeEvent(input$box_chart_btn, {
+    req(rv$df_daily, rv$trt_colors)
+    rv$chart_png_box <- rv$error <- NULL
+    tryCatch({
+      dates <- sort(unique(rv$df_daily$date))
+      idx   <- max(1, min(as.integer(input$box_date_idx %||% ceiling(length(dates)/2)), length(dates)))
+      sel_date  <- dates[idx]
+      sub       <- rv$df_daily
+      sel_units <- input$selected_units
+      if (!is.null(sel_units)&&length(sel_units)) sub <- sub[sub$unit %in% sel_units,]
+      sel_params <- input$chart_params
+      if (is.null(sel_params)||!length(sel_params))
+        sel_params <- get_available_chart_params(rv$df_daily, rv$params$main)
+      n_p <- length(sel_params); n_col <- if (n_p>1) 2 else 1; n_row <- ceiling(n_p/n_col)
+      tmpf <- tempfile(fileext=".png")
+      png(tmpf, width=5.5*n_col, height=5*n_row, units="in", res=300)
+      draw_boxplot_day(sub, sel_params, rv$trt_colors, selected_date=sel_date,
+                        ylab=t()$chart_ylab,
+                        show_jitter=isTRUE(input$show_jitter_box))
+      dev.off()
+      raw_bytes <- readBin(tmpf, "raw", file.info(tmpf)$size)
+      rv$chart_png_box <- base64_encode_raw(raw_bytes)
+      unlink(tmpf)
+    }, error=function(e) rv$error <- conditionMessage(e))
+  })
+
+  output$dl_box_ui <- renderUI({
+    req(rv$chart_png_box)
+    div(class="dl-wrap", actionButton("dl_box_btn", t()$btn_dl_box, icon=icon("image")))
+  })
+  output$clear_box_ui <- renderUI({
+    req(rv$chart_png_box)
+    tags$button(class="link-btn", style="color:#9CA3AF;",
+      onclick="Shiny.setInputValue('clear_box', Math.random(), {priority:'event'});",
+      icon("xmark"), " ", t()$btn_clear_box)
+  })
+  observeEvent(input$dl_box_btn, {
+    req(rv$chart_png_box)
+    session$sendCustomMessage("downloadPNG", list(
+      filename=paste0(rv$base_name,"_boxplot.png"), data=rv$chart_png_box))
+  })
+  output$box_chart_wrap <- renderUI({
+    req(rv$chart_png_box)
+    div(class="chart-wrap",
+      tags$img(src=paste0("data:image/png;base64,", rv$chart_png_box)))
+  })
+  observeEvent(input$clear_box, { rv$chart_png_box <- NULL })
+
+  # ── Step 6: Export finale ────────────────────────────────────────────────────
+  output$final_panel <- renderUI({
+    req(rv$df_daily)
+    tx <- t()
+    div(class="sx-card", p(class="section-label", tx$step6),
+      div(id="pivot-toggle", class="pivot-toggle", onclick="togglePivot();",
+        div(class="pivot-switch"),
+        div(div(class="pivot-label", tx$pivot_label),
+            div(class="pivot-sub",   tx$pivot_sub))
+      ),
+      div(style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;",
+        actionButton("pivot_btn", tx$btn_final, icon=icon("file-csv"),
+          style="border:none;color:#fff;font-weight:700;font-size:.95rem;padding:.58rem 1.6rem;border-radius:6px;background:#7C3AED;"),
+        div(class="dl-wrap", uiOutput("dl_final_ui"))
+      ),
+      uiOutput("final_preview_wrap")
+    )
+  })
+
+  observeEvent(input$pivot_btn, {
+    req(rv$df_daily)
+    rv$df_final <- rv$error <- NULL
+    tryCatch({
+      sel_units <- input$selected_units
+      df <- if (!is.null(sel_units)&&length(sel_units))
+              rv$df_daily[rv$df_daily$unit %in% sel_units,]
+            else rv$df_daily
+      sel_params <- if (!is.null(input$selected_params)&&length(input$selected_params))
+                      input$selected_params else rv$params$main
+      sel_params <- sel_params[sel_params %in% colnames(df)]
+      rv$df_final <- if (isTRUE(input$pivot_long)) pivot_long_pe(df, sel_params) else df
+    }, error=function(e) rv$error <- conditionMessage(e))
+  })
+
+  output$dl_final_ui <- renderUI({
+    req(rv$df_final)
+    div(class="dl-wrap", actionButton("dl_final_btn", t()$btn_dl_final, icon=icon("download")))
+  })
+  observeEvent(input$dl_final_btn, {
+    req(rv$df_final)
+    session$sendCustomMessage("downloadCSV", list(
+      filename=paste0(rv$base_name,"_final.csv"),
+      content=df_to_csv_string(rv$df_final)))
+  })
+
+  output$final_preview_wrap <- renderUI({
+    req(rv$df_final)
+    tx <- t()
+    tagList(
+      hr(class="section-divider"),
+      div(class="stats-strip",
+        div(class="stat-item", span(class="stat-val", nrow(rv$df_final)), span(class="stat-lbl", tx$stat_rows)),
+        div(class="stat-item", span(class="stat-val", ncol(rv$df_final)), span(class="stat-lbl", tx$stat_params)),
+        div(class="stat-item", span(class="stat-val", if(isTRUE(input$pivot_long))"long" else "wide"), span(class="stat-lbl", tx$stat_format))
+      ),
+      p(class="section-label", tx$final_preview),
+      div(class="preview-wrap", tableOutput("final_preview_tbl"))
+    )
+  })
+  output$final_preview_tbl <- renderTable({
+    req(rv$df_final); rv$df_final
+  }, striped=FALSE, hover=TRUE, bordered=FALSE, spacing="xs", na="")
+
+  # ── Badge stato ──────────────────────────────────────────────────────────────
+  output$status_badge <- renderUI({
+    tx <- t()
+    if (!is.null(rv$error))         div(class="status-badge badge-error", tx$status_error)
+    else if (!is.null(rv$df_final)) div(class="status-badge badge-ok",   tx$status_chart)
+    else if (!is.null(rv$chart_png_b64)) div(class="status-badge badge-ok", tx$status_chart)
+    else if (!is.null(rv$df_daily)) div(class="status-badge badge-ok",   tx$status_clean)
+    else if (!is.null(rv$df_raw))   div(class="status-badge badge-ok",   tx$status_loaded)
+    else                             div(class="status-badge badge-idle", tx$status_waiting)
+  })
+}
+
+shinyApp(ui, server)
+```
