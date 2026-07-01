@@ -69,6 +69,7 @@ PAL_NPG <- adjustcolor(c("#E64B35","#4DBBD5","#00A087","#3C5488","#F39B7F",
 TR <- list(
   it = list(
     app_subtitle   = "Pulizia e visualizzazione dati da",
+    app_descr      = "Scanner 3D multispettrale per la fenotipizzazione non distruttiva delle piante.",
     privacy_title  = "100% locale — i tuoi dati non lasciano mai il browser",
     privacy_body   = "Questa applicazione gira interamente nel tuo browser grazie a WebR. Nessun dato viene inviato a server esterni: il file che carichi viene elaborato solo sul tuo dispositivo. Puoi usarla offline, in rete aziendale o ovunque. Al primo avvio potrebbe essere necessario qualche secondo per il caricamento dell'ambiente R.",
     status_waiting = "In attesa", status_loaded = "✓ File caricato",
@@ -127,6 +128,7 @@ TR <- list(
   ),
   en = list(
     app_subtitle   = "Data cleaning and visualisation from",
+    app_descr      = "Multispectral 3D scanner for non-destructive plant phenotyping.",
     privacy_title  = "100% local — your data never leaves the browser",
     privacy_body   = "This application runs entirely in your browser using WebR. No data is sent to external servers: the file you upload is processed only on your device. You can use it offline, on a corporate network, or anywhere. On the first load, a few seconds may be needed to initialise the R environment.",
     status_waiting = "Waiting", status_loaded = "✓ File loaded",
@@ -530,19 +532,19 @@ ui <- page_fluid(
                    secondary="#B7D4C6", border_radius="6px"),
 
   tags$head(tags$style(HTML("
-    html, body { padding:1rem 1.5rem !important; margin:0 !important; background:#F7F9F7 !important; }
-    @media (prefers-color-scheme: dark) { html, body { background:#141A13 !important; color:#D8E8D5 !important; } }
+    html, body { padding:1rem 1.5rem !important; margin:0 !important; background:#F7F9F7 !important; font-size:16px; }
+    @media (prefers-color-scheme: dark) { html, body { background:#141A13 !important; color:#D8E8D5 !important; font-size:16px; } }
     h1.title { display:none !important; }
     .sx-card { background:#fff; border:1px solid #E2E6EA; border-radius:10px; padding:1.8rem 2.2rem; margin-bottom:1.4rem; box-shadow:0 1px 4px rgba(0,0,0,.06); }
     .privacy-banner { background:#F0F9FF; border:1px solid #BAE6FD; border-radius:10px; padding:1rem 1.4rem; margin-bottom:1.4rem; display:flex; align-items:flex-start; gap:.9rem; }
     .privacy-icon { font-size:1.3rem; flex-shrink:0; line-height:1.5; }
     .privacy-title { font-size:.82rem; font-weight:700; color:#0C4A6E; margin-bottom:.2rem; letter-spacing:.03em; text-transform:uppercase; }
     .privacy-body  { font-size:.82rem; color:#075985; margin:0; line-height:1.55; }
-    .app-title    { font-size:1.6rem; font-weight:700; letter-spacing:-.3px; color:#1A1D23; margin-bottom:.2rem; }
-    .app-subtitle { font-size:.95rem; color:#6B7280; margin-bottom:0; }
-    .section-label { font-size:.8rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#6B7280; margin-bottom:.8rem; }
+    .app-title    { font-size:1.75rem; font-weight:700; letter-spacing:-.3px; color:#1A1D23; margin-bottom:.2rem; }
+    .app-subtitle { font-size:1.05rem; color:#6B7280; margin-bottom:0; }
+    .section-label { font-size:.88rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#6B7280; margin-bottom:.8rem; }
     .section-divider { border:none; border-top:1px dashed #D1D5DB; margin:1.4rem 0; }
-    .lang-switcher { display:inline-flex; align-items:center; border:1.5px solid #D1D5DB; border-radius:6px; overflow:hidden; font-size:.85rem; font-weight:700; }
+    .lang-switcher { display:inline-flex; align-items:center; border:1.5px solid #D1D5DB; border-radius:6px; overflow:hidden; font-size:.95rem; font-weight:700; }
     .lang-btn { padding:.35rem .8rem; cursor:pointer; background:#fff; color:#6B7280; border:none; border-right:1px solid #D1D5DB; transition:all .12s; user-select:none; }
     .lang-btn:last-child { border-right:none; }
     .lang-btn.active { background:#2D6A4F; color:#fff; }
@@ -550,34 +552,34 @@ ui <- page_fluid(
     .badge-idle  { background:#E9ECF0; color:#4B5563; }
     .badge-ok    { background:#D1FAE5; color:#065F46; }
     .badge-error { background:#FEE2E2; color:#991B1B; }
-    .status-badge { display:inline-block; font-size:.85rem; font-weight:600; padding:.3em .85em; border-radius:999px; }
+    .status-badge { display:inline-block; font-size:.92rem; font-weight:600; padding:.3em .85em; border-radius:999px; }
     .col-grid { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.9rem; }
-    .col-toggle { display:inline-flex; align-items:center; gap:.35rem; padding:.38rem .85rem; border-radius:999px; border:1.5px solid #D1D5DB; background:#fff; font-size:.85rem; font-weight:500; color:#374151; cursor:pointer; transition:all .12s; user-select:none; }
+    .col-toggle { display:inline-flex; align-items:center; gap:.35rem; padding:.42rem .9rem; border-radius:999px; border:1.5px solid #D1D5DB; background:#fff; font-size:.92rem; font-weight:500; color:#374151; cursor:pointer; transition:all .12s; user-select:none; }
     .col-toggle.active  { border-color:#2D6A4F; background:#EAF4EF; color:#1C4430; }
-    .col-toggle.active::before { content:'✓'; font-size:.78rem; color:#2D6A4F; font-weight:700; }
+    .col-toggle.active::before { content:'✓'; font-size:.85rem; color:#2D6A4F; font-weight:700; }
     .col-toggle.excluded { border-color:#D1D5DB; background:#F9FAFB; color:#9CA3AF; text-decoration:line-through; }
     .col-toggle.dist { border-style:dashed; }
     .toggle-actions { display:flex; gap:.7rem; margin-bottom:.8rem; flex-wrap:wrap; }
-    .link-btn { background:none; border:none; padding:0; font-size:.85rem; color:#2D6A4F; font-weight:600; cursor:pointer; text-decoration:underline; }
+    .link-btn { background:none; border:none; padding:0; font-size:.92rem; color:#2D6A4F; font-weight:600; cursor:pointer; text-decoration:underline; }
     .link-btn:hover { color:#1C4430; }
-    #clean_btn, #pivot_btn { border:none; color:#fff; font-weight:600; font-size:1rem; padding:.6rem 1.7rem; border-radius:6px; transition:background .15s; }
+    #clean_btn, #pivot_btn { border:none; color:#fff; font-weight:600; font-size:1.05rem; padding:.6rem 1.7rem; border-radius:6px; transition:background .15s; }
     #clean_btn { background:#2D6A4F; } #clean_btn:hover { background:#245740; }
     #pivot_btn { background:#7C3AED; } #pivot_btn:hover { background:#6D28D9; }
-    #chart_btn { border:none; color:#fff; font-weight:700; font-size:.95rem; padding:.58rem 1.6rem; border-radius:6px; background:#0E7490; transition:background .15s; }
+    #chart_btn { border:none; color:#fff; font-weight:700; font-size:1rem; padding:.58rem 1.6rem; border-radius:6px; background:#0E7490; transition:background .15s; }
     #chart_btn:hover { background:#0C5E76; }
-    .dl-wrap .btn { border:1.5px solid #2D6A4F; color:#2D6A4F; background:transparent; font-weight:600; font-size:1rem; padding:.6rem 1.7rem; border-radius:6px; transition:all .15s; }
+    .dl-wrap .btn { border:1.5px solid #2D6A4F; color:#2D6A4F; background:transparent; font-weight:600; font-size:1.05rem; padding:.6rem 1.7rem; border-radius:6px; transition:all .15s; }
     .dl-wrap .btn:hover { background:#EAF4EF; }
     .stats-strip { display:flex; flex-wrap:wrap; gap:2rem; padding:1rem 1.4rem; background:#F0FBF5; border-radius:6px; border:1px solid #C6E8D6; margin-bottom:1.4rem; }
     .stat-item { display:flex; flex-direction:column; }
-    .stat-val  { font-size:1.4rem; font-weight:700; color:#2D6A4F; line-height:1; }
-    .stat-lbl  { font-size:.78rem; color:#6B7280; margin-top:.25rem; }
+    .stat-val  { font-size:1.5rem; font-weight:700; color:#2D6A4F; line-height:1; }
+    .stat-lbl  { font-size:.85rem; color:#6B7280; margin-top:.25rem; }
     .preview-wrap { overflow-x:auto; overflow-y:auto; max-height:320px; border-radius:6px; border:1px solid #E2E6EA; }
     .preview-wrap thead th { background:#F3F4F6; font-weight:700; color:#374151; border-bottom:2px solid #D1D5DB; padding:.55rem .8rem; position:sticky; top:0; z-index:1; }
-    .preview-wrap table { font-size:.88rem !important; margin-bottom:0; white-space:nowrap; }
+    .preview-wrap table { font-size:.95rem !important; margin-bottom:0; white-space:nowrap; }
     .preview-wrap tbody td { padding:.45rem .8rem; color:#4B5563; border-bottom:1px solid #F0F1F3; }
     .map-wrap { width:100%; max-width:900px; margin:0 auto; padding:.5rem 0; }
-    .map-hint { font-size:.82rem; color:#6B7280; margin-bottom:.8rem; }
-    .map-stats { display:flex; gap:1.5rem; margin-top:.8rem; font-size:.85rem; }
+    .map-hint { font-size:.9rem; color:#6B7280; margin-bottom:.8rem; }
+    .map-stats { display:flex; gap:1.5rem; margin-top:.8rem; font-size:.92rem; }
     .map-stat-sel  { color:#2D6A4F; font-weight:600; }
     .map-stat-excl { color:#9CA3AF; }
     .pivot-toggle { display:flex; align-items:center; gap:.85rem; padding:1rem 1.2rem; border-radius:8px; border:1.5px solid #E2E6EA; background:#FAFAFA; margin-bottom:1.2rem; cursor:pointer; transition:all .12s; }
@@ -587,12 +589,12 @@ ui <- page_fluid(
     .pivot-toggle.on .pivot-switch { background:#7C3AED; }
     .pivot-switch::after { content:''; position:absolute; top:.18rem; left:.18rem; width:1.04rem; height:1.04rem; border-radius:50%; background:#fff; transition:left .15s; }
     .pivot-toggle.on .pivot-switch::after { left:1.38rem; }
-    .pivot-label { font-size:.95rem; font-weight:600; color:#374151; }
-    .pivot-sub   { font-size:.82rem; color:#6B7280; margin-top:.15rem; }
+    .pivot-label { font-size:1rem; font-weight:600; color:#374151; }
+    .pivot-sub   { font-size:.88rem; color:#6B7280; margin-top:.15rem; }
     .chart-param-grid { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:1rem; }
-    .chart-param-toggle { display:inline-flex; align-items:center; gap:.4rem; padding:.4rem .9rem; border-radius:999px; border:1.5px solid #C5D4C2; background:#fff; font-size:.85rem; font-weight:500; color:#374151; cursor:pointer; transition:all .12s; user-select:none; }
+    .chart-param-toggle { display:inline-flex; align-items:center; gap:.4rem; padding:.42rem .9rem; border-radius:999px; border:1.5px solid #C5D4C2; background:#fff; font-size:.92rem; font-weight:500; color:#374151; cursor:pointer; transition:all .12s; user-select:none; }
     .chart-param-toggle.active { border-color:#0E7490; background:#E0F4F8; color:#0C4A5C; }
-    .chart-param-toggle.active::before { content:'✓'; font-size:.76rem; color:#0E7490; font-weight:700; }
+    .chart-param-toggle.active::before { content:'✓'; font-size:.82rem; color:#0E7490; font-weight:700; }
     .chart-param-toggle.excluded { border-color:#DDE5DB; background:#F9FAF9; color:#9CA3AF; }
     .chart-wrap { background:#fff; border-radius:6px; border:1px solid #E2E6EA; padding:1rem; margin-top:1rem; }
     .chart-wrap img { width:100%; height:auto; display:block; border-radius:4px; }
@@ -819,7 +821,7 @@ ui <- page_fluid(
   uiOutput("final_panel"),
 
   hr(class="section-divider"),
-  div(style="text-align:center;font-size:.85rem;color:#6B7280;padding:.5rem 0 1.5rem;",
+  div(style="text-align:center;font-size:.92rem;color:#6B7280;padding:.5rem 0 1.5rem;",
     uiOutput("app_credits"))
 )
 
@@ -836,7 +838,16 @@ server <- function(input, output, session) {
   t    <- reactive({ TR[[lang()]] })
 
   output$app_subtitle <- renderUI({
-    p(class="app-subtitle", t()$app_subtitle, " ", tags$strong("PlantEye"), ".")
+    tx <- t()
+    tagList(
+      p(class="app-subtitle", tx$app_subtitle, " ",
+        tags$a(href="https://phenospex.com/products/plant-phenotyping/planteye-f600-multispectral-3d-scanner-for-plants/",
+               target="_blank",
+               style="color:#2D6A4F;font-weight:700;text-decoration:underline;",
+               "PlantEye — Phenospex."),
+      p(class="app-subtitle", style="font-size:.92rem;color:#9CA3AF;margin-top:.1rem;",
+        tx$app_descr)
+    ))
   })
   output$privacy_banner <- renderUI({
     tx <- t()
@@ -850,6 +861,8 @@ server <- function(input, output, session) {
     tagList(cr$pre,
       tags$a(href="https://www.mauromaver.eu", target="_blank",
              style="color:#2D6A4F;font-weight:700;text-decoration:underline;","Mauro Maver"),
+      " · ",
+      tags$span(style="color:#9CA3AF;font-size:.88rem;", "v.1.0"),
       cr$bug,
       tags$a(href="https://github.com/Stramon1um", target="_blank",
              style="color:#2D6A4F;font-weight:600;text-decoration:underline;","GitHub"),
@@ -910,7 +923,7 @@ server <- function(input, output, session) {
         tags$button(class="link-btn", onclick="setAllCols('none')", tx$desel_all)
       ),
       div(class="col-grid", pills_main, pills_dist),
-      p(style="font-size:.82rem;color:#6B7280;margin-top:.3rem;",
+      p(style="font-size:.9rem;color:#6B7280;margin-top:.3rem;",
         span(id="col-count-active", length(p$main)), " / ",
         length(p$all), " ", tx$col_meta)
     )
@@ -1027,8 +1040,8 @@ server <- function(input, output, session) {
 
     div(class="sx-card",
       p(class="section-label", tx$step5),
-      p(style="font-size:.82rem;color:#6B7280;margin-bottom:1rem;", tx$chart_hint),
-      p(style="font-size:.82rem;color:#6B7280;font-weight:600;margin-bottom:.5rem;", tx$chart_param_lbl),
+      p(style="font-size:.9rem;color:#6B7280;margin-bottom:1rem;", tx$chart_hint),
+      p(style="font-size:.9rem;color:#6B7280;font-weight:600;margin-bottom:.5rem;", tx$chart_param_lbl),
       div(class="chart-param-grid", pills),
       div(id="ribbon-toggle", class="pivot-toggle on", onclick="toggleRibbon();",
         div(class="pivot-switch"),
@@ -1037,22 +1050,22 @@ server <- function(input, output, session) {
       ),
       # ── Slicer date integrato ─────────────────────────────────────────────
       hr(class="section-divider", style="margin:.8rem 0;"),
-      p(style="font-size:.82rem;color:#6B7280;margin-bottom:.8rem;", tx$range_hint),
+      p(style="font-size:.9rem;color:#6B7280;margin-bottom:.8rem;", tx$range_hint),
       div(style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:.8rem;",
         div(
-          tags$label(style="font-size:.8rem;font-weight:600;color:#6B7280;display:block;margin-bottom:.3rem;",
+          tags$label(style="font-size:.88rem;font-weight:600;color:#6B7280;display:block;margin-bottom:.3rem;",
                      tx$range_start),
           tags$input(type="range", id="range_start_idx", min=1, max=n, value=1, step=1,
                      style="width:100%;accent-color:#2D6A4F;", oninput="updateRangeLabel()")
         ),
         div(
-          tags$label(style="font-size:.8rem;font-weight:600;color:#6B7280;display:block;margin-bottom:.3rem;",
+          tags$label(style="font-size:.88rem;font-weight:600;color:#6B7280;display:block;margin-bottom:.3rem;",
                      tx$range_end),
           tags$input(type="range", id="range_end_idx", min=1, max=n, value=n, step=1,
                      style="width:100%;accent-color:#2D6A4F;", oninput="updateRangeLabel()")
         )
       ),
-      div(style="font-size:.85rem;color:#374151;margin-bottom:1rem;background:#F3F4F6;border-radius:6px;padding:.5rem 1rem;display:inline-block;",
+      div(style="font-size:.92rem;color:#374151;margin-bottom:1rem;background:#F3F4F6;border-radius:6px;padding:.5rem 1rem;display:inline-block;",
         span(id="range_label", paste(format(dates[1],"%d %b %Y"), "→", format(dates[n],"%d %b %Y")))
       ),
       tags$script(HTML(sprintf("
@@ -1142,15 +1155,15 @@ server <- function(input, output, session) {
 
     div(class="sx-card",
       p(class="section-label", tx$box_title),
-      p(style="font-size:.82rem;color:#6B7280;margin-bottom:1.2rem;", tx$box_hint),
+      p(style="font-size:.9rem;color:#6B7280;margin-bottom:1.2rem;", tx$box_hint),
       div(style="margin-bottom:.8rem;",
-        tags$label(style="font-size:.8rem;font-weight:600;color:#6B7280;display:block;margin-bottom:.3rem;",
+        tags$label(style="font-size:.88rem;font-weight:600;color:#6B7280;display:block;margin-bottom:.3rem;",
                    tx$box_date_lbl),
         tags$input(type="range", id="box_date_idx", min=1, max=n, value=mid, step=1,
                    style="width:100%;max-width:500px;accent-color:#7C3AED;",
                    oninput="updateBoxLabel()")
       ),
-      div(style="font-size:.85rem;color:#374151;margin-bottom:1rem;background:#F3F4F6;border-radius:6px;padding:.5rem 1rem;display:inline-block;",
+      div(style="font-size:.92rem;color:#374151;margin-bottom:1rem;background:#F3F4F6;border-radius:6px;padding:.5rem 1rem;display:inline-block;",
         span(id="box_label", format(dates[mid], "%d %b %Y"))
       ),
       tags$script(HTML(sprintf("
