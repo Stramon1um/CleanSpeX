@@ -4,6 +4,12 @@ project:
 
 website:
   title: "CleanSpeX"
+  description: "CleanSpeX"
+  favicon: icon.png
+  twitter-card: true
+  cookie-consent: true
+  google-analytics: "G-GEXKYETG1W"
+  open-graph: true
   search: false
   page-navigation: false
   back-to-top-navigation: false
