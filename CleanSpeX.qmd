@@ -31,14 +31,22 @@ format:
             body iframe { border: none !important; outline: none !important; }
             body .navbar { background-color: #1E261D !important; }
             body .navbar * { color: #A8C5A0 !important; }
+            /* Cookie banner — classi esatte Quarto */
+            footer.footer,
+            footer.footer .nav-footer,
+            footer.footer .nav-footer-center,
+            footer.footer .cookie-consent-footer {
+              background-color: #141A13 !important;
+              background: #141A13 !important;
+              border-color: #334430 !important;
+            }
+            footer.footer .cookie-consent-footer a,
+            footer.footer #open_preferences_center {
+              color: #6FCF7F !important;
+            }
           }
         </style>
         <script>
-          document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('iframe').forEach(function(f) {
-              f.style.background = 'transparent';
-            });
-          });
           window.addEventListener('message', function(event) {
             if (event.data && event.data.type === 'cleanspex-resize') {
               document.querySelectorAll('iframe').forEach(function(f) {
@@ -184,6 +192,124 @@ TR <- list(
     stat_rows      = "rows", stat_format = "format",
     final_preview  = "Final file preview",
     credits        = list(pre="Application developed by ", bug=" · Report issues on ", or=" or via ", mail="email")
+  ),
+  es = list(
+    app_subtitle   = "Limpieza y visualización de datos de",
+    app_descr      = "Escáner 3D multiespectral para la fenotipificación no destructiva de plantas.",
+    privacy_title  = "100% local — sus datos nunca salen del navegador",
+    privacy_body   = "Esta aplicación se ejecuta completamente en su navegador gracias a WebR. No se envían datos a servidores externos: el archivo que cargue se procesa únicamente en su dispositivo. Puede usarla sin conexión, en una red corporativa o en cualquier lugar. En el primer inicio puede ser necesario esperar unos segundos para cargar el entorno R.",
+    status_waiting = "En espera", status_loaded = "✓ Archivo cargado",
+    status_clean   = "✓ Archivo limpiado", status_chart = "✓ Gráfico listo",
+    status_error   = "✗ Error",
+    step1          = "1 — Cargar archivo",
+    file_ph        = "Seleccione un CSV exportado desde PlantEye…",
+    file_btn       = "Examinar",
+    file_info      = function(nr, np, nt, nd) paste0(nr, " mediciones · ", np, " plantas · ", nt, " tratamientos · ", nd, " días"),
+    step2          = "2 — Parámetros a incluir",
+    sel_main       = "Solo parámetros principales",
+    sel_all        = "Todos (+ distribuciones %)",
+    desel_all      = "Deseleccionar todos",
+    col_meta       = "parámetros seleccionados",
+    step3          = "3 — Procesar y descargar",
+    btn_process    = "Procesar",
+    btn_dl_clean   = "Descargar CSV limpio",
+    stat_plants    = "plantas", stat_trts = "tratamientos",
+    stat_days      = "días", stat_params = "parámetros",
+    stat_file      = "archivo",
+    step4          = "4 — Mapa espacial del banco",
+    map_hint       = "Haga clic en las macetas para excluirlas del análisis (se vuelven grises). Haga clic de nuevo para reincluirlas.",
+    map_selected   = "seleccionadas",
+    map_excluded   = "excluidas",
+    btn_sel_all    = "Seleccionar todas",
+    btn_desel_all  = "Deseleccionar todas",
+    step5          = "5 — Gráfico temporal",
+    chart_hint     = "Media diaria ± SE entre plantas del mismo tratamiento (escaneos agregados por día). Solo se incluyen las macetas seleccionadas en el mapa.",
+    chart_ylab     = "Valor medio",
+    chart_param_lbl= "Parámetros a mostrar:",
+    ribbon_label   = "Mostrar banda ±SE",
+    ribbon_sub     = "Mostrar el área de confianza alrededor de la curva media",
+    range_hint     = "Arrastre los controles deslizantes para restringir el intervalo de fechas mostrado (por defecto todo el período).",
+    range_start    = "Fecha inicio",
+    range_end      = "Fecha fin",
+    btn_chart      = "Generar gráfico",
+    btn_dl_png     = "Descargar PNG",
+    btn_clear      = "Borrar gráfico",
+    chart_no_trt   = "Seleccione al menos una maceta en el mapa para generar el gráfico.",
+    box_title      = "5b — Boxplot para una fecha única",
+    box_hint       = "Seleccione un único día de escaneo para visualizar la distribución de los valores entre las macetas de cada tratamiento.",
+    box_date_lbl   = "Seleccionar fecha",
+    btn_box_chart  = "Generar boxplot",
+    jitter_label   = "Mostrar puntos individuales (jitter)",
+    jitter_sub     = "Superponer cada medición como un punto, útil para detectar valores atípicos",
+    btn_dl_box     = "Descargar PNG",
+    btn_clear_box  = "Borrar boxplot",
+    step6          = "6 — Exportación final",
+    pivot_label    = "Formato largo (parámetros en una columna)",
+    pivot_sub      = "Cada fila tendrá un parámetro y su valor, en lugar de una columna por parámetro",
+    btn_final      = "Generar archivo final",
+    btn_dl_final   = "Descargar CSV final",
+    stat_rows      = "filas", stat_format = "formato",
+    final_preview  = "Vista previa del archivo final",
+    credits        = list(pre="Aplicación desarrollada por ", bug=" · Reportar problemas en ", or=" o por ", mail="correo")
+  ),
+  fr = list(
+    app_subtitle   = "Nettoyage et visualisation des données de",
+    app_descr      = "Scanner 3D multispectral pour la phénotypage non destructif des plantes.",
+    privacy_title  = "100 % local — vos données ne quittent jamais le navigateur",
+    privacy_body   = "Cette application s'exécute entièrement dans votre navigateur grâce à WebR. Aucune donnée n'est envoyée à des serveurs externes : le fichier que vous chargez est traité uniquement sur votre appareil. Vous pouvez l'utiliser hors ligne, sur un réseau d'entreprise ou n'importe où. Au premier démarrage, quelques secondes peuvent être nécessaires pour initialiser l'environnement R.",
+    status_waiting = "En attente", status_loaded = "✓ Fichier chargé",
+    status_clean   = "✓ Fichier nettoyé", status_chart = "✓ Graphique prêt",
+    status_error   = "✗ Erreur",
+    step1          = "1 — Charger le fichier",
+    file_ph        = "Sélectionnez un CSV exporté depuis PlantEye…",
+    file_btn       = "Parcourir",
+    file_info      = function(nr, np, nt, nd) paste0(nr, " mesures · ", np, " plantes · ", nt, " traitements · ", nd, " jours"),
+    step2          = "2 — Paramètres à inclure",
+    sel_main       = "Paramètres principaux uniquement",
+    sel_all        = "Tous (+ distributions %)",
+    desel_all      = "Tout désélectionner",
+    col_meta       = "paramètres sélectionnés",
+    step3          = "3 — Traiter et télécharger",
+    btn_process    = "Traiter",
+    btn_dl_clean   = "Télécharger CSV nettoyé",
+    stat_plants    = "plantes", stat_trts = "traitements",
+    stat_days      = "jours", stat_params = "paramètres",
+    stat_file      = "fichier",
+    step4          = "4 — Carte spatiale du banc",
+    map_hint       = "Cliquez sur les pots pour les exclure de l'analyse (ils deviennent gris). Cliquez à nouveau pour les réinclure.",
+    map_selected   = "sélectionnés",
+    map_excluded   = "exclus",
+    btn_sel_all    = "Tout sélectionner",
+    btn_desel_all  = "Tout désélectionner",
+    step5          = "5 — Graphique temporel",
+    chart_hint     = "Moyenne journalière ± ET entre plantes du même traitement (scans agrégés par jour). Seuls les pots sélectionnés sur la carte sont inclus.",
+    chart_ylab     = "Valeur moyenne",
+    chart_param_lbl= "Paramètres à afficher :",
+    ribbon_label   = "Afficher le ruban ±ET",
+    ribbon_sub     = "Afficher la bande de confiance autour de la courbe moyenne",
+    range_hint     = "Faites glisser les curseurs pour restreindre la plage de dates affichée (par défaut : toute la période).",
+    range_start    = "Date début",
+    range_end      = "Date fin",
+    btn_chart      = "Générer le graphique",
+    btn_dl_png     = "Télécharger PNG",
+    btn_clear      = "Effacer le graphique",
+    chart_no_trt   = "Sélectionnez au moins un pot sur la carte pour générer le graphique.",
+    box_title      = "5b — Boxplot pour une date unique",
+    box_hint       = "Sélectionnez un seul jour de scan pour afficher la distribution des valeurs entre les pots de chaque traitement.",
+    box_date_lbl   = "Sélectionner la date",
+    btn_box_chart  = "Générer le boxplot",
+    jitter_label   = "Afficher les points individuels (jitter)",
+    jitter_sub     = "Superposer chaque mesure comme un point, utile pour repérer les valeurs aberrantes",
+    btn_dl_box     = "Télécharger PNG",
+    btn_clear_box  = "Effacer le boxplot",
+    step6          = "6 — Export final",
+    pivot_label    = "Format long (paramètres en une colonne)",
+    pivot_sub      = "Chaque ligne aura un paramètre et sa valeur, au lieu d'une colonne par paramètre",
+    btn_final      = "Générer le fichier final",
+    btn_dl_final   = "Télécharger le CSV final",
+    stat_rows      = "lignes", stat_format = "format",
+    final_preview  = "Aperçu du fichier final",
+    credits        = list(pre="Application développée par ", bug=" · Signaler des problèmes sur ", or=" ou par ", mail="e-mail")
   )
 )
 
@@ -536,10 +662,10 @@ ui <- page_fluid(
     @media (prefers-color-scheme: dark) { html, body { background:#141A13 !important; color:#D8E8D5 !important; font-size:16px; } }
     h1.title { display:none !important; }
     .sx-card { background:#fff; border:1px solid #E2E6EA; border-radius:10px; padding:1.8rem 2.2rem; margin-bottom:1.4rem; box-shadow:0 1px 4px rgba(0,0,0,.06); }
-    .privacy-banner { background:#F0F9FF; border:1px solid #BAE6FD; border-radius:10px; padding:1rem 1.4rem; margin-bottom:1.4rem; display:flex; align-items:flex-start; gap:.9rem; }
+    .privacy-banner { background:#F0F9EF; border:1px solid #B8DABB; border-radius:10px; padding:1rem 1.4rem; margin-bottom:1.4rem; display:flex; align-items:flex-start; gap:.9rem; }
     .privacy-icon { font-size:1.3rem; flex-shrink:0; line-height:1.5; }
-    .privacy-title { font-size:.82rem; font-weight:700; color:#0C4A6E; margin-bottom:.2rem; letter-spacing:.03em; text-transform:uppercase; }
-    .privacy-body  { font-size:.82rem; color:#075985; margin:0; line-height:1.55; }
+    .privacy-title { font-size:.82rem; font-weight:700; color:#14532D; margin-bottom:.2rem; letter-spacing:.03em; text-transform:uppercase; }
+    .privacy-body  { font-size:.82rem; color:#166534; margin:0; line-height:1.55; }
     .app-title    { font-size:1.75rem; font-weight:700; letter-spacing:-.3px; color:#1A1D23; margin-bottom:.2rem; }
     .app-subtitle { font-size:1.05rem; color:#6B7280; margin-bottom:0; }
     .section-label { font-size:.88rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#6B7280; margin-bottom:.8rem; }
@@ -811,7 +937,9 @@ ui <- page_fluid(
         uiOutput("status_badge"),
         div(class="lang-switcher",
           tags$button(class="lang-btn", `data-lang`="it", onclick="setLang('it')", "IT"),
-          tags$button(class="lang-btn active", `data-lang`="en", onclick="setLang('en')", "EN")
+          tags$button(class="lang-btn active", `data-lang`="en", onclick="setLang('en')", "EN"),
+          tags$button(class="lang-btn", `data-lang`="es", onclick="setLang('es')", "ES"),
+          tags$button(class="lang-btn", `data-lang`="fr", onclick="setLang('fr')", "FR")
         )
       )
     )
@@ -865,15 +993,15 @@ server <- function(input, output, session) {
     cr <- t()$credits
     tagList(cr$pre,
       tags$a(href="https://www.mauromaver.eu", target="_blank",
-             style="color:#2D6A4F;font-weight:700;text-decoration:underline;","Mauro Maver"),
+             style="color:#3A6B35;font-weight:700;text-decoration:underline;","Mauro Maver"),
       " · ",
       tags$span(style="color:#9CA3AF;font-size:.88rem;", "v.1.0"),
       cr$bug,
       tags$a(href="https://github.com/Stramon1um", target="_blank",
-             style="color:#2D6A4F;font-weight:600;text-decoration:underline;","GitHub"),
+             style="color:#3A6B35;font-weight:600;text-decoration:underline;","GitHub"),
       cr$or,
       tags$a(href="mailto:mauro.maver@univr.it",
-             style="color:#2D6A4F;font-weight:600;text-decoration:underline;", cr$mail),
+             style="color:#3A6B35;font-weight:600;text-decoration:underline;", cr$mail),
       " \U0001F60A")
   })
 
