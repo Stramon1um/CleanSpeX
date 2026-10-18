@@ -41,6 +41,7 @@
 ### Repository
 - README rewritten: link to the app, DOI badge, workflow, input format, replicates, output files, how to cite.
 - `CHANGELOG.md` added.
+- `CITATION.cff` added: GitHub shows a "Cite this repository" button and Zenodo reads the citation metadata from it.
 - `_quarto.yml`: only `CleanSpeX.qmd` is rendered, so README and CHANGELOG do not become pages of the site.
 
 ## v1.0 (2026-10-12)

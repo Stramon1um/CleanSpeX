@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use CleanSpeX in your research, please cite it as below."
+type: software
+title: "CleanSpeX: a browser-based tool for PlantEye spectral phenotyping data cleaning and exploration"
+abstract: "CleanSpeX is a free, browser-based application for cleaning, exploring and exporting spectral phenotyping data acquired with the PlantEye F600 multispectral 3D scanner (Phenospex). It runs entirely in the browser via WebR and shinylive: scans are aggregated to daily means per plant, pots can be excluded from an interactive bench map, and cleaned data can be explored with time-series charts and boxplots and exported in wide or long format."
+authors:
+  - family-names: Maver
+    given-names: Mauro
+    affiliation: University of Verona
+    orcid: "https://orcid.org/0000-0002-8162-3618"
+version: 1.1.0
+date-released: 2026-10-18
+doi: 10.5281/zenodo.23317333
+license: MIT
+repository-code: "https://github.com/Stramon1um/CleanSpeX"
+url: "https://www.mauromaver.eu/CleanSpeX/"
+keywords:
+  - plant phenotyping
+  - spectral imaging
+  - PlantEye
+  - Phenospex
+  - data cleaning
+  - time series
+  - WebR
+  - shinylive
+  - R
+  - open science
