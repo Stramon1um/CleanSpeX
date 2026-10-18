@@ -245,7 +245,7 @@ TR &lt;- list(
     btn_chart      = "Genera grafico",
     btn_dl_png     = "Scarica PNG",
     btn_clear      = "Cancella grafico",
-    chart_no_trt   = "Seleziona almeno un vaso nella mappa per generare il grafico.",
+    chart_no_trt   = "Seleziona almeno un vaso nella mappa (passo 4).",
     box_title      = "5b — Boxplot su data singola",
     box_hint       = "Seleziona un singolo giorno di scansione per visualizzare la distribuzione dei valori tra i vasi di ogni trattamento.",
     box_date_lbl   = "Seleziona data",
@@ -261,6 +261,13 @@ TR &lt;- list(
     btn_dl_final   = "Scarica CSV finale",
     stat_rows      = "righe", stat_format = "formato",
     final_preview  = "Anteprima file finale",
+    status_final   = "✓ File finale pronto",
+    err_cols       = function(x) paste0("Colonne obbligatorie mancanti nel file: ", x, "."),
+    err_date       = "Impossibile leggere le date della colonna 'timestamp'. Formati accettati: AAAA-MM-GG, GG/MM/AAAA, GG.MM.AAAA.",
+    err_unit       = "La colonna 'unit' deve avere il formato a:x:y (es. 1:3:5) per ricavare la posizione dei vasi sul bench.",
+    err_nodata     = "Nessun dato numerico disponibile per i parametri selezionati.",
+    scans_note     = function(a, b) paste0("Scansioni mediate per pianta e giorno: ", if (a == b) a else paste0(a, "-", b), "."),
+    sensor_note    = "Lo stesso vaso è stato letto da più sensori: i valori sono stati mediati per pianta e giorno, quindi ogni pianta conta una sola volta (replica biologica).",
     credits        = list(pre="Applicazione creata da ", bug=" · Segnala problemi su ", or=" o via ", mail="mail")
   ),
   en = list(
@@ -304,7 +311,7 @@ TR &lt;- list(
     btn_chart      = "Generate chart",
     btn_dl_png     = "Download PNG",
     btn_clear      = "Clear chart",
-    chart_no_trt   = "Select at least one pot in the map to generate the chart.",
+    chart_no_trt   = "Select at least one pot in the map (step 4).",
     box_title      = "5b — Boxplot for a single date",
     box_hint       = "Select a single scan day to display the distribution of values across pots for each treatment.",
     box_date_lbl   = "Select date",
@@ -320,6 +327,13 @@ TR &lt;- list(
     btn_dl_final   = "Download final CSV",
     stat_rows      = "rows", stat_format = "format",
     final_preview  = "Final file preview",
+    status_final   = "✓ Final file ready",
+    err_cols       = function(x) paste0("Required columns missing from the file: ", x, "."),
+    err_date       = "Dates in the 'timestamp' column could not be read. Accepted formats: YYYY-MM-DD, DD/MM/YYYY, DD.MM.YYYY.",
+    err_unit       = "The 'unit' column must have the form a:x:y (e.g. 1:3:5) to derive pot positions on the bench.",
+    err_nodata     = "No numeric data available for the selected parameters.",
+    scans_note     = function(a, b) paste0("Scans averaged per plant and day: ", if (a == b) a else paste0(a, "-", b), "."),
+    sensor_note    = "The same pot was read by more than one sensor: values were averaged per plant and day, so each plant counts once (biological replicate).",
     credits        = list(pre="Application developed by ", bug=" · Report issues on ", or=" or via ", mail="email")
   ),
   es = list(
@@ -363,7 +377,7 @@ TR &lt;- list(
     btn_chart      = "Generar gráfico",
     btn_dl_png     = "Descargar PNG",
     btn_clear      = "Borrar gráfico",
-    chart_no_trt   = "Seleccione al menos una maceta en el mapa para generar el gráfico.",
+    chart_no_trt   = "Seleccione al menos una maceta en el mapa (paso 4).",
     box_title      = "5b — Boxplot para una fecha única",
     box_hint       = "Seleccione un único día de escaneo para visualizar la distribución de los valores entre las macetas de cada tratamiento.",
     box_date_lbl   = "Seleccionar fecha",
@@ -379,11 +393,18 @@ TR &lt;- list(
     btn_dl_final   = "Descargar CSV final",
     stat_rows      = "filas", stat_format = "formato",
     final_preview  = "Vista previa del archivo final",
+    status_final   = "✓ Archivo final listo",
+    err_cols       = function(x) paste0("Faltan columnas obligatorias en el archivo: ", x, "."),
+    err_date       = "No se pudieron leer las fechas de la columna 'timestamp'. Formatos aceptados: AAAA-MM-DD, DD/MM/AAAA, DD.MM.AAAA.",
+    err_unit       = "La columna 'unit' debe tener el formato a:x:y (p. ej. 1:3:5) para obtener la posición de las macetas en el banco.",
+    err_nodata     = "No hay datos numéricos disponibles para los parámetros seleccionados.",
+    scans_note     = function(a, b) paste0("Escaneos promediados por planta y día: ", if (a == b) a else paste0(a, "-", b), "."),
+    sensor_note    = "La misma maceta fue leída por más de un sensor: los valores se promediaron por planta y día, de modo que cada planta cuenta una sola vez (réplica biológica).",
     credits        = list(pre="Aplicación desarrollada por ", bug=" · Reportar problemas en ", or=" o por ", mail="correo")
   ),
   fr = list(
     app_subtitle   = "Nettoyage et visualisation des données de",
-    app_descr      = "Scanner 3D multispectral pour la phénotypage non destructif des plantes.",
+    app_descr      = "Scanner 3D multispectral pour le phénotypage non destructif des plantes.",
     privacy_title  = "100 % local — vos données ne quittent jamais le navigateur",
     privacy_body   = "Cette application s'exécute entièrement dans votre navigateur grâce à WebR. Aucune donnée n'est envoyée à des serveurs externes : le fichier que vous chargez est traité uniquement sur votre appareil. Vous pouvez l'utiliser hors ligne, sur un réseau d'entreprise ou n'importe où. Au premier démarrage, quelques secondes peuvent être nécessaires pour initialiser l'environnement R.",
     status_waiting = "En attente", status_loaded = "✓ Fichier chargé",
@@ -411,10 +432,10 @@ TR &lt;- list(
     btn_sel_all    = "Tout sélectionner",
     btn_desel_all  = "Tout désélectionner",
     step5          = "5 — Graphique temporel",
-    chart_hint     = "Moyenne journalière ± ET entre plantes du même traitement (scans agrégés par jour). Seuls les pots sélectionnés sur la carte sont inclus.",
+    chart_hint     = "Moyenne journalière ± ES entre plantes du même traitement (scans agrégés par jour). Seuls les pots sélectionnés sur la carte sont inclus.",
     chart_ylab     = "Valeur moyenne",
     chart_param_lbl= "Paramètres à afficher :",
-    ribbon_label   = "Afficher le ruban ±ET",
+    ribbon_label   = "Afficher le ruban ±ES",
     ribbon_sub     = "Afficher la bande de confiance autour de la courbe moyenne",
     range_hint     = "Faites glisser les curseurs pour restreindre la plage de dates affichée (par défaut : toute la période).",
     range_start    = "Date début",
@@ -422,7 +443,7 @@ TR &lt;- list(
     btn_chart      = "Générer le graphique",
     btn_dl_png     = "Télécharger PNG",
     btn_clear      = "Effacer le graphique",
-    chart_no_trt   = "Sélectionnez au moins un pot sur la carte pour générer le graphique.",
+    chart_no_trt   = "Sélectionnez au moins un pot sur la carte (étape 4).",
     box_title      = "5b — Boxplot pour une date unique",
     box_hint       = "Sélectionnez un seul jour de scan pour afficher la distribution des valeurs entre les pots de chaque traitement.",
     box_date_lbl   = "Sélectionner la date",
@@ -438,40 +459,89 @@ TR &lt;- list(
     btn_dl_final   = "Télécharger le CSV final",
     stat_rows      = "lignes", stat_format = "format",
     final_preview  = "Aperçu du fichier final",
+    status_final   = "✓ Fichier final prêt",
+    err_cols       = function(x) paste0("Colonnes obligatoires manquantes dans le fichier : ", x, "."),
+    err_date       = "Impossible de lire les dates de la colonne 'timestamp'. Formats acceptés : AAAA-MM-JJ, JJ/MM/AAAA, JJ.MM.AAAA.",
+    err_unit       = "La colonne 'unit' doit avoir la forme a:x:y (ex. 1:3:5) pour déduire la position des pots sur le banc.",
+    err_nodata     = "Aucune donnée numérique disponible pour les paramètres sélectionnés.",
+    scans_note     = function(a, b) paste0("Scans moyennés par plante et par jour : ", if (a == b) a else paste0(a, "-", b), "."),
+    sensor_note    = "Le même pot a été lu par plusieurs capteurs : les valeurs ont été moyennées par plante et par jour, chaque plante compte donc une seule fois (réplicat biologique).",
     credits        = list(pre="Application développée par ", bug=" · Signaler des problèmes sur ", or=" ou par ", mail="e-mail")
   )
 )
+
+# ── Colonne di metadati ───────────────────────────────────────────────────────
+META_COLS     &lt;- c("unit","timestamp","sensor","genotype","g_alias","treatment",
+                   "date","posX","posY")
+ID_COLS_DAILY &lt;- c("unit","date","treatment","posX","posY","genotype","n_scans")
+
+# ── Date: ISO o formati europei, anche con l'ora in coda ─────────────────────
+parse_pe_date &lt;- function(x) {
+  s  &lt;- trimws(as.character(x)); ok &lt;- !is.na(s) &amp; nzchar(s)
+  if (!any(ok)) return(as.Date(rep(NA, length(s))))
+  for (f in c("%Y-%m-%d","%Y/%m/%d","%d/%m/%Y","%d.%m.%Y","%d-%m-%Y","%m/%d/%Y")) {
+    d &lt;- as.Date(s, format = f)
+    y &lt;- as.integer(format(d[ok], "%Y"))
+    if (all(!is.na(d[ok])) &amp;&amp; all(y &gt;= 1990 &amp; y &lt;= 2100)) return(d)
+  }
+  as.Date(rep(NA, length(s)))
+}
 
 # ── Parsing PlantEye ──────────────────────────────────────────────────────────
 parse_planteye &lt;- function(filepath) {
   df &lt;- read.csv(filepath, check.names = FALSE, stringsAsFactors = FALSE,
                  encoding = "UTF-8")
-  df$date &lt;- as.Date(substr(df$timestamp, 1, 10))
-  df$posX &lt;- as.integer(sapply(strsplit(df$unit, ":"), `[`, 2))
-  df$posY &lt;- as.integer(sapply(strsplit(df$unit, ":"), `[`, 3))
+  # BOM UTF-8 all'inizio del file (byte EF BB BF, anche se letto come "ï»¿")
+  b1 &lt;- charToRaw(names(df)[1])
+  for (bom in list(as.raw(c(0xef,0xbb,0xbf)), as.raw(c(0xc3,0xaf,0xc2,0xbb,0xc2,0xbf))))
+    if (length(b1) &gt; length(bom) &amp;&amp; all(b1[seq_along(bom)] == bom))
+      names(df)[1] &lt;- rawToChar(b1[-seq_along(bom)])
+  names(df) &lt;- trimws(names(df))
+  miss &lt;- setdiff(c("unit","timestamp","treatment"), names(df))
+  if (length(miss)) stop("ERR_COLS|", paste(miss, collapse = ", "), call. = FALSE)
+  # Metadati sempre come testo: una colonna vuota viene letta come NA logico
+  # e farebbe sparire tutte le righe nell'aggregazione
+  for (m in intersect(META_COLS, names(df))) {
+    v &lt;- as.character(df[[m]]); v[is.na(v)] &lt;- ""; df[[m]] &lt;- trimws(v)
+  }
+  df$date &lt;- parse_pe_date(df$timestamp)
+  if (all(is.na(df$date))) stop("ERR_DATE", call. = FALSE)
+  df &lt;- df[!is.na(df$date) &amp; nzchar(df$unit), , drop = FALSE]
+  parts  &lt;- strsplit(df$unit, ":")
+  getpos &lt;- function(i) suppressWarnings(as.integer(vapply(parts,
+              function(p) if (length(p) &gt;= 3) p[i] else NA_character_, "")))
+  df$posX &lt;- getpos(2); df$posY &lt;- getpos(3)
+  if (!nrow(df) || any(is.na(df$posX) | is.na(df$posY))) stop("ERR_UNIT", call. = FALSE)
   df
 }
 
 # ── Classificazione parametri ─────────────────────────────────────────────────
 classify_params &lt;- function(df) {
-  meta   &lt;- c("unit","timestamp","sensor","genotype","g_alias","treatment",
-               "date","posX","posY")
-  all_p  &lt;- setdiff(colnames(df), meta)
+  all_p  &lt;- setdiff(colnames(df), META_COLS)
   is_dist &lt;- grepl("\\[.+\\]", all_p)
   list(main = all_p[!is_dist], dist = all_p[is_dist], all = all_p)
 }
 
 # ── Aggregazione giornaliera per pianta ───────────────────────────────────────
+# Unità sperimentale = vaso (unit). Tutte le scansioni dello stesso vaso nello
+# stesso giorno (ripetizioni nel giorno e, con più teste, i diversi sensori)
+# sono repliche tecniche: si ottiene sempre UNA riga per pianta e giorno.
 daily_mean_per_plant &lt;- function(df, params) {
-  id_cols &lt;- c("unit","date","treatment","posX","posY","genotype","sensor")
-  id_cols &lt;- id_cols[id_cols %in% colnames(df)]
-  keep    &lt;- c(id_cols, params)
-  sub     &lt;- df[, keep[keep %in% colnames(df)], drop = FALSE]
-  for (p in params) sub[[p]] &lt;- suppressWarnings(as.numeric(sub[[p]]))
-  agg &lt;- aggregate(sub[, params, drop=FALSE],
-                   by = sub[, id_cols, drop=FALSE],
-                   FUN = mean, na.rm = TRUE)
-  agg
+  params &lt;- params[params %in% colnames(df)]
+  key    &lt;- paste(df$unit, format(df$date), sep = "\r")
+  first  &lt;- !duplicated(key)
+  info   &lt;- intersect(c("unit","date","treatment","posX","posY","genotype"), colnames(df))
+  out    &lt;- df[first, info, drop = FALSE]
+  grp    &lt;- factor(key, levels = key[first])
+  out$n_scans &lt;- as.integer(table(grp))
+  for (p in params) {
+    v &lt;- suppressWarnings(as.numeric(df[[p]]))
+    out[[p]] &lt;- as.numeric(tapply(v, grp, function(x)
+      if (all(is.na(x))) NA_real_ else mean(x, na.rm = TRUE)))
+  }
+  out &lt;- out[order(out$date, out$posX, out$posY), , drop = FALSE]
+  rownames(out) &lt;- NULL
+  out
 }
 
 # ── Aggregazione media±SE per trattamento × giorno ───────────────────────────
@@ -481,23 +551,26 @@ agg_trt_day &lt;- function(daily_df, params, selected_units) {
   result &lt;- list()
   for (p in params) {
     vals &lt;- suppressWarnings(as.numeric(sub[[p]]))
+    if (all(is.na(vals))) next
     tmp  &lt;- sub; tmp$val &lt;- vals
     m    &lt;- aggregate(val ~ date + treatment, data = tmp, FUN = mean, na.rm = TRUE)
     s    &lt;- aggregate(val ~ date + treatment, data = tmp, FUN = function(x) {
       n &lt;- sum(!is.na(x)); if (n &lt; 2) 0 else sd(x, na.rm=TRUE)/sqrt(n)
     })
-    names(m)[3] &lt;- "mean"; names(s)[3] &lt;- "se"
-    merged &lt;- merge(m, s, by = c("date","treatment"))
+    nn   &lt;- aggregate(val ~ date + treatment, data = tmp, FUN = function(x) sum(!is.na(x)))
+    names(m)[3] &lt;- "mean"; names(s)[3] &lt;- "se"; names(nn)[3] &lt;- "n"
+    merged &lt;- merge(merge(m, s, by = c("date","treatment")), nn, by = c("date","treatment"))
     merged$param &lt;- p
     result[[p]] &lt;- merged
   }
+  if (!length(result)) return(NULL)
   do.call(rbind, result)
 }
 
 # ── Colori trattamento (palette npg condivisa) ────────────────────────────────
 make_trt_colors &lt;- function(treatments) {
   trts &lt;- sort(unique(as.character(treatments)))
-  setNames(PAL_NPG[seq_along(trts)], trts)
+  setNames(PAL_NPG[(seq_along(trts) - 1) %% length(PAL_NPG) + 1], trts)
 }
 
 # ── Generazione SVG mappa bench ──────────────────────────────────────────────
@@ -536,8 +609,6 @@ make_bench_svg &lt;- function(map_df, trt_colors, selected_units,
     col  &lt;- trt_colors[trt]
     fill &lt;- if (sel) col else "#D1D5DB"
     strk &lt;- if (sel) col else "#9CA3AF"
-    sdark_fill &lt;- if (sel) col else "#4A5568"
-    sdark_strk &lt;- if (sel) col else "#718096"
     x_svg &lt;- pad_x + (map_df$posX[i]-1)*cell_w + 3
     y_svg &lt;- pad_y + (map_df$posY[i]-1)*cell_h + 3
     safe_id &lt;- gsub(":", "_", uid)
@@ -555,9 +626,9 @@ make_bench_svg &lt;- function(map_df, trt_colors, selected_units,
       uid, trt))
     # Mini etichetta unit
     cells &lt;- c(cells, sprintf(
-      '&lt;text x="%.0f" y="%.0f" text-anchor="middle" font-size="11"
+      '&lt;text id="t_%s" class="vaso-lbl" x="%.0f" y="%.0f" text-anchor="middle" font-size="11"
        fill="%s" font-family="system-ui" style="pointer-events:none;font-weight:600;"&gt;%s&lt;/text&gt;',
-      x_svg + (cell_w-6)/2, y_svg + (cell_h-6)/2 + 4,
+      safe_id, x_svg + (cell_w-6)/2, y_svg + (cell_h-6)/2 + 4,
       if (sel) "#FFFFFF" else "#9CA3AF",
       uid))
   }
@@ -597,19 +668,25 @@ draw_time_chart &lt;- function(trt_day_df, params, trt_colors, show_ribbon = TRU
   trts      &lt;- intersect(names(trt_colors), unique(trt_day_df$treatment))
   trts      &lt;- trts[order(trts)]
   all_dates &lt;- sort(unique(trt_day_df$date))
-  date_ticks &lt;- seq(min(all_dates), max(all_dates), by = 7)
+  date_ticks &lt;- pretty(all_dates)
+  date_ticks &lt;- date_ticks[date_ticks &gt;= min(all_dates) &amp; date_ticks &lt;= max(all_dates)]
+  if (!length(date_ticks)) date_ticks &lt;- all_dates
 
   for (p in params) {
     sub &lt;- trt_day_df[trt_day_df$param == p, , drop=FALSE]
     if (!nrow(sub)) next
 
+    if (!any(is.finite(sub$mean))) next
+    # Taglio a 0 solo per variabili non negative (indici come PSRI possono essere &lt; 0)
+    nonneg &lt;- all(sub$mean &gt;= 0, na.rm=TRUE)
     ylim &lt;- range(sub$mean + sub$se, sub$mean - sub$se, na.rm=TRUE)
-    ylim[1] &lt;- max(0, ylim[1])
+    if (nonneg) ylim[1] &lt;- max(0, ylim[1])
+    if (diff(ylim) == 0) ylim &lt;- ylim + c(-0.5, 0.5) * max(abs(ylim[1]), 1)
     ylim &lt;- ylim + diff(ylim) * c(-0.05, 0.08)
 
     p_clean &lt;- gsub("\\s*$", "", p)
     last_tok &lt;- regmatches(p_clean, regexpr("[^ ]+$", p_clean))
-    unit_m &lt;- if (length(last_tok) &amp;&amp; !grepl("^[[:digit:]%\\[]", last_tok)) last_tok else ""
+    unit_m &lt;- if (length(last_tok) &amp;&amp; grepl(" ", p_clean) &amp;&amp; !grepl("^[[:digit:]%\\[]", last_tok)) last_tok else ""
 
     plot.new()
     plot.window(xlim=range(all_dates), ylim=ylim)
@@ -626,7 +703,7 @@ draw_time_chart &lt;- function(trt_day_df, params, trt_colors, show_ribbon = TRU
       if (show_ribbon) {
         rib_col &lt;- adjustcolor(col, alpha.f=0.18)
         polygon(c(d$date, rev(d$date)),
-                c(d$mean + d$se, rev(pmax(d$mean - d$se, 0))),
+                c(d$mean + d$se, rev(if (nonneg) pmax(d$mean - d$se, 0) else d$mean - d$se)),
                 col=rib_col, border=NA)
       }
       lines(d$date, d$mean, col=col, lwd=2.2)
@@ -650,7 +727,12 @@ draw_time_chart &lt;- function(trt_day_df, params, trt_colors, show_ribbon = TRU
 
     # Legenda solo nel primo pannello, testo e simboli più grandi
     if (p == params[1]) {
-      legend("topleft", legend=trts, col=trt_colors[trts], lwd=2.5,
+      n_lab &lt;- vapply(trts, function(tr) {
+        nv &lt;- trt_day_df$n[trt_day_df$treatment == tr &amp; trt_day_df$param == p]
+        if (!length(nv)) "" else if (min(nv) == max(nv)) paste0(" (n=", max(nv), ")")
+        else paste0(" (n=", min(nv), "-", max(nv), ")")
+      }, "")
+      legend("topleft", legend=paste0(trts, n_lab), col=trt_colors[trts], lwd=2.5,
              bty="n", cex=1.05, pt.cex=1.5)
     }
   }
@@ -689,11 +771,14 @@ draw_boxplot_day &lt;- function(daily_df, params, trt_colors, selected_date,
 
     p_clean  &lt;- gsub("\\s*$", "", p)
     last_tok &lt;- regmatches(p_clean, regexpr("[^ ]+$", p_clean))
-    unit_m   &lt;- if (length(last_tok) &amp;&amp; !grepl("^[[:digit:]%\\[]", last_tok)) last_tok else ""
+    unit_m   &lt;- if (length(last_tok) &amp;&amp; grepl(" ", p_clean) &amp;&amp; !grepl("^[[:digit:]%\\[]", last_tok)) last_tok else ""
     ylab_full &lt;- if (nchar(unit_m) &gt; 0) paste0(ylab, " [", trimws(unit_m), "]") else ylab
 
     all_vals &lt;- unlist(bp_data); all_vals &lt;- all_vals[!is.na(all_vals)]
-    ylim &lt;- if (length(all_vals)) range(all_vals) * c(0.95, 1.05) else c(0,1)
+    if (!length(all_vals)) next
+    ylim &lt;- range(all_vals)
+    pad  &lt;- if (diff(ylim) &gt; 0) diff(ylim) * 0.06 else max(abs(ylim[1]) * 0.05, 0.5)
+    ylim &lt;- ylim + c(-pad, pad)
 
     plot.new()
     plot.window(xlim=c(0.5, length(bp_data)+0.5), ylim=ylim)
@@ -723,7 +808,8 @@ draw_boxplot_day &lt;- function(daily_df, params, trt_colors, selected_date,
 
     usr &lt;- par("usr")
     y_off &lt;- (usr[4] - usr[3]) * 0.04
-    text(x=bp_pos, y=usr[3] - y_off, labels=names(bp_data),
+    text(x=bp_pos, y=usr[3] - y_off,
+         labels=paste0(names(bp_data), " (n=", lengths(bp_data), ")"),
          srt=30, adj=c(1,1), xpd=TRUE, cex=0.95, col="#1A1A1A")
 
     axis(2, at=y_major, col="#1A1A1A", col.axis="#1A1A1A", cex.axis=1.1,
@@ -738,7 +824,7 @@ draw_boxplot_day &lt;- function(daily_df, params, trt_colors, selected_date,
 
 # ── Pivot long ────────────────────────────────────────────────────────────────
 pivot_long_pe &lt;- function(df, params) {
-  id_cols    &lt;- c("unit","timestamp","date","treatment","sensor","genotype","posX","posY")
+  id_cols    &lt;- c("unit","timestamp","date","treatment","sensor","genotype","posX","posY","n_scans")
   id_present &lt;- id_cols[id_cols %in% colnames(df)]
   id_data    &lt;- df[, id_present, drop=FALSE]
   long_rows  &lt;- do.call(rbind, lapply(params, function(p) {
@@ -769,9 +855,32 @@ jsonlite_like_array_r &lt;- function(x) {
   paste0("[", paste0('"', esc, '"', collapse=","), "]")
 }
 
+csv_field &lt;- function(x, sep) {
+  x &lt;- as.character(x); x[is.na(x)] &lt;- ""
+  need &lt;- grepl(paste0("[", sep, "\"\r\n]"), x)
+  x[need] &lt;- paste0('"', gsub('"', '""', x[need], fixed = TRUE), '"')
+  x
+}
 df_to_csv_string &lt;- function(df, sep=",") {
-  con &lt;- textConnection("out","w"); write.table(df, con, sep=sep, row.names=FALSE, quote=FALSE, na="")
-  close(con); paste(out, collapse="\n")
+  cols &lt;- lapply(df, function(col) {
+    if (inherits(col, "Date")) col &lt;- format(col, "%Y-%m-%d")
+    csv_field(col, sep)
+  })
+  header &lt;- paste(csv_field(names(df), sep), collapse = sep)
+  body   &lt;- if (nrow(df)) do.call(paste, c(unname(cols), sep = sep)) else character(0)
+  paste(c(header, body), collapse = "\n")
+}
+
+# renderTable mostrerebbe le date come numeri (giorni dal 1970)
+fmt_dates &lt;- function(df) {
+  for (c in names(df)) if (inherits(df[[c]], "Date")) df[[c]] &lt;- format(df[[c]], "%Y-%m-%d")
+  df
+}
+
+tr_error &lt;- function(msg, tx) {
+  if (startsWith(msg, "ERR_COLS|")) return(tx$err_cols(sub("^ERR_COLS\\|", "", msg)))
+  switch(msg, ERR_DATE = tx$err_date, ERR_UNIT = tx$err_unit,
+         ERR_NOSEL = tx$chart_no_trt, ERR_NODATA = tx$err_nodata, msg)
 }
 
 get_available_chart_params &lt;- function(df, selected_params) {
@@ -832,6 +941,8 @@ ui &lt;- page_fluid(
     .preview-wrap thead th { background:#F3F4F6; font-weight:700; color:#374151; border-bottom:2px solid #D1D5DB; padding:.55rem .8rem; position:sticky; top:0; z-index:1; }
     .preview-wrap table { font-size:.95rem !important; margin-bottom:0; white-space:nowrap; }
     .preview-wrap tbody td { padding:.45rem .8rem; color:#4B5563; border-bottom:1px solid #F0F1F3; }
+    .err-box { margin-top:1rem; padding:.7rem 1rem; border-radius:6px; background:#FEF2F2; border:1px solid #FECACA; color:#991B1B; font-size:.95rem; font-weight:500; }
+    .note-line { font-size:.88rem; color:#6B7280; margin:-.6rem 0 1rem; }
     .map-wrap { width:100%; max-width:900px; margin:0 auto; padding:.5rem 0; }
     .map-hint { font-size:.9rem; color:#6B7280; margin-bottom:.8rem; }
     .map-stats { display:flex; gap:1.5rem; margin-top:.8rem; font-size:.92rem; }
@@ -890,6 +1001,8 @@ ui &lt;- page_fluid(
     body.dark .preview-wrap thead th { background:#253023; color:#C5D8C2; border-color:#334430; }
     body.dark .preview-wrap tbody td { background:#1E261D; color:#B8D0B5; border-color:#2A3528; }
     body.dark .map-hint { color:#7A9975; }
+    body.dark .err-box { background:#3D1A1A; border-color:#7F1D1D; color:#FCA5A5; }
+    body.dark .note-line { color:#7A9975; }
     body.dark .map-stat-sel  { color:#6FCF7F; }
     body.dark .map-stat-excl { color:#5A6B58; }
     body.dark .pivot-toggle { background:#1E261D; border-color:#334430; }
@@ -922,9 +1035,13 @@ ui &lt;- page_fluid(
 
     (function() {
       var mq = window.matchMedia('(prefers-color-scheme: dark)');
-      function applyDark(on) { document.body.classList.toggle('dark', on); }
+      function applyDark(on) {
+        document.body.classList.toggle('dark', on);
+        if (window.Shiny &amp;&amp; Shiny.setInputValue) Shiny.setInputValue('dark_mode', on);
+      }
       applyDark(mq.matches);
       mq.addEventListener('change', function(e) { applyDark(e.matches); });
+      $(document).on('shiny:connected', function() { Shiny.setInputValue('dark_mode', mq.matches); });
     })();
 
     function setLang(lang) {
@@ -961,6 +1078,8 @@ ui &lt;- page_fluid(
       document.querySelectorAll('.col-toggle.active').forEach(function(t){ sel.push(t.getAttribute('data-col')); });
       Shiny.setInputValue('selected_params', sel, {priority:'event'});
       Shiny.setInputValue('active_col_count', sel.length, {priority:'event'});
+      var cnt = document.getElementById('col-count-active');
+      if (cnt) cnt.textContent = sel.length;
     }
 
     function toggleVaso(safe_id) {
@@ -969,7 +1088,6 @@ ui &lt;- page_fluid(
       var cur = el.getAttribute('data-sel');
       var newSel = cur==='1' ? '0' : '1';
       el.setAttribute('data-sel', newSel);
-      var col = el.getAttribute('data-trt-col') || el.getAttribute('fill');
       if (newSel==='1') {
         el.setAttribute('fill', el.getAttribute('data-col')||el.getAttribute('fill'));
         el.setAttribute('stroke', el.getAttribute('data-col')||el.getAttribute('fill'));
@@ -979,10 +1097,15 @@ ui &lt;- page_fluid(
         el.setAttribute('stroke', '#9CA3AF');
         el.classList.remove('sel'); el.classList.add('excl');
       }
+      setVasoLabel(safe_id, newSel==='1');
       var selected=[];
       document.querySelectorAll('.vaso.sel').forEach(function(v){ selected.push(v.getAttribute('data-unit')); });
       Shiny.setInputValue('selected_units', selected, {priority:'event'});
       updateMapStats();
+    }
+    function setVasoLabel(safe_id, on) {
+      var lab = document.getElementById('t_'+safe_id);
+      if (lab) lab.setAttribute('fill', on ? '#FFFFFF' : '#9CA3AF');
     }
     function selectAllVasos() {
       document.querySelectorAll('.vaso').forEach(function(el) {
@@ -990,6 +1113,7 @@ ui &lt;- page_fluid(
         el.setAttribute('fill', el.getAttribute('data-col')||el.getAttribute('fill'));
         el.setAttribute('stroke', el.getAttribute('data-col')||el.getAttribute('fill'));
         el.classList.remove('excl'); el.classList.add('sel');
+        setVasoLabel(el.id.substring(2), true);
       });
       var selected=[];
       document.querySelectorAll('.vaso.sel').forEach(function(v){ selected.push(v.getAttribute('data-unit')); });
@@ -1002,6 +1126,7 @@ ui &lt;- page_fluid(
         el.setAttribute('fill','#D1D5DB');
         el.setAttribute('stroke','#9CA3AF');
         el.classList.remove('sel'); el.classList.add('excl');
+        setVasoLabel(el.id.substring(2), false);
       });
       Shiny.setInputValue('selected_units', [], {priority:'event'});
       updateMapStats();
@@ -1046,12 +1171,6 @@ ui &lt;- page_fluid(
       var link=document.createElement('a'); link.href='data:image/png;base64,'+msg.data;
       link.download=msg.filename; document.body.appendChild(link); link.click(); document.body.removeChild(link);
     });
-    Shiny.addCustomMessageHandler('initMapColors', function(msg) {
-      msg.units.forEach(function(item) {
-        var el=document.getElementById('v_'+item.id);
-        if (el) el.setAttribute('data-col', item.col);
-      });
-    });
     $(document).on('shiny:value', function(e) {
       if (e.name==='col_selector_panel') setTimeout(updateColMeta, 50);
       if (e.name==='map_panel') setTimeout(updateMapStats, 100);
@@ -1092,12 +1211,37 @@ server &lt;- function(input, output, session) {
   rv &lt;- reactiveValues(
     df_raw=NULL, df_daily=NULL, df_final=NULL,
     params=NULL, trt_colors=NULL, map_df=NULL,
-    error=NULL, base_name=NULL,
-    chart_png_b64=NULL, chart_png_range=NULL, chart_png_box=NULL
+    error=NULL, error_step=NULL, base_name=NULL,
+    chart_png_b64=NULL, chart_png_range=NULL, chart_png_box=NULL,
+    # Stato delle scelte dell'utente, conservato quando i pannelli vengono
+    # ridisegnati (cambio lingua, dark mode, rielaborazione)
+    sel_units=NULL, sel_params=NULL, chart_params=NULL,
+    date_range=NULL, box_idx=NULL, multi_sensor=FALSE
   )
+  set_err &lt;- function(step, msg) { rv$error &lt;- msg; rv$error_step &lt;- step }
 
   lang &lt;- reactive({ if (is.null(input$ui_lang)) "en" else input$ui_lang })
   t    &lt;- reactive({ TR[[lang()]] })
+
+  observeEvent(input$selected_units, {
+    rv$sel_units &lt;- unlist(input$selected_units)
+    if (length(rv$sel_units) &amp;&amp; identical(rv$error, "ERR_NOSEL")) rv$error &lt;- NULL
+  }, ignoreNULL = FALSE, ignoreInit = TRUE)
+  observeEvent(input$selected_params, { rv$sel_params   &lt;- unlist(input$selected_params) }, ignoreNULL = FALSE, ignoreInit = TRUE)
+  observeEvent(input$chart_params,    { rv$chart_params &lt;- unlist(input$chart_params)    }, ignoreNULL = FALSE, ignoreInit = TRUE)
+  observeEvent(list(input$range_start_idx, input$range_end_idx), {
+    if (!is.null(input$range_start_idx) &amp;&amp; !is.null(input$range_end_idx))
+      rv$date_range &lt;- c(input$range_start_idx, input$range_end_idx)
+  }, ignoreInit = TRUE)
+  observeEvent(input$box_date_idx, { rv$box_idx &lt;- input$box_date_idx }, ignoreInit = TRUE)
+
+  for (st in c("load","clean","chart","box","final")) local({
+    s &lt;- st
+    output[[paste0("err_", s)]] &lt;- renderUI({
+      req(rv$error, identical(rv$error_step, s))
+      div(class="err-box", "\u26A0 ", tr_error(rv$error, t()))
+    })
+  })
 
   output$app_subtitle &lt;- renderUI({
     tx &lt;- t()
@@ -1124,7 +1268,7 @@ server &lt;- function(input, output, session) {
       tags$a(href="https://www.mauromaver.eu", target="_blank",
              style="color:#3A6B35;font-weight:700;text-decoration:underline;","Mauro Maver"),
       " · ",
-      tags$span(style="color:#9CA3AF;font-size:.88rem;", "v.1.0"),
+      tags$span(style="color:#9CA3AF;font-size:.88rem;", "v.1.1"),
       cr$bug,
       tags$a(href="https://github.com/Stramon1um", target="_blank",
              style="color:#3A6B35;font-weight:600;text-decoration:underline;","GitHub"),
@@ -1140,21 +1284,31 @@ server &lt;- function(input, output, session) {
     div(class="sx-card", p(class="section-label", tx$step1),
       fileInput("file_in", label=NULL, accept=c(".csv","text/csv"),
                 placeholder=tx$file_ph, buttonLabel=tx$file_btn),
-      uiOutput("file_info_chip"))
+      uiOutput("file_info_chip"),
+      uiOutput("err_load"))
   })
 
   observeEvent(input$file_in, {
     rv$df_raw &lt;- rv$df_daily &lt;- rv$df_final &lt;- rv$params &lt;- rv$trt_colors &lt;-
-      rv$map_df &lt;- rv$error &lt;- rv$chart_png_b64 &lt;- rv$chart_png_range &lt;- rv$chart_png_box &lt;- NULL
+      rv$map_df &lt;- rv$error &lt;- rv$error_step &lt;- rv$chart_png_b64 &lt;- rv$chart_png_range &lt;- rv$chart_png_box &lt;- NULL
+    rv$sel_units &lt;- rv$sel_params &lt;- rv$chart_params &lt;- rv$date_range &lt;- rv$box_idx &lt;- NULL
+    rv$multi_sensor &lt;- FALSE
     tryCatch({
       df &lt;- parse_planteye(input$file_in$datapath)
-      rv$df_raw   &lt;- df
-      rv$base_name &lt;- sub("\\.csv$","", input$file_in$name, ignore.case=TRUE)
-      p   &lt;- classify_params(df)
-      rv$params &lt;- p
+      p  &lt;- classify_params(df)
+      rv$base_name  &lt;- sub("\\.csv$","", input$file_in$name, ignore.case=TRUE)
+      rv$params     &lt;- p
+      rv$sel_params &lt;- p$main
       rv$trt_colors &lt;- make_trt_colors(df$treatment)
-      rv$map_df &lt;- unique(df[, c("unit","treatment","posX","posY")])
-    }, error=function(e) rv$error &lt;- conditionMessage(e))
+      md &lt;- unique(df[, c("unit","treatment","posX","posY")])
+      rv$map_df     &lt;- md[!duplicated(md$unit), , drop=FALSE]
+      rv$sel_units  &lt;- rv$map_df$unit
+      if ("sensor" %in% names(df)) {
+        ns &lt;- tapply(df$sensor, paste(df$unit, df$date), function(x) length(unique(x[nzchar(x)])))
+        rv$multi_sensor &lt;- any(ns &gt; 1, na.rm=TRUE)
+      }
+      rv$df_raw &lt;- df
+    }, error=function(e) set_err("load", conditionMessage(e)))
   })
 
   output$file_info_chip &lt;- renderUI({
@@ -1173,10 +1327,13 @@ server &lt;- function(input, output, session) {
     req(rv$params)
     tx &lt;- t()
     p  &lt;- rv$params
-    pills_main &lt;- lapply(p$main, function(col)
-      tags$span(class="col-toggle active", `data-col`=col, onclick="toggleCol(this);", col))
-    pills_dist &lt;- lapply(p$dist, function(col)
-      tags$span(class="col-toggle dist excluded", `data-col`=col, onclick="toggleCol(this);", col))
+    sel &lt;- isolate(rv$sel_params)
+    pill &lt;- function(col, dist) {
+      tags$span(class=paste("col-toggle", if (dist) "dist", if (col %in% sel) "active" else "excluded"),
+                `data-col`=col, onclick="toggleCol(this);", col)
+    }
+    pills_main &lt;- lapply(p$main, pill, dist=FALSE)
+    pills_dist &lt;- lapply(p$dist, pill, dist=TRUE)
 
     div(class="sx-card", p(class="section-label", tx$step2),
       div(class="toggle-actions",
@@ -1186,7 +1343,7 @@ server &lt;- function(input, output, session) {
       ),
       div(class="col-grid", pills_main, pills_dist),
       p(style="font-size:.9rem;color:#6B7280;margin-top:.3rem;",
-        span(id="col-count-active", length(p$main)), " / ",
+        span(id="col-count-active", length(intersect(sel, p$all))), " / ",
         length(p$all), " ", tx$col_meta)
     )
   })
@@ -1201,18 +1358,22 @@ server &lt;- function(input, output, session) {
           style="border:none;color:#fff;font-weight:600;font-size:1rem;padding:.6rem 1.7rem;border-radius:6px;background:#2D6A4F;"),
         div(class="dl-wrap", uiOutput("dl_clean_ui"))
       ),
+      uiOutput("err_clean"),
       uiOutput("summary_wrap")
     )
   })
 
   observeEvent(input$clean_btn, {
     req(rv$df_raw)
-    rv$df_daily &lt;- rv$df_final &lt;- rv$chart_png_b64 &lt;- rv$error &lt;- NULL
+    rv$df_daily &lt;- rv$df_final &lt;- rv$chart_png_b64 &lt;- rv$chart_png_box &lt;- rv$error &lt;- NULL
+    rv$chart_params &lt;- rv$date_range &lt;- rv$box_idx &lt;- NULL
     tryCatch({
-      sel &lt;- input$selected_params
+      sel &lt;- rv$sel_params
       if (is.null(sel)||!length(sel)) sel &lt;- rv$params$main
-      rv$df_daily &lt;- daily_mean_per_plant(rv$df_raw, sel)
-    }, error=function(e) rv$error &lt;- conditionMessage(e))
+      dd &lt;- daily_mean_per_plant(rv$df_raw, sel)
+      if (!nrow(dd) || !length(get_available_chart_params(dd, sel))) stop("ERR_NODATA", call.=FALSE)
+      rv$df_daily &lt;- dd
+    }, error=function(e) set_err("clean", conditionMessage(e)))
   })
 
   output$dl_clean_ui &lt;- renderUI({
@@ -1237,36 +1398,39 @@ server &lt;- function(input, output, session) {
         div(class="stat-item", span(class="stat-val", length(unique(df$unit))), span(class="stat-lbl", tx$stat_plants)),
         div(class="stat-item", span(class="stat-val", length(unique(df$treatment))), span(class="stat-lbl", tx$stat_trts)),
         div(class="stat-item", span(class="stat-val", length(unique(df$date))), span(class="stat-lbl", tx$stat_days)),
-        div(class="stat-item", span(class="stat-val", ncol(df)-6), span(class="stat-lbl", tx$stat_params)),
+        div(class="stat-item", span(class="stat-val", length(setdiff(colnames(df), ID_COLS_DAILY))), span(class="stat-lbl", tx$stat_params)),
         div(class="stat-item", span(class="stat-val", paste0(rv$base_name,"_clean.csv")), span(class="stat-lbl", tx$stat_file))
       ),
+      p(class="note-line", tx$scans_note(min(df$n_scans), max(df$n_scans)),
+        if (isTRUE(rv$multi_sensor)) tagList(" ", tx$sensor_note)),
       div(class="preview-wrap", tableOutput("preview_tbl"))
     )
   })
   output$preview_tbl &lt;- renderTable({
     req(rv$df_daily)
     df &lt;- rv$df_daily
-    disp_cols &lt;- c("unit","date","treatment","posX","posY",
+    disp_cols &lt;- c("unit","date","treatment","posX","posY","n_scans",
                    intersect(rv$params$main[1:min(4,length(rv$params$main))], colnames(df)))
-    df[, disp_cols[disp_cols %in% colnames(df)], drop=FALSE]
-  }, striped=FALSE, hover=TRUE, bordered=FALSE, spacing="xs", na="")
+    fmt_dates(df[, disp_cols[disp_cols %in% colnames(df)], drop=FALSE])
+  }, striped=FALSE, hover=TRUE, bordered=FALSE, spacing="xs", na="", digits=3)
 
   # ── Step 4: Mappa spaziale ──────────────────────────────────────────────────
   output$map_panel &lt;- renderUI({
     req(rv$map_df, rv$trt_colors)
     tx    &lt;- t()
     mdf   &lt;- rv$map_df
-    n_sel &lt;- nrow(mdf)
+    sel   &lt;- intersect(isolate(rv$sel_units), mdf$unit)
     is_dark &lt;- isTRUE(input$dark_mode)
     svg_html &lt;- make_bench_svg(mdf, rv$trt_colors,
-                                selected_units = mdf$unit,
+                                selected_units = sel,
                                 is_dark = is_dark)
+    js_arr &lt;- function(x) paste0("[", paste0('"', x, '"', collapse=","), "]")
     init_js &lt;- tags$script(HTML(paste0(
       "setTimeout(function(){\n",
       paste(sprintf("  var e=document.getElementById('v_%s'); if(e) e.setAttribute('data-col','%s');",
                     gsub(":","_",mdf$unit), rv$trt_colors[mdf$treatment]), collapse="\n"),
       "\n  Shiny.setInputValue('selected_units',",
-      paste0("[", paste0('"', mdf$unit, '"', collapse=","), "]"),
+      if (length(sel)) js_arr(sel) else "[]",
       ",{priority:'event'});\n}, 200);"
     )))
 
@@ -1280,8 +1444,8 @@ server &lt;- function(input, output, session) {
       div(class="map-wrap", HTML(svg_html)),
       init_js,
       div(class="map-stats",
-        span(class="map-stat-sel", id="map-stat-sel", n_sel), " ", tx$map_selected, " · ",
-        span(class="map-stat-excl", id="map-stat-excl", "0"), " ", tx$map_excluded
+        span(class="map-stat-sel", id="map-stat-sel", length(sel)), " ", tx$map_selected, " · ",
+        span(class="map-stat-excl", id="map-stat-excl", nrow(mdf) - length(sel)), " ", tx$map_excluded
       )
     )
   })
@@ -1295,17 +1459,23 @@ server &lt;- function(input, output, session) {
     n     &lt;- length(dates)
     avail &lt;- get_available_chart_params(df, rv$params$main)
     if (!length(avail)) return(NULL)
+    cp  &lt;- isolate(rv$chart_params)
+    act &lt;- if (is.null(cp)) avail else intersect(avail, cp)
+    if (!length(act)) act &lt;- avail
+    rg  &lt;- isolate(rv$date_range); if (length(rg) != 2) rg &lt;- c(1, n)
+    r0  &lt;- max(1, min(as.integer(rg[1]), n)); r1 &lt;- max(1, min(as.integer(rg[2]), n))
+    rib &lt;- isolate(input$show_ribbon); rib_on &lt;- is.null(rib) || isTRUE(rib)
 
     pills &lt;- lapply(avail, function(p)
-      tags$span(class="chart-param-toggle active", `data-param`=p,
-                onclick="toggleChartParam(this);", p))
+      tags$span(class=paste("chart-param-toggle", if (p %in% act) "active" else "excluded"),
+                `data-param`=p, onclick="toggleChartParam(this);", p))
 
     div(class="sx-card",
       p(class="section-label", tx$step5),
       p(style="font-size:.9rem;color:#6B7280;margin-bottom:1rem;", tx$chart_hint),
       p(style="font-size:.9rem;color:#6B7280;font-weight:600;margin-bottom:.5rem;", tx$chart_param_lbl),
       div(class="chart-param-grid", pills),
-      div(id="ribbon-toggle", class="pivot-toggle on", onclick="toggleRibbon();",
+      div(id="ribbon-toggle", class=if (rib_on) "pivot-toggle on" else "pivot-toggle", onclick="toggleRibbon();",
         div(class="pivot-switch"),
         div(div(class="pivot-label", tx$ribbon_label),
             div(class="pivot-sub",   tx$ribbon_sub))
@@ -1317,18 +1487,18 @@ server &lt;- function(input, output, session) {
         div(
           tags$label(style="font-size:.88rem;font-weight:600;color:#6B7280;display:block;margin-bottom:.3rem;",
                      tx$range_start),
-          tags$input(type="range", id="range_start_idx", min=1, max=n, value=1, step=1,
+          tags$input(type="range", id="range_start_idx", min=1, max=n, value=r0, step=1,
                      style="width:100%;accent-color:#2D6A4F;", oninput="updateRangeLabel()")
         ),
         div(
           tags$label(style="font-size:.88rem;font-weight:600;color:#6B7280;display:block;margin-bottom:.3rem;",
                      tx$range_end),
-          tags$input(type="range", id="range_end_idx", min=1, max=n, value=n, step=1,
+          tags$input(type="range", id="range_end_idx", min=1, max=n, value=r1, step=1,
                      style="width:100%;accent-color:#2D6A4F;", oninput="updateRangeLabel()")
         )
       ),
       div(style="font-size:.92rem;color:#374151;margin-bottom:1rem;background:#F3F4F6;border-radius:6px;padding:.5rem 1rem;display:inline-block;",
-        span(id="range_label", paste(format(dates[1],"%d %b %Y"), "→", format(dates[n],"%d %b %Y")))
+        span(id="range_label", paste(format(dates[min(r0,r1)],"%d %b %Y"), "→", format(dates[max(r0,r1)],"%d %b %Y")))
       ),
       tags$script(HTML(sprintf("
         var _dates_range = %s;
@@ -1350,6 +1520,7 @@ server &lt;- function(input, output, session) {
         uiOutput("dl_png_ui"),
         uiOutput("clear_chart_ui")
       ),
+      uiOutput("err_chart"),
       uiOutput("chart_render_wrap")
     )
   })
@@ -1357,11 +1528,11 @@ server &lt;- function(input, output, session) {
   observeEvent(input$chart_btn, {
     req(rv$df_daily, rv$trt_colors)
     rv$chart_png_b64 &lt;- rv$error &lt;- NULL
-    sel_units &lt;- input$selected_units
-    if (is.null(sel_units)||!length(sel_units)) { rv$error &lt;- t()$chart_no_trt; return() }
-    sel_params &lt;- input$chart_params
-    if (is.null(sel_params)||!length(sel_params))
-      sel_params &lt;- get_available_chart_params(rv$df_daily, rv$params$main)
+    sel_units &lt;- rv$sel_units
+    if (!length(sel_units)) { set_err("chart", "ERR_NOSEL"); return() }
+    avail &lt;- get_available_chart_params(rv$df_daily, rv$params$main)
+    sel_params &lt;- intersect(rv$chart_params, avail)
+    if (!length(sel_params)) sel_params &lt;- avail
     if (!length(sel_params)) return()
     tryCatch({
       dates &lt;- sort(unique(rv$df_daily$date))
@@ -1370,7 +1541,8 @@ server &lt;- function(input, output, session) {
       if (i0 &gt; i1) { tmp &lt;- i0; i0 &lt;- i1; i1 &lt;- tmp }
       sub &lt;- rv$df_daily[rv$df_daily$date %in% dates[i0:i1] &amp; rv$df_daily$unit %in% sel_units,]
       trt_day &lt;- agg_trt_day(sub, sel_params, unique(sub$unit))
-      if (is.null(trt_day)||!nrow(trt_day)) return()
+      if (is.null(trt_day)||!nrow(trt_day)) stop("ERR_NODATA", call.=FALSE)
+      sel_params &lt;- sel_params[sel_params %in% trt_day$param]
       show_ribbon &lt;- if (is.null(input$show_ribbon)) TRUE else isTRUE(input$show_ribbon)
       n_p &lt;- length(sel_params); n_col &lt;- if (n_p&gt;1) 2 else 1; n_row &lt;- ceiling(n_p/n_col)
       tmpf &lt;- tempfile(fileext=".png")
@@ -1380,7 +1552,7 @@ server &lt;- function(input, output, session) {
       raw_bytes &lt;- readBin(tmpf, "raw", file.info(tmpf)$size)
       rv$chart_png_b64 &lt;- base64_encode_raw(raw_bytes)
       unlink(tmpf)
-    }, error=function(e) rv$error &lt;- conditionMessage(e))
+    }, error=function(e) set_err("chart", conditionMessage(e)))
   })
 
   `%||%` &lt;- function(a, b) if (is.null(a)) b else a
@@ -1414,6 +1586,9 @@ server &lt;- function(input, output, session) {
     dates &lt;- sort(unique(rv$df_daily$date))
     n     &lt;- length(dates)
     mid   &lt;- ceiling(n/2)
+    bi    &lt;- isolate(rv$box_idx)
+    if (!is.null(bi)) mid &lt;- max(1, min(as.integer(bi), n))
+    jit_on &lt;- isTRUE(isolate(input$show_jitter_box))
 
     div(class="sx-card",
       p(class="section-label", tx$box_title),
@@ -1437,7 +1612,7 @@ server &lt;- function(input, output, session) {
         }
         updateBoxLabel();
       ", jsonlite_like_array_r(format(dates, "%d %b %Y"))))),
-      div(id="jitter-box-toggle", class="pivot-toggle", onclick="toggleJitterBox();",
+      div(id="jitter-box-toggle", class=if (jit_on) "pivot-toggle on" else "pivot-toggle", onclick="toggleJitterBox();",
         div(class="pivot-switch"),
         div(div(class="pivot-label", tx$jitter_label),
             div(class="pivot-sub",   tx$jitter_sub))
@@ -1448,6 +1623,7 @@ server &lt;- function(input, output, session) {
         uiOutput("dl_box_ui"),
         uiOutput("clear_box_ui")
       ),
+      uiOutput("err_box"),
       uiOutput("box_chart_wrap")
     )
   })
@@ -1459,12 +1635,15 @@ server &lt;- function(input, output, session) {
       dates &lt;- sort(unique(rv$df_daily$date))
       idx   &lt;- max(1, min(as.integer(input$box_date_idx %||% ceiling(length(dates)/2)), length(dates)))
       sel_date  &lt;- dates[idx]
-      sub       &lt;- rv$df_daily
-      sel_units &lt;- input$selected_units
-      if (!is.null(sel_units)&amp;&amp;length(sel_units)) sub &lt;- sub[sub$unit %in% sel_units,]
-      sel_params &lt;- input$chart_params
-      if (is.null(sel_params)||!length(sel_params))
-        sel_params &lt;- get_available_chart_params(rv$df_daily, rv$params$main)
+      sel_units &lt;- rv$sel_units
+      if (!length(sel_units)) stop("ERR_NOSEL", call.=FALSE)
+      sub &lt;- rv$df_daily[rv$df_daily$unit %in% sel_units, , drop=FALSE]
+      avail &lt;- get_available_chart_params(rv$df_daily, rv$params$main)
+      sel_params &lt;- intersect(rv$chart_params, avail)
+      if (!length(sel_params)) sel_params &lt;- avail
+      sel_params &lt;- sel_params[vapply(sel_params, function(p)
+        any(!is.na(suppressWarnings(as.numeric(sub[[p]][sub$date == sel_date])))), logical(1))]
+      if (!length(sel_params)) stop("ERR_NODATA", call.=FALSE)
       n_p &lt;- length(sel_params); n_col &lt;- if (n_p&gt;1) 2 else 1; n_row &lt;- ceiling(n_p/n_col)
       tmpf &lt;- tempfile(fileext=".png")
       png(tmpf, width=5.5*n_col, height=5*n_row, units="in", res=300)
@@ -1475,7 +1654,7 @@ server &lt;- function(input, output, session) {
       raw_bytes &lt;- readBin(tmpf, "raw", file.info(tmpf)$size)
       rv$chart_png_box &lt;- base64_encode_raw(raw_bytes)
       unlink(tmpf)
-    }, error=function(e) rv$error &lt;- conditionMessage(e))
+    }, error=function(e) set_err("box", conditionMessage(e)))
   })
 
   output$dl_box_ui &lt;- renderUI({
@@ -1505,7 +1684,7 @@ server &lt;- function(input, output, session) {
     req(rv$df_daily)
     tx &lt;- t()
     div(class="sx-card", p(class="section-label", tx$step6),
-      div(id="pivot-toggle", class="pivot-toggle", onclick="togglePivot();",
+      div(id="pivot-toggle", class=if (isTRUE(isolate(input$pivot_long))) "pivot-toggle on" else "pivot-toggle", onclick="togglePivot();",
         div(class="pivot-switch"),
         div(div(class="pivot-label", tx$pivot_label),
             div(class="pivot-sub",   tx$pivot_sub))
@@ -1515,6 +1694,7 @@ server &lt;- function(input, output, session) {
           style="border:none;color:#fff;font-weight:700;font-size:.95rem;padding:.58rem 1.6rem;border-radius:6px;background:#7C3AED;"),
         div(class="dl-wrap", uiOutput("dl_final_ui"))
       ),
+      uiOutput("err_final"),
       uiOutput("final_preview_wrap")
     )
   })
@@ -1523,15 +1703,13 @@ server &lt;- function(input, output, session) {
     req(rv$df_daily)
     rv$df_final &lt;- rv$error &lt;- NULL
     tryCatch({
-      sel_units &lt;- input$selected_units
-      df &lt;- if (!is.null(sel_units)&amp;&amp;length(sel_units))
-              rv$df_daily[rv$df_daily$unit %in% sel_units,]
-            else rv$df_daily
-      sel_params &lt;- if (!is.null(input$selected_params)&amp;&amp;length(input$selected_params))
-                      input$selected_params else rv$params$main
-      sel_params &lt;- sel_params[sel_params %in% colnames(df)]
+      sel_units &lt;- rv$sel_units
+      if (!length(sel_units)) stop("ERR_NOSEL", call.=FALSE)
+      df &lt;- rv$df_daily[rv$df_daily$unit %in% sel_units, , drop=FALSE]
+      rownames(df) &lt;- NULL
+      sel_params &lt;- setdiff(colnames(df), ID_COLS_DAILY)
       rv$df_final &lt;- if (isTRUE(input$pivot_long)) pivot_long_pe(df, sel_params) else df
-    }, error=function(e) rv$error &lt;- conditionMessage(e))
+    }, error=function(e) set_err("final", conditionMessage(e)))
   })
 
   output$dl_final_ui &lt;- renderUI({
@@ -1560,14 +1738,14 @@ server &lt;- function(input, output, session) {
     )
   })
   output$final_preview_tbl &lt;- renderTable({
-    req(rv$df_final); rv$df_final
-  }, striped=FALSE, hover=TRUE, bordered=FALSE, spacing="xs", na="")
+    req(rv$df_final); fmt_dates(rv$df_final)
+  }, striped=FALSE, hover=TRUE, bordered=FALSE, spacing="xs", na="", digits=3)
 
   # ── Badge stato ──────────────────────────────────────────────────────────────
   output$status_badge &lt;- renderUI({
     tx &lt;- t()
     if (!is.null(rv$error))         div(class="status-badge badge-error", tx$status_error)
-    else if (!is.null(rv$df_final)) div(class="status-badge badge-ok",   tx$status_chart)
+    else if (!is.null(rv$df_final)) div(class="status-badge badge-ok",   tx$status_final)
     else if (!is.null(rv$chart_png_b64)) div(class="status-badge badge-ok", tx$status_chart)
     else if (!is.null(rv$df_daily)) div(class="status-badge badge-ok",   tx$status_clean)
     else if (!is.null(rv$df_raw))   div(class="status-badge badge-ok",   tx$status_loaded)

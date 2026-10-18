@@ -1,6 +1,8 @@
 project:
   type: website
   output-dir: docs
+  render:
+    - CleanSpeX.qmd   # solo l'app: README/CHANGELOG non diventano pagine del sito
 
 website:
   title: "CleanSpeX"
