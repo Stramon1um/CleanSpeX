@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.1 (in preparation)
+## v1.1 (2026-10-18)
 
 ### Statistics
 - **One row per plant and day, always.** Daily means are now computed per pot (`unit`) and date only. In v1.0 the grouping also included `sensor`: when the same pot was read by more than one sensor head, each plant appeared twice per day and the SE was computed with an inflated *n* (pseudoreplication). Readings from different sensors are now averaged as technical replicates, and a note is shown when this happens.
