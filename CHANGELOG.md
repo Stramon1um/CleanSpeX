@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.2 (2026-11-05)
 
 ### Data integrity
 - **Final export always matches the selection.** In v1.1, pots excluded after generating the final file were still in the downloaded CSV. Changing the pots or the wide/long format now discards the generated file, which has to be generated again.
