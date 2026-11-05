@@ -23,9 +23,11 @@
 
 ### New
 - **Example data:** a link in step 1 loads a synthetic data set, so the app can be tried without a file.
+- **Download as PDF and SVG** as well as PNG, for both charts, always matching the chart on screen.
 - **Three color palettes** for the bench map and the charts: NPG (default), colorblind-friendly Okabe-Ito and grayscale, the same as CleanRhizo. The map changes at once; a chart already generated keeps its colors until it is generated again.
 
 ### Interface
+- A chart already generated shows a warning when the selected pots change, until it is generated again or the same pots are selected. The files stay available for comparison.
 - Excluded pots have a dashed border, and pot labels switch to dark text on light colors, so the map stays readable with every palette.
 - Deselecting every parameter now gives a clear message. In v1.1, step 3 and the charts silently fell back to the main parameters.
 - Distribution parameters kept in step 2 can be drawn in the charts. They are off by default and shown with a dashed border.

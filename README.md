@@ -22,7 +22,7 @@ The website uses Google Analytics to count visits only if you accept cookies in 
 2. **Select parameters** to keep. Main parameters are preselected; distribution parameters (colour bins such as `Hue [0-20]`) can be added with one click. At least one parameter is needed.
 3. **Process**: all scans of the same pot on the same day are averaged, giving one row per plant and day. Download the cleaned file.
 4. **Inspect the bench map**: pots are drawn at their position on the bench and coloured by treatment. Click a pot to exclude it from charts and export (e.g. a dead plant or a border effect); click again to include it. Three color palettes are available for the map and the charts: NPG, colorblind-friendly Okabe-Ito and grayscale.
-5. **Explore** with a time-series chart (daily mean ± SE per treatment, adjustable date range, optional SE ribbon) and a boxplot for a single scan day (optional individual points, one per plant). Main parameters are drawn by default; distribution parameters kept in step 2 can be switched on, up to 40 parameters per chart. Both are downloadable as PNG at 300 dpi.
+5. **Explore** with a time-series chart (daily mean ± SE per treatment, adjustable date range, optional SE ribbon) and a boxplot for a single scan day (optional individual points, one per plant). Main parameters are drawn by default; distribution parameters kept in step 2 can be switched on, up to 40 parameters per chart. Both are downloadable as PNG (300 dpi), PDF or SVG, always matching the chart on screen. A chart does not update by itself: a warning appears if the selected pots change after it was generated.
 6. **Export** the final dataset in wide or long format (`parameter`, `value`), restricted to the selected pots. Changing the pots or the format discards the generated file, so it has to be generated again.
 
 ## Biological vs technical replicates
@@ -51,8 +51,8 @@ The unit shown on the Y axis is taken from the last word of the parameter name w
 |---|---|
 | `<name>_clean.csv` | daily mean per plant for the selected parameters, with `n_scans` |
 | `<name>_final.csv` | final dataset restricted to the selected pots, wide or long format |
-| `<name>_chart.png` | time-series chart, 300 dpi |
-| `<name>_boxplot.png` | boxplot for the selected day, 300 dpi |
+| `<name>_chart.png` / `.pdf` / `.svg` | time-series chart (PNG at 300 dpi) |
+| `<name>_boxplot.png` / `.pdf` / `.svg` | boxplot for the selected day (PNG at 300 dpi) |
 
 CSV files use `,` as separator and `.` as decimal mark; fields are quoted only when they contain commas, quotes or line breaks.
 

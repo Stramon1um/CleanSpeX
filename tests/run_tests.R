@@ -130,12 +130,13 @@ ok("nessun errore al limite", is.null(chart_params_error(rep("p", MAX_CHART_PARA
 ok("errore oltre il limite", identical(chart_params_error(rep("p", MAX_CHART_PARAMS + 1)), "ERR_TOOMANY"))
 big <- paste0("p", seq_len(MAX_CHART_PARAMS))
 big_df <- do.call(rbind, lapply(big, function(p) data.frame(date = as.Date("2024-03-01"), treatment = "A", mean = 1, se = 0.1, n = 2, param = p)))
-tmp <- tempfile(fileext = ".png")
-drawn <- tryCatch({
-  png(tmp, width = 5.5 * 2, height = 5 * ceiling(MAX_CHART_PARAMS / 2), units = "in", res = 300)
-  draw_time_chart(big_df, big, make_trt_colors("A")); dev.off(); TRUE
-}, error = function(e) conditionMessage(e))
+big_spec <- list(fun = draw_time_chart, args = list(trt_day_df = big_df, params = big, trt_colors = make_trt_colors("A")))
+drawn <- tryCatch({ render_chart_file(big_spec, tempfile(fileext = ".png"), "png"); TRUE }, error = function(e) conditionMessage(e))
 ok("il grafico al limite si può generare", drawn)
+
+ok("PNG aggiornato con gli stessi vasi, in qualsiasi ordine", !png_is_stale(c("a", "b"), c("b", "a")))
+ok("PNG superato se un vaso è escluso", png_is_stale(c("a", "b"), "a"))
+ok("PNG superato se nessun vaso è selezionato", png_is_stale(c("a", "b"), NULL))
 
 # ── Traduzioni ───────────────────────────────────────────────────────────────
 k <- lapply(TR, names)
@@ -188,6 +189,34 @@ drawn <- tryCatch({
   dev.off(); TRUE
 }, error = function(e) conditionMessage(e))
 ok("esempio: grafici con un parametro di distribuzione", drawn)
+
+# ── Formati di salvataggio ───────────────────────────────────────────────────
+starts_with <- function(f, what) identical(readBin(f, "raw", length(what)), what)
+d_dl <- dd[, c("unit", "date", "treatment", "Height mm", "Hue [0-20]")]
+d_dl$treatment[d_dl$treatment == "Control"] <- "Contr\u00f4le \u20ac"
+names(d_dl)[4] <- "Altezza \u00b5m\u00b2"
+pars <- names(d_dl)[4:5]; tc_dl <- make_trt_colors(d_dl$treatment)
+specs <- list(
+  chart = list(fun = draw_time_chart, args = list(trt_day_df = agg_trt_day(d_dl, pars, unique(d_dl$unit)), params = pars, trt_colors = tc_dl)),
+  box   = list(fun = draw_boxplot_day, args = list(daily_df = d_dl, params = pars, trt_colors = tc_dl, selected_date = d_dl$date[1], show_jitter = TRUE)))
+for (nm in names(specs)) {
+  f_png <- tempfile(fileext = ".png"); render_chart_file(specs[[nm]], f_png, "png")
+  ok(paste("PNG valido:", nm), starts_with(f_png, as.raw(c(0x89, 0x50, 0x4E, 0x47))) && dev.cur() == 1)
+  warns <- character(0); f_pdf <- tempfile(fileext = ".pdf")
+  withCallingHandlers(render_chart_file(specs[[nm]], f_pdf, "pdf"),
+                      warning = function(w) { warns <<- c(warns, conditionMessage(w)); invokeRestart("muffleWarning") })
+  ok(paste("PDF valido, accenti e simboli senza avvisi:", nm), starts_with(f_pdf, charToRaw("%PDF")) && !length(warns) && dev.cur() == 1)
+  f_svg <- tempfile(fileext = ".svg")
+  r <- tryCatch({ render_chart_file(specs[[nm]], f_svg, "svg"); "ok" }, error = conditionMessage)
+  ok(paste("SVG valido oppure errore chiaro senza cairo:", nm), dev.cur() == 1 &&
+       (r == "ERR_EXPORT" || (r == "ok" && any(grepl("<svg", readLines(f_svg, 5))))))
+}
+r <- tryCatch({ render_chart_file(list(fun = function(...) stop("boh"), args = list(params = "a")), tempfile(), "pdf"); "ok" }, error = conditionMessage)
+ok("un errore nel disegno non lascia device aperti", r == "boh" && dev.cur() == 1)
+ok("errore di formato tradotto", all(vapply(TR, function(l) identical(tr_error("ERR_EXPORT", l), l$err_export), TRUE)))
+ok("chart_to_b64 produce testo", is.character(chart_to_b64(specs$box, "pdf")) && startsWith(chart_to_b64(specs$box, "pdf"), "JVBER"))
+ok("un tipo MIME per formato", identical(names(CHART_MIME), c("png", "pdf", "svg")))
+
 lg <- pivot_long_pe(dd, pr$all)
 ok("esempio: formato long", nrow(lg) == nrow(dd) * length(pr$all))
 

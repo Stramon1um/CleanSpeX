@@ -303,15 +303,17 @@ TR <- list(
     range_end      = "Data fine",
     btn_chart      = "Genera grafico",
     btn_dl_png     = "Scarica PNG",
+    btn_dl_pdf     = "Scarica PDF",
+    btn_dl_svg     = "Scarica SVG",
     btn_clear      = "Cancella grafico",
     chart_no_trt   = "Seleziona almeno un vaso nella mappa (passo 4).",
+    chart_stale    = "I vasi selezionati sono cambiati: questo grafico non li rispecchia più. Generalo di nuovo prima di scaricarlo.",
     box_title      = "5b — Boxplot su data singola",
     box_hint       = "Seleziona un singolo giorno di scansione per visualizzare la distribuzione dei valori tra i vasi di ogni trattamento.",
     box_date_lbl   = "Seleziona data",
     btn_box_chart  = "Genera boxplot",
     jitter_label   = "Mostra punti individuali (jitter)",
     jitter_sub     = "Visualizza ogni pianta come puntino (la sua media del giorno), utile per individuare outlier",
-    btn_dl_box     = "Scarica PNG",
     btn_clear_box  = "Cancella boxplot",
     step6          = "6 — Export finale",
     pivot_label    = "Formato long (parametri in una colonna)",
@@ -326,6 +328,7 @@ TR <- list(
     err_unit       = "La colonna 'unit' deve avere il formato a:x:y (es. 1:3:5) per ricavare la posizione dei vasi sul bench.",
     err_nodata     = "Nessun dato numerico disponibile per i parametri selezionati.",
     err_noparam    = "Seleziona almeno un parametro.",
+    err_export     = "Questo formato non è disponibile in questo browser.",
     err_toomany    = function(n) paste0("Troppi parametri per una sola immagine: selezionane al massimo ", n, "."),
     scans_note     = function(a, b) paste0("Scansioni mediate per pianta e giorno: ", if (a == b) a else paste0(a, "-", b), "."),
     note_bad_dates = function(n) paste0("Righe escluse perché senza una data leggibile: ", n, "."),
@@ -382,15 +385,17 @@ TR <- list(
     range_end      = "End date",
     btn_chart      = "Generate chart",
     btn_dl_png     = "Download PNG",
+    btn_dl_pdf     = "Download PDF",
+    btn_dl_svg     = "Download SVG",
     btn_clear      = "Clear chart",
     chart_no_trt   = "Select at least one pot in the map (step 4).",
+    chart_stale    = "The selected pots have changed: this chart no longer matches them. Generate it again before downloading.",
     box_title      = "5b — Boxplot for a single date",
     box_hint       = "Select a single scan day to display the distribution of values across pots for each treatment.",
     box_date_lbl   = "Select date",
     btn_box_chart  = "Generate boxplot",
     jitter_label   = "Show individual data points (jitter)",
     jitter_sub     = "Overlay each plant as a dot (its daily mean), useful to spot outliers",
-    btn_dl_box     = "Download PNG",
     btn_clear_box  = "Clear boxplot",
     step6          = "6 — Final export",
     pivot_label    = "Long format (parameters in one column)",
@@ -405,6 +410,7 @@ TR <- list(
     err_unit       = "The 'unit' column must have the form a:x:y (e.g. 1:3:5) to derive pot positions on the bench.",
     err_nodata     = "No numeric data available for the selected parameters.",
     err_noparam    = "Select at least one parameter.",
+    err_export     = "This format is not available in this browser.",
     err_toomany    = function(n) paste0("Too many parameters for one image: select at most ", n, "."),
     scans_note     = function(a, b) paste0("Scans averaged per plant and day: ", if (a == b) a else paste0(a, "-", b), "."),
     note_bad_dates = function(n) paste0("Rows excluded because they have no readable date: ", n, "."),
@@ -461,15 +467,17 @@ TR <- list(
     range_end      = "Fecha fin",
     btn_chart      = "Generar gráfico",
     btn_dl_png     = "Descargar PNG",
+    btn_dl_pdf     = "Descargar PDF",
+    btn_dl_svg     = "Descargar SVG",
     btn_clear      = "Borrar gráfico",
     chart_no_trt   = "Seleccione al menos una maceta en el mapa (paso 4).",
+    chart_stale    = "Las macetas seleccionadas han cambiado: este gráfico ya no las refleja. Genérelo de nuevo antes de descargarlo.",
     box_title      = "5b — Boxplot para una fecha única",
     box_hint       = "Seleccione un único día de escaneo para visualizar la distribución de los valores entre las macetas de cada tratamiento.",
     box_date_lbl   = "Seleccionar fecha",
     btn_box_chart  = "Generar boxplot",
     jitter_label   = "Mostrar puntos individuales (jitter)",
     jitter_sub     = "Superponer cada planta como un punto (su media del día), útil para detectar valores atípicos",
-    btn_dl_box     = "Descargar PNG",
     btn_clear_box  = "Borrar boxplot",
     step6          = "6 — Exportación final",
     pivot_label    = "Formato largo (parámetros en una columna)",
@@ -484,6 +492,7 @@ TR <- list(
     err_unit       = "La columna 'unit' debe tener el formato a:x:y (p. ej. 1:3:5) para obtener la posición de las macetas en el banco.",
     err_nodata     = "No hay datos numéricos disponibles para los parámetros seleccionados.",
     err_noparam    = "Seleccione al menos un parámetro.",
+    err_export     = "Este formato no está disponible en este navegador.",
     err_toomany    = function(n) paste0("Demasiados parámetros para una sola imagen: seleccione como máximo ", n, "."),
     scans_note     = function(a, b) paste0("Escaneos promediados por planta y día: ", if (a == b) a else paste0(a, "-", b), "."),
     note_bad_dates = function(n) paste0("Filas excluidas por no tener una fecha legible: ", n, "."),
@@ -540,15 +549,17 @@ TR <- list(
     range_end      = "Date fin",
     btn_chart      = "Générer le graphique",
     btn_dl_png     = "Télécharger PNG",
+    btn_dl_pdf     = "Télécharger PDF",
+    btn_dl_svg     = "Télécharger SVG",
     btn_clear      = "Effacer le graphique",
     chart_no_trt   = "Sélectionnez au moins un pot sur la carte (étape 4).",
+    chart_stale    = "Les pots sélectionnés ont changé : ce graphique ne leur correspond plus. Générez-le à nouveau avant de le télécharger.",
     box_title      = "5b — Boxplot pour une date unique",
     box_hint       = "Sélectionnez un seul jour de scan pour afficher la distribution des valeurs entre les pots de chaque traitement.",
     box_date_lbl   = "Sélectionner la date",
     btn_box_chart  = "Générer le boxplot",
     jitter_label   = "Afficher les points individuels (jitter)",
     jitter_sub     = "Superposer chaque plante comme un point (sa moyenne du jour), utile pour repérer les valeurs aberrantes",
-    btn_dl_box     = "Télécharger PNG",
     btn_clear_box  = "Effacer le boxplot",
     step6          = "6 — Export final",
     pivot_label    = "Format long (paramètres en une colonne)",
@@ -563,6 +574,7 @@ TR <- list(
     err_unit       = "La colonne 'unit' doit avoir la forme a:x:y (ex. 1:3:5) pour déduire la position des pots sur le banc.",
     err_nodata     = "Aucune donnée numérique disponible pour les paramètres sélectionnés.",
     err_noparam    = "Sélectionnez au moins un paramètre.",
+    err_export     = "Ce format n'est pas disponible dans ce navigateur.",
     err_toomany    = function(n) paste0("Trop de paramètres pour une seule image : sélectionnez-en ", n, " au maximum."),
     scans_note     = function(a, b) paste0("Scans moyennés par plante et par jour : ", if (a == b) a else paste0(a, "-", b), "."),
     note_bad_dates = function(n) paste0("Lignes exclues car sans date lisible : ", n, "."),
@@ -1072,7 +1084,8 @@ tr_error <- function(msg, tx) {
   if (startsWith(msg, "ERR_COLS|")) return(tx$err_cols(sub("^ERR_COLS\\|", "", msg)))
   switch(msg, ERR_DATE = tx$err_date, ERR_UNIT = tx$err_unit,
          ERR_NOSEL = tx$chart_no_trt, ERR_NODATA = tx$err_nodata,
-         ERR_NOPARAM = tx$err_noparam, ERR_TOOMANY = tx$err_toomany(MAX_CHART_PARAMS), msg)
+         ERR_NOPARAM = tx$err_noparam, ERR_TOOMANY = tx$err_toomany(MAX_CHART_PARAMS),
+         ERR_EXPORT = tx$err_export, msg)
 }
 
 get_available_chart_params <- function(df, selected_params) {
@@ -1088,6 +1101,37 @@ resolve_chart_params <- function(chart_params, avail, main) {
   m <- intersect(avail, main)
   if (length(m)) m else avail
 }
+
+# Disegna un grafico su file: stesse dimensioni per tutti i formati.
+# spec = list(fun = funzione di disegno, args = i suoi argomenti).
+render_chart_file <- function(spec, path, device = "png") {
+  n_p   <- length(spec$args$params)
+  n_col <- if (n_p > 1) 2 else 1
+  w <- 5.5 * n_col
+  h <- 5 * ceiling(n_p / n_col)
+  # pdf con codifica WinAnsi: copre accenti, µ, ² e il simbolo dell'euro
+  before <- dev.cur()
+  suppressWarnings(switch(device,
+    png = png(path, width = w, height = h, units = "in", res = 300),
+    pdf = pdf(path, width = w, height = h, useDingbats = FALSE, encoding = "WinAnsi"),
+    svg = svg(path, width = w, height = h)))
+  # Senza cairo svg() non apre alcun device e avvisa soltanto
+  if (dev.cur() == before) stop("ERR_EXPORT", call. = FALSE)
+  tryCatch(do.call(spec$fun, spec$args), finally = dev.off())
+  invisible(path)
+}
+
+chart_to_b64 <- function(spec, device = "png") {
+  f <- tempfile(fileext = paste0(".", device))
+  on.exit(unlink(f))
+  render_chart_file(spec, f, device)
+  base64_encode_raw(readBin(f, "raw", file.info(f)$size))
+}
+
+CHART_MIME <- c(png = "image/png", pdf = "application/pdf", svg = "image/svg+xml")
+
+# Un PNG non mostra quali vasi sono stati usati: va segnalato se la mappa è cambiata
+png_is_stale <- function(png_units, selected_units) !setequal(png_units, selected_units)
 
 # Oltre 42 pannelli (21 righe da 1500 px) il PNG supera il limite di 32767 px e
 # png() si ferma con "unable to start device".
@@ -1399,8 +1443,8 @@ ui <- page_fluid(
       var link=document.createElement('a'); link.href=URL.createObjectURL(blob);
       link.download=msg.filename; document.body.appendChild(link); link.click(); document.body.removeChild(link);
     });
-    Shiny.addCustomMessageHandler('downloadPNG', function(msg) {
-      var link=document.createElement('a'); link.href='data:image/png;base64,'+msg.data;
+    Shiny.addCustomMessageHandler('downloadFile', function(msg) {
+      var link=document.createElement('a'); link.href='data:'+msg.mime+';base64,'+msg.data;
       link.download=msg.filename; document.body.appendChild(link); link.click(); document.body.removeChild(link);
     });
     $(document).on('shiny:value', function(e) {
@@ -1444,7 +1488,8 @@ server <- function(input, output, session) {
     df_raw=NULL, df_daily=NULL, df_final=NULL,
     params=NULL, trt_colors=NULL, map_df=NULL,
     error=NULL, error_step=NULL, base_name=NULL, file_name=NULL,
-    chart_png_b64=NULL, chart_png_box=NULL,
+    chart_png_b64=NULL, chart_png_box=NULL, chart_units=NULL, box_units=NULL,
+    chart_spec=NULL, box_spec=NULL,  # ultimo grafico disegnato, riusato per PDF e SVG
     # Stato delle scelte dell'utente, conservato quando i pannelli vengono
     # ridisegnati (cambio lingua, dark mode, rielaborazione)
     sel_units=NULL, sel_params=NULL, chart_params=NULL,
@@ -1553,6 +1598,7 @@ server <- function(input, output, session) {
   load_data <- function(path, file_name, is_example = FALSE) {
     rv$file_name <- file_name
     rv$is_example <- is_example
+    rv$chart_spec <- rv$box_spec <- NULL
     rv$df_raw <- rv$df_daily <- rv$df_final <- rv$params <- rv$trt_colors <-
       rv$map_df <- rv$error <- rv$error_step <- rv$chart_png_b64 <- rv$chart_png_box <- NULL
     rv$sel_units <- rv$sel_params <- rv$chart_params <- rv$date_range <- rv$box_idx <- NULL
@@ -1815,7 +1861,7 @@ server <- function(input, output, session) {
       div(style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;",
         actionButton("chart_btn", tx$btn_chart, icon=icon("chart-line"),
           style="border:none;color:#fff;font-weight:600;font-size:1rem;padding:.6rem 1.7rem;border-radius:6px;background:#0E7490;"),
-        uiOutput("dl_png_ui"),
+        uiOutput("dl_chart_ui"),
         uiOutput("clear_chart_ui")
       ),
       uiOutput("err_chart"),
@@ -1842,14 +1888,12 @@ server <- function(input, output, session) {
       if (is.null(trt_day)||!nrow(trt_day)) stop("ERR_NODATA", call.=FALSE)
       sel_params <- sel_params[sel_params %in% trt_day$param]
       show_ribbon <- if (is.null(input$show_ribbon)) TRUE else isTRUE(input$show_ribbon)
-      n_p <- length(sel_params); n_col <- if (n_p>1) 2 else 1; n_row <- ceiling(n_p/n_col)
-      tmpf <- tempfile(fileext=".png")
-      png(tmpf, width=5.5*n_col, height=5*n_row, units="in", res=300)
-      draw_time_chart(trt_day, sel_params, rv$trt_colors, show_ribbon=show_ribbon, ylab=t()$chart_ylab)
-      dev.off()
-      raw_bytes <- readBin(tmpf, "raw", file.info(tmpf)$size)
-      rv$chart_png_b64 <- base64_encode_raw(raw_bytes)
-      unlink(tmpf)
+      spec <- list(fun=draw_time_chart,
+                   args=list(trt_day_df=trt_day, params=sel_params, trt_colors=rv$trt_colors,
+                             show_ribbon=show_ribbon, ylab=t()$chart_ylab))
+      rv$chart_png_b64 <- chart_to_b64(spec)
+      rv$chart_spec  <- spec
+      rv$chart_units <- sel_units
     }, error=function(e) set_err("chart", conditionMessage(e)))
   })
 
@@ -1857,12 +1901,35 @@ server <- function(input, output, session) {
 
   output$chart_render_wrap <- renderUI({
     req(rv$chart_png_b64)
-    div(class="chart-wrap",
-      tags$img(src=paste0("data:image/png;base64,", rv$chart_png_b64)))
+    tagList(
+      if (png_is_stale(rv$chart_units, rv$sel_units)) div(class="warn-box", id="chart-stale", t()$chart_stale),
+      div(class="chart-wrap",
+        tags$img(src=paste0("data:image/png;base64,", rv$chart_png_b64))))
   })
-  output$dl_png_ui <- renderUI({
+  # Pulsanti e download condivisi dal grafico temporale e dal boxplot.
+  # PDF e SVG riusano la specifica del grafico mostrato, anche se nel frattempo
+  # sono cambiate le opzioni: il file scaricato è sempre la figura a schermo.
+  dl_buttons <- function(prefix) {
+    tx <- t()
+    div(class="dl-wrap", style="display:flex;gap:.8rem;flex-wrap:wrap;",
+      actionButton(paste0(prefix, "_png_btn"), tx$btn_dl_png, icon=icon("image")),
+      actionButton(paste0(prefix, "_pdf_btn"), tx$btn_dl_pdf, icon=icon("file-pdf")),
+      actionButton(paste0(prefix, "_svg_btn"), tx$btn_dl_svg, icon=icon("bezier-curve")))
+  }
+  send_chart <- function(ext, suffix, b64) {
+    session$sendCustomMessage("downloadFile", list(
+      filename=paste0(rv$base_name, "_", suffix, ".", ext),
+      mime=CHART_MIME[[ext]], data=b64))
+  }
+  export_chart <- function(ext, spec, suffix, step) {
+    rv$error <- NULL
+    tryCatch(send_chart(ext, suffix, chart_to_b64(spec, ext)),
+             error=function(e) set_err(step, conditionMessage(e)))
+  }
+
+  output$dl_chart_ui <- renderUI({
     req(rv$chart_png_b64)
-    div(class="dl-wrap", actionButton("dl_png_btn", t()$btn_dl_png, icon=icon("image")))
+    dl_buttons("dl_chart")
   })
   output$clear_chart_ui <- renderUI({
     req(rv$chart_png_b64)
@@ -1870,10 +1937,17 @@ server <- function(input, output, session) {
       onclick="Shiny.setInputValue('clear_chart', Math.random(), {priority:'event'});",
       icon("xmark"), " ", t()$btn_clear)
   })
-  observeEvent(input$dl_png_btn, {
+  observeEvent(input$dl_chart_png_btn, {
     req(rv$chart_png_b64)
-    session$sendCustomMessage("downloadPNG", list(
-      filename=paste0(rv$base_name,"_chart.png"), data=rv$chart_png_b64))
+    send_chart("png", "chart", rv$chart_png_b64)
+  })
+  observeEvent(input$dl_chart_pdf_btn, {
+    req(rv$chart_png_b64, rv$chart_spec)
+    export_chart("pdf", rv$chart_spec, "chart", "chart")
+  })
+  observeEvent(input$dl_chart_svg_btn, {
+    req(rv$chart_png_b64, rv$chart_spec)
+    export_chart("svg", rv$chart_spec, "chart", "chart")
   })
   observeEvent(input$clear_chart, { rv$chart_png_b64 <- NULL })
 
@@ -1943,22 +2017,19 @@ server <- function(input, output, session) {
       sel_params <- sel_params[vapply(sel_params, function(p)
         any(!is.na(suppressWarnings(as.numeric(sub[[p]][sub$date == sel_date])))), logical(1))]
       if (!length(sel_params)) stop("ERR_NODATA", call.=FALSE)
-      n_p <- length(sel_params); n_col <- if (n_p>1) 2 else 1; n_row <- ceiling(n_p/n_col)
-      tmpf <- tempfile(fileext=".png")
-      png(tmpf, width=5.5*n_col, height=5*n_row, units="in", res=300)
-      draw_boxplot_day(sub, sel_params, rv$trt_colors, selected_date=sel_date,
-                        ylab=t()$chart_ylab,
-                        show_jitter=isTRUE(input$show_jitter_box))
-      dev.off()
-      raw_bytes <- readBin(tmpf, "raw", file.info(tmpf)$size)
-      rv$chart_png_box <- base64_encode_raw(raw_bytes)
-      unlink(tmpf)
+      spec <- list(fun=draw_boxplot_day,
+                   args=list(daily_df=sub, params=sel_params, trt_colors=rv$trt_colors,
+                             selected_date=sel_date, ylab=t()$chart_ylab,
+                             show_jitter=isTRUE(input$show_jitter_box)))
+      rv$chart_png_box <- chart_to_b64(spec)
+      rv$box_spec  <- spec
+      rv$box_units <- sel_units
     }, error=function(e) set_err("box", conditionMessage(e)))
   })
 
   output$dl_box_ui <- renderUI({
     req(rv$chart_png_box)
-    div(class="dl-wrap", actionButton("dl_box_btn", t()$btn_dl_box, icon=icon("image")))
+    dl_buttons("dl_box")
   })
   output$clear_box_ui <- renderUI({
     req(rv$chart_png_box)
@@ -1966,15 +2037,24 @@ server <- function(input, output, session) {
       onclick="Shiny.setInputValue('clear_box', Math.random(), {priority:'event'});",
       icon("xmark"), " ", t()$btn_clear_box)
   })
-  observeEvent(input$dl_box_btn, {
+  observeEvent(input$dl_box_png_btn, {
     req(rv$chart_png_box)
-    session$sendCustomMessage("downloadPNG", list(
-      filename=paste0(rv$base_name,"_boxplot.png"), data=rv$chart_png_box))
+    send_chart("png", "boxplot", rv$chart_png_box)
+  })
+  observeEvent(input$dl_box_pdf_btn, {
+    req(rv$chart_png_box, rv$box_spec)
+    export_chart("pdf", rv$box_spec, "boxplot", "box")
+  })
+  observeEvent(input$dl_box_svg_btn, {
+    req(rv$chart_png_box, rv$box_spec)
+    export_chart("svg", rv$box_spec, "boxplot", "box")
   })
   output$box_chart_wrap <- renderUI({
     req(rv$chart_png_box)
-    div(class="chart-wrap",
-      tags$img(src=paste0("data:image/png;base64,", rv$chart_png_box)))
+    tagList(
+      if (png_is_stale(rv$box_units, rv$sel_units)) div(class="warn-box", id="box-stale", t()$chart_stale),
+      div(class="chart-wrap",
+        tags$img(src=paste0("data:image/png;base64,", rv$chart_png_box))))
   })
   observeEvent(input$clear_box, { rv$chart_png_box <- NULL })
 
