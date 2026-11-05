@@ -21,6 +21,24 @@
 - Google Analytics loads only after consent. In v1.1 `gtag.js` was requested from Google before the visitor answered the cookie banner.
 - Montserrat is no longer loaded from Google Fonts: the page title and navigation bar use the system font.
 
+### New
+- **Example data:** a link in step 1 loads a synthetic data set, so the app can be tried without a file.
+- **Three color palettes** for the bench map and the charts: NPG (default), colorblind-friendly Okabe-Ito and grayscale, the same as CleanRhizo. The map changes at once; a chart already generated keeps its colors until it is generated again.
+
+### Interface
+- Excluded pots have a dashed border, and pot labels switch to dark text on light colors, so the map stays readable with every palette.
+- Deselecting every parameter now gives a clear message. In v1.1, step 3 and the charts silently fell back to the main parameters.
+- Distribution parameters kept in step 2 can be drawn in the charts. They are off by default and shown with a dashed border.
+- Charts are limited to 40 parameters at a time, with a clear message. Above about 42, the image exceeds the size PNG files can reach here and the app stopped with a technical error.
+- The data preview shows the first selected parameters, including distribution ones. In v1.1 it showed only the first main parameters of the file.
+- The bench map legend wraps onto more rows instead of being cut off on small benches; very long treatment names are shortened, with the full name in a tooltip.
+- The file name stays in the upload field after changing language.
+- The ±SE band is described as the standard error, not as a confidence band, and the jitter points as plants, not measurements.
+
+### Repository
+- New test script (`tests/run_tests.R`), run on GitHub Actions.
+- Removed unused code.
+
 ## v1.1 (2026-10-18)
 
 ### Statistics

@@ -18,11 +18,11 @@ The website uses Google Analytics to count visits only if you accept cookies in 
 
 ## Workflow
 
-1. **Load** the `.csv` file exported from PlantEye.
-2. **Select parameters** to keep. Main parameters are preselected; distribution parameters (colour bins such as `Hue [0-20]`) can be added with one click.
+1. **Load** the `.csv` file exported from PlantEye, or try the app with the built-in synthetic example data.
+2. **Select parameters** to keep. Main parameters are preselected; distribution parameters (colour bins such as `Hue [0-20]`) can be added with one click. At least one parameter is needed.
 3. **Process**: all scans of the same pot on the same day are averaged, giving one row per plant and day. Download the cleaned file.
-4. **Inspect the bench map**: pots are drawn at their position on the bench and coloured by treatment. Click a pot to exclude it from charts and export (e.g. a dead plant or a border effect); click again to include it.
-5. **Explore** with a time-series chart (daily mean ± SE per treatment, adjustable date range, optional SE ribbon) and a boxplot for a single scan day (optional individual points). Both are downloadable as PNG at 300 dpi.
+4. **Inspect the bench map**: pots are drawn at their position on the bench and coloured by treatment. Click a pot to exclude it from charts and export (e.g. a dead plant or a border effect); click again to include it. Three color palettes are available for the map and the charts: NPG, colorblind-friendly Okabe-Ito and grayscale.
+5. **Explore** with a time-series chart (daily mean ± SE per treatment, adjustable date range, optional SE ribbon) and a boxplot for a single scan day (optional individual points, one per plant). Main parameters are drawn by default; distribution parameters kept in step 2 can be switched on, up to 40 parameters per chart. Both are downloadable as PNG at 300 dpi.
 6. **Export** the final dataset in wide or long format (`parameter`, `value`), restricted to the selected pots. Changing the pots or the format discards the generated file, so it has to be generated again.
 
 ## Biological vs technical replicates
@@ -85,6 +85,14 @@ quarto preview     # local preview (WebR needs a web server, not file://)
 ```
 
 The site in `docs/` is published with GitHub Pages.
+
+The functions behind the app are tested with a plain R script, which needs only the `htmltools` package and also runs on GitHub Actions:
+
+```bash
+Rscript tests/run_tests.R
+```
+
+`tests/data/example_planteye.csv` holds the built-in example data: invented values for 12 pots, 3 treatments and 6 days, not a real PlantEye export.
 
 ## Related apps
 

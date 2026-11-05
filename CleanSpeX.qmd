@@ -82,12 +82,179 @@ filters:
 suppressPackageStartupMessages(library(shiny))
 suppressPackageStartupMessages(library(bslib))
 
-# ── Palette ggsci npg (alpha 0.8) ────────────────────────────────────────────
-PAL_NPG <- adjustcolor(c("#E64B35","#4DBBD5","#00A087","#3C5488","#F39B7F",
-                          "#8491B4","#91D1C2","#DC0000","#7E6148","#B09C85"),
-                        alpha.f = 0.8)
+# ── Palette dei trattamenti ──────────────────────────────────────────────────
+# Le stesse di CleanRhizo.
+# npg: ggsci::pal_npg() (Nature Publishing Group), molto usata in figure di biologia.
+# okabe: Okabe-Ito senza il nero, distinguibile con deficit della visione dei colori.
+# gray: generata sul numero di trattamenti, per la stampa in bianco e nero. Si ferma
+# a 0.7 (non 0.85 come in CleanRhizo): qui i colori sono linee su sfondo bianco.
+# Oltre il numero di colori disponibili, npg e okabe ricominciano dall'inizio.
+PALETTES <- list(
+  npg   = c("#E64B35","#4DBBD5","#00A087","#3C5488","#F39B7F",
+            "#8491B4","#91D1C2","#DC0000","#7E6148","#B09C85"),
+  okabe = c("#E69F00","#56B4E9","#009E73","#F0E442",
+            "#0072B2","#D55E00","#CC79A7","#999999")
+)
+DEFAULT_PALETTE <- "npg"
 
-# ── Dizionario bilingue ───────────────────────────────────────────────────────
+get_palette <- function(name, n) {
+  base <- if (identical(name, "gray")) gray.colors(max(n, 1), start = 0.2, end = 0.7)
+          else if (!is.null(PALETTES[[name]])) PALETTES[[name]]
+          else PALETTES[[DEFAULT_PALETTE]]
+  rep_len(adjustcolor(base, alpha.f = 0.8), n)
+}
+
+# ── Dati di esempio sintetici, non misure reali ──────────────────────────────
+# Stesso contenuto di tests/data/example_planteye.csv (verificato dai test).
+EXAMPLE_PLANTEYE <- c(
+  "unit,timestamp,treatment,genotype,Height mm,Leaf area mm2,Digital biomass,NDVI average,PSRI,Hue [0-20],Hue [20-40],Hue [40-60],Hue [60-80]",
+  "1:1:1,2026-03-02 07:00:00,Control,G1,126.5,4394,51244,0.627,-0.0516,4.56,15.07,55.08,25.29",
+  "1:1:2,2026-03-02 07:00:00,Drought,G1,85.4,2978,34301,0.626,-0.0414,4.51,10.84,64.48,20.17",
+  "1:1:3,2026-03-02 07:00:00,Salt,G1,103.5,3694,43483,0.611,-0.0471,3.44,15.63,59.75,21.18",
+  "1:2:1,2026-03-02 07:00:00,Control,G1,119.9,4102,51070,0.627,-0.052,2.72,12.43,67.19,17.66",
+  "1:2:2,2026-03-02 07:00:00,Drought,G1,83.6,3009,35042,0.618,-0.0562,7.43,16.35,56.75,19.47",
+  "1:2:3,2026-03-02 07:00:00,Salt,G1,81.7,2840,33748,0.603,-0.0514,2.25,16.37,60.58,20.8",
+  "1:3:1,2026-03-02 07:00:00,Control,G1,114.1,3953,48327,0.612,-0.0478,0,19.25,59.43,21.32",
+  "1:3:2,2026-03-02 07:00:00,Drought,G1,84,2826,35479,0.608,-0.0578,1.98,20.46,59.4,18.16",
+  "1:3:3,2026-03-02 07:00:00,Salt,G1,105.3,3776,41206,0.635,-0.0524,4.83,17.54,59.93,17.71",
+  "1:4:1,2026-03-02 07:00:00,Control,G1,114.3,3954,48460,0.632,-0.0525,8.47,10.16,63.12,18.25",
+  "1:4:2,2026-03-02 07:00:00,Drought,G1,84.3,3137,35427,0.609,-0.0574,4.29,11.59,62.58,21.54",
+  "1:4:3,2026-03-02 07:00:00,Salt,G1,95.7,3342,40954,0.643,-0.0553,1.5,14.72,64.95,18.84",
+  "1:1:1,2026-03-02 15:00:00,Control,G1,120.7,4416,51516,0.618,-0.0472,9.28,18.52,52.55,19.65",
+  "1:1:2,2026-03-02 15:00:00,Drought,G1,81.9,2903,34192,0.609,-0.0475,7.19,13.19,60.29,19.32",
+  "1:1:3,2026-03-02 15:00:00,Salt,G1,104.9,3517,43969,0.611,-0.0483,7.43,15.29,57.88,19.39",
+  "1:2:1,2026-03-02 15:00:00,Control,G1,120,4254,50158,0.626,-0.0443,7.44,15.96,56.2,20.39",
+  "1:2:2,2026-03-02 15:00:00,Drought,G1,87.6,2930,34880,0.628,-0.052,2.97,13.55,61.82,21.66",
+  "1:2:3,2026-03-02 15:00:00,Salt,G1,81.1,2829,33479,0.629,-0.0524,4.48,17.31,59.86,18.35",
+  "1:3:1,2026-03-02 15:00:00,Control,G1,116.3,3952,46330,0.633,-0.0487,5.42,16.04,56.64,21.9",
+  "1:3:2,2026-03-02 15:00:00,Drought,G1,83.7,2915,33975,0.626,-0.0521,7.32,14.24,56.29,22.15",
+  "1:3:3,2026-03-02 15:00:00,Salt,G1,102,3488,41990,0.62,-0.0522,10.48,14.56,52.32,22.64",
+  "1:4:1,2026-03-02 15:00:00,Control,G1,119.5,4005,47538,0.619,-0.0417,6.76,15.19,57.75,20.3",
+  "1:4:2,2026-03-02 15:00:00,Drought,G1,86.4,3095,36717,0.631,-0.0447,2.46,17.9,60.02,19.62",
+  "1:4:3,2026-03-02 15:00:00,Salt,G1,94.5,3341,40938,0.614,-0.054,11.78,15.61,53.76,18.85",
+  "1:1:1,2026-03-03 07:00:00,Control,G1,149,5200,60756,0.647,-0.0613,6.22,16.43,56.94,20.4",
+  "1:1:2,2026-03-03 07:00:00,Drought,G1,97.2,3477,41021,0.635,-0.0476,6.22,14.74,60.14,18.9",
+  "1:1:3,2026-03-03 07:00:00,Salt,G1,121,4318,50304,0.636,-0.0409,5.45,11.87,64.16,18.51",
+  "1:2:1,2026-03-03 07:00:00,Control,G1,139.1,4948,59319,0.633,-0.0507,3.07,14.19,63.93,18.8",
+  "1:2:2,2026-03-03 07:00:00,Drought,G1,102.3,3467,42185,0.633,-0.0483,4.54,11.88,58.96,24.62",
+  "1:2:3,2026-03-03 07:00:00,Salt,G1,94.6,3331,39084,0.643,-0.0417,7.01,15.49,57.81,19.68",
+  "1:3:1,2026-03-03 07:00:00,Control,G1,131.1,4570,56954,0.638,-0.0441,0.14,15.83,63.93,20.1",
+  "1:3:2,2026-03-03 07:00:00,Drought,G1,99.8,3389,40343,0.635,-0.048,2.94,18.21,59.47,19.38",
+  "1:3:3,2026-03-03 07:00:00,Salt,G1,119.4,4186,49729,0.654,-0.0457,4.59,14.55,57.83,23.03",
+  "1:4:1,2026-03-03 07:00:00,Control,G1,140,4576,54111,0.626,-0.0569,6.93,9.25,59.92,23.9",
+  "1:4:2,2026-03-03 07:00:00,Drought,G1,102,3712,43469,0.642,-0.0421,6.59,14.95,59.67,18.8",
+  "1:4:3,2026-03-03 07:00:00,Salt,G1,113.4,3897,46369,0.629,-0.0467,4.45,16.45,64.65,14.46",
+  "1:1:1,2026-03-03 15:00:00,Control,G1,148.9,5200,62954,0.633,-0.053,4.96,11.67,61.88,21.5",
+  "1:1:2,2026-03-03 15:00:00,Drought,G1,98.2,3472,39858,0.653,-0.0512,6.72,15.66,59.02,18.61",
+  "1:1:3,2026-03-03 15:00:00,Salt,G1,119.2,4202,51846,0.616,-0.059,0.1,15.68,64.97,19.24",
+  "1:2:1,2026-03-03 15:00:00,Control,G1,140.8,4984,59169,0.645,-0.049,1.13,18.31,63,17.56",
+  "1:2:2,2026-03-03 15:00:00,Drought,G1,101.5,3423,41584,0.643,-0.0468,5.84,10.42,64.76,18.98",
+  "1:2:3,2026-03-03 15:00:00,Salt,G1,92.9,3407,40068,0.63,-0.0471,5.98,11.45,63.5,19.08",
+  "1:3:1,2026-03-03 15:00:00,Control,G1,132.7,4554,55897,0.636,-0.0424,0,22.32,55.62,22.05",
+  "1:3:2,2026-03-03 15:00:00,Drought,G1,97.2,3352,39012,0.654,-0.0397,1.7,19.17,62.16,16.97",
+  "1:3:3,2026-03-03 15:00:00,Salt,G1,122.9,4325,50797,0.636,-0.0431,5.72,11.33,64.96,17.98",
+  "1:4:1,2026-03-03 15:00:00,Control,G1,136.8,4906,55308,0.639,-0.0445,7.68,15.21,55.77,21.34",
+  "1:4:2,2026-03-03 15:00:00,Drought,G1,101.7,3651,44615,0.635,-0.0428,3.16,10.6,66.58,19.65",
+  "1:4:3,2026-03-03 15:00:00,Salt,G1,116.5,4022,47764,0.632,-0.0549,0,17.98,64.49,17.53",
+  "1:1:1,2026-03-04 07:00:00,Control,G1,171.1,5762,71567,0.671,-0.0484,5.97,11.02,63.82,19.2",
+  "1:1:2,2026-03-04 07:00:00,Drought,G1,114.2,3941,49524,0.653,-0.0396,4.74,18.08,57.06,20.11",
+  "1:1:3,2026-03-04 07:00:00,Salt,G1,134.8,4831,61182,0.673,-0.0475,7.1,15.72,57.89,19.29",
+  "1:2:1,2026-03-04 07:00:00,Control,G1,165.2,5687,69482,0.647,-0.055,0,15.3,66.71,17.99",
+  "1:2:2,2026-03-04 07:00:00,Drought,G1,120.2,4192,49301,0.658,-0.051,6.79,18.11,58.32,16.77",
+  "1:2:3,2026-03-04 07:00:00,Salt,G1,114.2,3830,45741,0.658,-0.054,0,21.42,61.02,17.56",
+  "1:3:1,2026-03-04 07:00:00,Control,G1,152.7,5518,63943,0.658,-0.0493,3.5,11.84,63.63,21.03",
+  "1:3:2,2026-03-04 07:00:00,Drought,G1,116.1,3888,46549,0.663,-0.051,3.02,14.93,61.78,20.28",
+  "1:3:3,2026-03-04 07:00:00,Salt,G1,137.4,4977,57521,0.654,-0.0509,0.83,18.1,62.83,18.24",
+  "1:4:1,2026-03-04 07:00:00,Control,G1,162.8,5540,62983,0.674,-0.0504,6.37,13.13,61.96,18.54",
+  "1:4:2,2026-03-04 07:00:00,Drought,G1,117.2,4173,49803,0.658,-0.0408,5,16.85,53.82,24.34",
+  "1:4:3,2026-03-04 07:00:00,Salt,G1,129.3,4601,53556,0.663,-0.046,6.86,11.63,60.64,20.86",
+  "1:1:1,2026-03-04 15:00:00,Control,G1,167.1,5855,69861,0.678,-0.0505,6.43,13.88,56.1,23.6",
+  "1:1:2,2026-03-04 15:00:00,Drought,G1,113.3,3890,47244,0.651,-0.0441,8.46,12.1,59.62,19.82",
+  "1:1:3,2026-03-04 15:00:00,Salt,G1,144.9,4941,58737,0.656,-0.0434,10.28,11.73,56.92,21.07",
+  "1:2:1,2026-03-04 15:00:00,Control,G1,164.4,5993,67913,0.655,-0.0479,6.48,13.43,59.43,20.66",
+  "1:2:2,2026-03-04 15:00:00,Drought,G1,118.1,4084,47484,0.648,-0.0526,4.37,13.2,61.26,21.16",
+  "1:2:3,2026-03-04 15:00:00,Salt,G1,110.4,3878,46638,0.649,-0.0481,4.67,11.75,59.28,24.3",
+  "1:3:1,2026-03-04 15:00:00,Control,G1,155.5,5292,66281,0.658,-0.0515,3.4,14.45,58.95,23.19",
+  "1:3:2,2026-03-04 15:00:00,Drought,G1,112.9,4002,46206,0.633,-0.043,0.53,16.08,60.97,22.42",
+  "1:3:3,2026-03-04 15:00:00,Salt,G1,141.3,4853,56509,0.647,-0.0463,5.96,17.75,56.04,20.25",
+  "1:4:1,2026-03-04 15:00:00,Control,G1,159.4,5504,64768,0.666,-0.0543,5.83,11.75,64.45,17.96",
+  "1:4:2,2026-03-04 15:00:00,Drought,G1,117.6,4129,48546,0.646,-0.0436,9.14,13.64,58.68,18.54",
+  "1:4:3,2026-03-04 15:00:00,Salt,G1,134.3,4498,56512,0.663,-0.0533,5.83,15.49,57.83,20.85",
+  "1:1:1,2026-03-05 07:00:00,Control,G1,190,6788,80653,0.672,-0.0524,2.28,15.07,64.18,18.47",
+  "1:1:2,2026-03-05 07:00:00,Drought,G1,126.4,4345,53264,0.651,-0.0343,2.63,8.38,67.89,21.09",
+  "1:1:3,2026-03-05 07:00:00,Salt,G1,157.6,5484,66313,0.677,-0.0531,1.59,16.07,64.71,17.63",
+  "1:2:1,2026-03-05 07:00:00,Control,G1,180.9,6293,73968,0.687,-0.0538,2.03,11.38,64.41,22.18",
+  "1:2:2,2026-03-05 07:00:00,Drought,G1,134.2,4531,54985,0.667,-0.0398,6.52,19.13,58.38,15.97",
+  "1:2:3,2026-03-05 07:00:00,Salt,G1,124.8,4424,52493,0.672,-0.0369,5.21,16.46,64.19,14.14",
+  "1:3:1,2026-03-05 07:00:00,Control,G1,171.8,6221,74121,0.673,-0.0438,4.32,14.33,55.97,25.38",
+  "1:3:2,2026-03-05 07:00:00,Drought,G1,126.3,4472,52971,0.664,-0.0395,6.96,18.54,56.31,18.19",
+  "1:3:3,2026-03-05 07:00:00,Salt,G1,154.2,5696,65525,0.675,-0.0435,7.3,18.86,58.28,15.57",
+  "1:4:1,2026-03-05 07:00:00,Control,G1,175,6195,73219,0.669,-0.0492,6.93,13.59,58.39,21.09",
+  "1:4:2,2026-03-05 07:00:00,Drought,G1,133.6,4545,57218,0.68,-0.0382,6.2,14.94,59.59,19.27",
+  "1:4:3,2026-03-05 07:00:00,Salt,G1,146.3,5249,62116,0.671,-0.0468,6.68,15.04,57.98,20.3",
+  "1:1:1,2026-03-05 15:00:00,Control,G1,190.2,6968,79944,0.696,-0.054,5.72,16.64,62.25,15.39",
+  "1:1:2,2026-03-05 15:00:00,Drought,G1,125.9,4333,51595,0.668,-0.0479,8.61,12.52,57.83,21.05",
+  "1:1:3,2026-03-05 15:00:00,Salt,G1,151.9,5646,64742,0.681,-0.0466,8.21,19.26,57.49,15.04",
+  "1:2:1,2026-03-05 15:00:00,Control,G1,184.9,6218,75709,0.668,-0.0554,0.99,12.43,60.41,26.17",
+  "1:2:2,2026-03-05 15:00:00,Drought,G1,131.3,4744,54088,0.668,-0.0254,6.9,13.05,60.29,19.76",
+  "1:2:3,2026-03-05 15:00:00,Salt,G1,124.1,4257,51629,0.694,-0.0465,3.92,20.29,55.04,20.75",
+  "1:3:1,2026-03-05 15:00:00,Control,G1,174.9,6037,71926,0.697,-0.0508,3.3,18.14,57.86,20.69",
+  "1:3:2,2026-03-05 15:00:00,Drought,G1,119.9,4286,52935,0.658,-0.0347,11.15,13.93,57.34,17.58",
+  "1:3:3,2026-03-05 15:00:00,Salt,G1,159,5619,66100,0.669,-0.0469,5.98,13.43,62.83,17.75",
+  "1:4:1,2026-03-05 15:00:00,Control,G1,175.9,6096,74727,0.677,-0.0486,3.84,19.29,59.72,17.15",
+  "1:4:2,2026-03-05 15:00:00,Drought,G1,134.6,4679,56450,0.671,-0.0491,6.2,6.13,59.99,27.68",
+  "1:4:3,2026-03-05 15:00:00,Salt,G1,147.2,5069,61225,0.675,-0.0489,4.92,16.82,59.41,18.85",
+  "1:1:1,2026-03-06 07:00:00,Control,G1,215.6,7676,90167,0.681,-0.0505,5.14,15.92,63.58,15.36",
+  "1:1:2,2026-03-06 07:00:00,Drought,G1,144.4,5065,59278,0.685,-0.0406,8.92,12.12,60.98,17.99",
+  "1:1:3,2026-03-06 07:00:00,Salt,G1,177.4,6167,74272,0.684,-0.0468,11.37,17.8,55.19,15.64",
+  "1:2:1,2026-03-06 07:00:00,Control,G1,208.4,6951,83090,0.712,-0.0522,7.34,16.48,57.68,18.5",
+  "1:2:2,2026-03-06 07:00:00,Drought,G1,137.9,5110,60834,0.69,-0.0427,5.75,20.09,57.62,16.54",
+  "1:2:3,2026-03-06 07:00:00,Salt,G1,138.2,4932,58797,0.689,-0.0369,4.03,14.36,60.05,21.55",
+  "1:3:1,2026-03-06 07:00:00,Control,G1,194.8,6667,80363,0.7,-0.0508,0,17.4,65.79,16.81",
+  "1:3:2,2026-03-06 07:00:00,Drought,G1,141.3,4931,59975,0.673,-0.0373,10.96,14.83,56.35,17.86",
+  "1:3:3,2026-03-06 07:00:00,Salt,G1,177.1,6398,73626,0.686,-0.0513,4.3,12.36,63.96,19.37",
+  "1:4:1,2026-03-06 07:00:00,Control,G1,195.3,6876,82853,0.694,-0.049,5.74,14.65,65.27,14.34",
+  "1:4:2,2026-03-06 07:00:00,Drought,G1,153,5112,61862,0.683,-0.0357,11.91,13.27,57.79,17.04",
+  "1:4:3,2026-03-06 07:00:00,Salt,G1,164.9,5903,68808,0.686,-0.0436,5.95,17.5,57.67,18.88",
+  "1:1:1,2026-03-06 15:00:00,Control,G1,216.2,7333,88268,0.701,-0.0557,1.91,11.8,67.32,18.98",
+  "1:1:2,2026-03-06 15:00:00,Drought,G1,142.7,5020,61678,0.698,-0.0355,4.38,15.23,62.91,17.49",
+  "1:1:3,2026-03-06 15:00:00,Salt,G1,179.7,6223,73162,0.692,-0.0397,8.62,13.38,60.6,17.4",
+  "1:2:1,2026-03-06 15:00:00,Control,G1,200,7176,85385,0.695,-0.0584,7.4,12.53,59.28,20.78",
+  "1:2:2,2026-03-06 15:00:00,Drought,G1,146.1,5135,61790,0.692,-0.0465,3.87,14.56,58.43,23.14",
+  "1:2:3,2026-03-06 15:00:00,Salt,G1,138.8,5015,58009,0.686,-0.0319,11.21,12.14,56.39,20.25",
+  "1:3:1,2026-03-06 15:00:00,Control,G1,194.3,6594,80547,0.691,-0.0546,5.38,17.09,56.12,21.4",
+  "1:3:2,2026-03-06 15:00:00,Drought,G1,140.7,4976,59503,0.688,-0.0457,4.56,14.57,57.94,22.93",
+  "1:3:3,2026-03-06 15:00:00,Salt,G1,181.5,6291,72843,0.691,-0.0447,5.54,16.68,60.52,17.26",
+  "1:4:1,2026-03-06 15:00:00,Control,G1,200.9,7111,81640,0.713,-0.0395,2.72,17.74,58.82,20.72",
+  "1:4:2,2026-03-06 15:00:00,Drought,G1,151.3,5385,62423,0.671,-0.0426,5.72,13.27,61.46,19.55",
+  "1:4:3,2026-03-06 15:00:00,Salt,G1,168,5821,68430,0.67,-0.0428,8.7,10.95,61.64,18.71",
+  "1:1:1,2026-03-07 07:00:00,Control,G1,242.6,8341,97773,0.725,-0.0458,1.42,12.81,61.65,24.12",
+  "1:1:2,2026-03-07 07:00:00,Drought,G1,157.5,5316,66152,0.68,-0.0354,8.22,12.1,60.97,18.72",
+  "1:1:3,2026-03-07 07:00:00,Salt,G1,195.9,6812,82894,0.719,-0.0476,4.46,14.48,62.36,18.7",
+  "1:2:1,2026-03-07 07:00:00,Control,G1,233.3,7850,94902,0.732,-0.0472,5.68,9.9,63.43,20.99",
+  "1:2:2,2026-03-07 07:00:00,Drought,G1,162.1,5616,64692,0.689,-0.03,7.23,17.77,55.75,19.25",
+  "1:2:3,2026-03-07 07:00:00,Salt,G1,155.6,5362,62920,0.702,-0.0474,12.44,12.53,60.67,14.37",
+  "1:3:1,2026-03-07 07:00:00,Control,G1,216.8,7157,89917,0.725,-0.0484,7.34,15.18,56.27,21.22",
+  "1:3:2,2026-03-07 07:00:00,Drought,G1,163.2,5325,64551,0.707,-0.0457,3.38,16.27,62.92,17.44",
+  "1:3:3,2026-03-07 07:00:00,Salt,G1,192.8,6901,80827,0.717,-0.0422,7.48,14.9,62.54,15.09",
+  "1:4:1,2026-03-07 07:00:00,Control,G1,223.1,7802,94218,0.716,-0.0503,4.74,14.06,58.43,22.77",
+  "1:4:2,2026-03-07 07:00:00,Drought,G1,172.2,5975,69253,0.701,-0.0524,9.88,12.62,57.99,19.51",
+  "1:4:3,2026-03-07 07:00:00,Salt,G1,184.8,6397,74126,0.706,-0.0394,4.39,15.56,61.46,18.6",
+  "1:1:1,2026-03-07 15:00:00,Control,G1,242.3,8098,100450,0.721,-0.0631,5.78,16.91,58.97,18.34",
+  "1:1:2,2026-03-07 15:00:00,Drought,G1,160.7,5598,65005,0.689,-0.0453,3.47,18.78,53.51,24.24",
+  "1:1:3,2026-03-07 15:00:00,Salt,G1,193.9,6996,83006,0.7,-0.0401,4.51,13.56,62.24,19.68",
+  "1:2:1,2026-03-07 15:00:00,Control,G1,221.9,8059,95595,0.719,-0.0418,3.4,14.05,62.17,20.39",
+  "1:2:2,2026-03-07 15:00:00,Drought,G1,162.3,5613,68648,0.687,-0.0429,6.1,16.02,55.14,22.74",
+  "1:2:3,2026-03-07 15:00:00,Salt,G1,155.4,5315,63806,0.703,-0.0377,8.01,16.05,56.3,19.65",
+  "1:3:1,2026-03-07 15:00:00,Control,G1,208.9,7485,88767,0.704,-0.0518,4.35,16.66,60.45,18.54",
+  "1:3:2,2026-03-07 15:00:00,Drought,G1,157.3,5316,63823,0.716,-0.0318,8.42,12.25,55.28,24.06",
+  "1:3:3,2026-03-07 15:00:00,Salt,G1,190,6800,83429,0.7,-0.0465,5.34,10.88,64.77,19.01",
+  "1:4:1,2026-03-07 15:00:00,Control,G1,226.9,7634,93182,0.713,-0.0496,1.61,12.9,67.02,18.48",
+  "1:4:2,2026-03-07 15:00:00,Drought,G1,166,5808,69992,0.687,-0.0327,2.16,13.58,63.28,20.98",
+  "1:4:3,2026-03-07 15:00:00,Salt,G1,183.1,6346,76411,0.692,-0.0438,6.66,10.65,57.43,25.26"
+)
+
+# ── Dizionario delle traduzioni ──────────────────────────────────────────────
 TR <- list(
   it = list(
     app_subtitle   = "Pulizia e visualizzazione dati da",
@@ -100,6 +267,8 @@ TR <- list(
     step1          = "1 — Carica il file",
     file_ph        = "Seleziona un CSV esportato da PlantEye…",
     file_btn       = "Sfoglia",
+    example_btn    = "Prova con dati di esempio",
+    example_note   = "Dati di esempio sintetici, non misure reali.",
     file_info      = function(nr, np, nt, nd) paste0(nr, " misure · ", np, " piante · ", nt, " trattamenti · ", nd, " giorni"),
     step2          = "2 — Parametri da includere",
     sel_main       = "Solo parametri principali",
@@ -116,6 +285,11 @@ TR <- list(
     map_hint       = "Clicca sui vasi per escluderli dall'analisi (diventano grigi). Clicca di nuovo per riselezionarli.",
     map_selected   = "selezionati",
     map_excluded   = "esclusi",
+    palette_lbl    = "Palette di colori (mappa e grafici):",
+    palette_npg_sub = "colori vivaci, predefinita",
+    palette_okabe_sub = "adatta al daltonismo",
+    palette_gray   = "Scala di grigi",
+    palette_gray_sub = "per la stampa in bianco e nero",
     btn_sel_all    = "Seleziona tutti",
     btn_desel_all  = "Deseleziona tutti",
     step5          = "5 — Grafico temporale",
@@ -123,7 +297,7 @@ TR <- list(
     chart_ylab     = "Valore medio",
     chart_param_lbl= "Parametri da visualizzare:",
     ribbon_label   = "Mostra banda ±SE",
-    ribbon_sub     = "Visualizza l'area di confidenza attorno alla curva media",
+    ribbon_sub     = "Visualizza l'errore standard attorno alla curva media",
     range_hint     = "Trascina i cursori per restringere l'intervallo di date visualizzato (di default tutto il periodo).",
     range_start    = "Data inizio",
     range_end      = "Data fine",
@@ -136,7 +310,7 @@ TR <- list(
     box_date_lbl   = "Seleziona data",
     btn_box_chart  = "Genera boxplot",
     jitter_label   = "Mostra punti individuali (jitter)",
-    jitter_sub     = "Visualizza ogni singola misura come puntino, utile per individuare outlier",
+    jitter_sub     = "Visualizza ogni pianta come puntino (la sua media del giorno), utile per individuare outlier",
     btn_dl_box     = "Scarica PNG",
     btn_clear_box  = "Cancella boxplot",
     step6          = "6 — Export finale",
@@ -151,6 +325,8 @@ TR <- list(
     err_date       = "Impossibile leggere le date della colonna 'timestamp'. Formati accettati: AAAA-MM-GG, GG/MM/AAAA, GG.MM.AAAA.",
     err_unit       = "La colonna 'unit' deve avere il formato a:x:y (es. 1:3:5) per ricavare la posizione dei vasi sul bench.",
     err_nodata     = "Nessun dato numerico disponibile per i parametri selezionati.",
+    err_noparam    = "Seleziona almeno un parametro.",
+    err_toomany    = function(n) paste0("Troppi parametri per una sola immagine: selezionane al massimo ", n, "."),
     scans_note     = function(a, b) paste0("Scansioni mediate per pianta e giorno: ", if (a == b) a else paste0(a, "-", b), "."),
     note_bad_dates = function(n) paste0("Righe escluse perché senza una data leggibile: ", n, "."),
     note_ambig_dates = "Queste date si possono leggere sia come GG/MM/AAAA sia come MM/GG/AAAA: sono state lette come GG/MM/AAAA. Controlla che sia corretto.",
@@ -170,6 +346,8 @@ TR <- list(
     step1          = "1 — Load file",
     file_ph        = "Select a CSV exported from PlantEye…",
     file_btn       = "Browse",
+    example_btn    = "Try with example data",
+    example_note   = "Synthetic example data, not real measurements.",
     file_info      = function(nr, np, nt, nd) paste0(nr, " measurements · ", np, " plants · ", nt, " treatments · ", nd, " days"),
     step2          = "2 — Parameters to include",
     sel_main       = "Main parameters only",
@@ -186,6 +364,11 @@ TR <- list(
     map_hint       = "Click pots to exclude them from the analysis (they turn grey). Click again to re-include.",
     map_selected   = "selected",
     map_excluded   = "excluded",
+    palette_lbl    = "Color palette (map and charts):",
+    palette_npg_sub = "vivid colors, default",
+    palette_okabe_sub = "colorblind-friendly",
+    palette_gray   = "Grayscale",
+    palette_gray_sub = "for black-and-white printing",
     btn_sel_all    = "Select all",
     btn_desel_all  = "Deselect all",
     step5          = "5 — Time-series chart",
@@ -193,7 +376,7 @@ TR <- list(
     chart_ylab     = "Mean value",
     chart_param_lbl= "Parameters to display:",
     ribbon_label   = "Show ±SE ribbon",
-    ribbon_sub     = "Display the confidence band around the mean curve",
+    ribbon_sub     = "Display the standard error around the mean curve",
     range_hint     = "Drag the sliders to restrict the date range shown (default: full period).",
     range_start    = "Start date",
     range_end      = "End date",
@@ -206,7 +389,7 @@ TR <- list(
     box_date_lbl   = "Select date",
     btn_box_chart  = "Generate boxplot",
     jitter_label   = "Show individual data points (jitter)",
-    jitter_sub     = "Overlay each measurement as a dot, useful to spot outliers",
+    jitter_sub     = "Overlay each plant as a dot (its daily mean), useful to spot outliers",
     btn_dl_box     = "Download PNG",
     btn_clear_box  = "Clear boxplot",
     step6          = "6 — Final export",
@@ -221,6 +404,8 @@ TR <- list(
     err_date       = "Dates in the 'timestamp' column could not be read. Accepted formats: YYYY-MM-DD, DD/MM/YYYY, DD.MM.YYYY.",
     err_unit       = "The 'unit' column must have the form a:x:y (e.g. 1:3:5) to derive pot positions on the bench.",
     err_nodata     = "No numeric data available for the selected parameters.",
+    err_noparam    = "Select at least one parameter.",
+    err_toomany    = function(n) paste0("Too many parameters for one image: select at most ", n, "."),
     scans_note     = function(a, b) paste0("Scans averaged per plant and day: ", if (a == b) a else paste0(a, "-", b), "."),
     note_bad_dates = function(n) paste0("Rows excluded because they have no readable date: ", n, "."),
     note_ambig_dates = "These dates can be read as either DD/MM/YYYY or MM/DD/YYYY: they were read as DD/MM/YYYY. Please check that this is correct.",
@@ -240,6 +425,8 @@ TR <- list(
     step1          = "1 — Cargar archivo",
     file_ph        = "Seleccione un CSV exportado desde PlantEye…",
     file_btn       = "Examinar",
+    example_btn    = "Probar con datos de ejemplo",
+    example_note   = "Datos de ejemplo sintéticos, no mediciones reales.",
     file_info      = function(nr, np, nt, nd) paste0(nr, " mediciones · ", np, " plantas · ", nt, " tratamientos · ", nd, " días"),
     step2          = "2 — Parámetros a incluir",
     sel_main       = "Solo parámetros principales",
@@ -256,6 +443,11 @@ TR <- list(
     map_hint       = "Haga clic en las macetas para excluirlas del análisis (se vuelven grises). Haga clic de nuevo para reincluirlas.",
     map_selected   = "seleccionadas",
     map_excluded   = "excluidas",
+    palette_lbl    = "Paleta de colores (mapa y gráficos):",
+    palette_npg_sub = "colores vivos, predeterminada",
+    palette_okabe_sub = "apta para daltonismo",
+    palette_gray   = "Escala de grises",
+    palette_gray_sub = "para impresión en blanco y negro",
     btn_sel_all    = "Seleccionar todas",
     btn_desel_all  = "Deseleccionar todas",
     step5          = "5 — Gráfico temporal",
@@ -263,7 +455,7 @@ TR <- list(
     chart_ylab     = "Valor medio",
     chart_param_lbl= "Parámetros a mostrar:",
     ribbon_label   = "Mostrar banda ±SE",
-    ribbon_sub     = "Mostrar el área de confianza alrededor de la curva media",
+    ribbon_sub     = "Mostrar el error estándar alrededor de la curva media",
     range_hint     = "Arrastre los controles deslizantes para restringir el intervalo de fechas mostrado (por defecto todo el período).",
     range_start    = "Fecha inicio",
     range_end      = "Fecha fin",
@@ -276,7 +468,7 @@ TR <- list(
     box_date_lbl   = "Seleccionar fecha",
     btn_box_chart  = "Generar boxplot",
     jitter_label   = "Mostrar puntos individuales (jitter)",
-    jitter_sub     = "Superponer cada medición como un punto, útil para detectar valores atípicos",
+    jitter_sub     = "Superponer cada planta como un punto (su media del día), útil para detectar valores atípicos",
     btn_dl_box     = "Descargar PNG",
     btn_clear_box  = "Borrar boxplot",
     step6          = "6 — Exportación final",
@@ -291,6 +483,8 @@ TR <- list(
     err_date       = "No se pudieron leer las fechas de la columna 'timestamp'. Formatos aceptados: AAAA-MM-DD, DD/MM/AAAA, DD.MM.AAAA.",
     err_unit       = "La columna 'unit' debe tener el formato a:x:y (p. ej. 1:3:5) para obtener la posición de las macetas en el banco.",
     err_nodata     = "No hay datos numéricos disponibles para los parámetros seleccionados.",
+    err_noparam    = "Seleccione al menos un parámetro.",
+    err_toomany    = function(n) paste0("Demasiados parámetros para una sola imagen: seleccione como máximo ", n, "."),
     scans_note     = function(a, b) paste0("Escaneos promediados por planta y día: ", if (a == b) a else paste0(a, "-", b), "."),
     note_bad_dates = function(n) paste0("Filas excluidas por no tener una fecha legible: ", n, "."),
     note_ambig_dates = "Estas fechas pueden leerse como DD/MM/AAAA o como MM/DD/AAAA: se han leído como DD/MM/AAAA. Compruebe que sea correcto.",
@@ -310,6 +504,8 @@ TR <- list(
     step1          = "1 — Charger le fichier",
     file_ph        = "Sélectionnez un CSV exporté depuis PlantEye…",
     file_btn       = "Parcourir",
+    example_btn    = "Essayer avec des données d'exemple",
+    example_note   = "Données d'exemple synthétiques, pas de vraies mesures.",
     file_info      = function(nr, np, nt, nd) paste0(nr, " mesures · ", np, " plantes · ", nt, " traitements · ", nd, " jours"),
     step2          = "2 — Paramètres à inclure",
     sel_main       = "Paramètres principaux uniquement",
@@ -326,6 +522,11 @@ TR <- list(
     map_hint       = "Cliquez sur les pots pour les exclure de l'analyse (ils deviennent gris). Cliquez à nouveau pour les réinclure.",
     map_selected   = "sélectionnés",
     map_excluded   = "exclus",
+    palette_lbl    = "Palette de couleurs (carte et graphiques) :",
+    palette_npg_sub = "couleurs vives, par défaut",
+    palette_okabe_sub = "adaptée au daltonisme",
+    palette_gray   = "Niveaux de gris",
+    palette_gray_sub = "pour l'impression en noir et blanc",
     btn_sel_all    = "Tout sélectionner",
     btn_desel_all  = "Tout désélectionner",
     step5          = "5 — Graphique temporel",
@@ -333,7 +534,7 @@ TR <- list(
     chart_ylab     = "Valeur moyenne",
     chart_param_lbl= "Paramètres à afficher :",
     ribbon_label   = "Afficher le ruban ±ES",
-    ribbon_sub     = "Afficher la bande de confiance autour de la courbe moyenne",
+    ribbon_sub     = "Afficher l'erreur standard autour de la courbe moyenne",
     range_hint     = "Faites glisser les curseurs pour restreindre la plage de dates affichée (par défaut : toute la période).",
     range_start    = "Date début",
     range_end      = "Date fin",
@@ -346,7 +547,7 @@ TR <- list(
     box_date_lbl   = "Sélectionner la date",
     btn_box_chart  = "Générer le boxplot",
     jitter_label   = "Afficher les points individuels (jitter)",
-    jitter_sub     = "Superposer chaque mesure comme un point, utile pour repérer les valeurs aberrantes",
+    jitter_sub     = "Superposer chaque plante comme un point (sa moyenne du jour), utile pour repérer les valeurs aberrantes",
     btn_dl_box     = "Télécharger PNG",
     btn_clear_box  = "Effacer le boxplot",
     step6          = "6 — Export final",
@@ -361,6 +562,8 @@ TR <- list(
     err_date       = "Impossible de lire les dates de la colonne 'timestamp'. Formats acceptés : AAAA-MM-JJ, JJ/MM/AAAA, JJ.MM.AAAA.",
     err_unit       = "La colonne 'unit' doit avoir la forme a:x:y (ex. 1:3:5) pour déduire la position des pots sur le banc.",
     err_nodata     = "Aucune donnée numérique disponible pour les paramètres sélectionnés.",
+    err_noparam    = "Sélectionnez au moins un paramètre.",
+    err_toomany    = function(n) paste0("Trop de paramètres pour une seule image : sélectionnez-en ", n, " au maximum."),
     scans_note     = function(a, b) paste0("Scans moyennés par plante et par jour : ", if (a == b) a else paste0(a, "-", b), "."),
     note_bad_dates = function(n) paste0("Lignes exclues car sans date lisible : ", n, "."),
     note_ambig_dates = "Ces dates peuvent se lire JJ/MM/AAAA ou MM/JJ/AAAA : elles ont été lues comme JJ/MM/AAAA. Vérifiez que cela est correct.",
@@ -511,9 +714,18 @@ agg_trt_day <- function(daily_df, params, selected_units) {
 }
 
 # ── Colori trattamento (palette npg condivisa) ────────────────────────────────
-make_trt_colors <- function(treatments) {
+make_trt_colors <- function(treatments, palette = DEFAULT_PALETTE) {
   trts <- sort(unique(as.character(treatments)))
-  setNames(PAL_NPG[(seq_along(trts) - 1) %% length(PAL_NPG) + 1], trts)
+  setNames(get_palette(palette, length(trts)), trts)
+}
+
+# Testo leggibile sul vaso: scuro sui colori chiari (giallo, grigi chiari).
+# I colori sono semitrasparenti, quindi conta anche lo sfondo della mappa.
+label_color <- function(col, bg = "#FFFFFF") {
+  m <- col2rgb(col, alpha = TRUE)[, 1] / 255
+  v <- m[1:3] * m[4] + (col2rgb(bg)[, 1] / 255) * (1 - m[4])
+  lin <- ifelse(v <= 0.03928, v / 12.92, ((v + 0.055) / 1.055)^2.4)
+  if (sum(c(0.2126, 0.7152, 0.0722) * lin) > 0.45) "#1A1A1A" else "#FFFFFF"
 }
 
 # ── Generazione SVG mappa bench ──────────────────────────────────────────────
@@ -564,6 +776,7 @@ make_bench_svg <- function(map_df, trt_colors, selected_units,
       col  <- trt_colors[trt]
       fill <- if (sel) col else "#D1D5DB"
       strk <- if (sel) col else "#9CA3AF"
+      lbl  <- label_color(col, bg)
       x_svg <- pad_x + (md$posX[i]-1)*cell_w + 3
       y_svg <- y0 + (md$posY[i]-1)*cell_h + 3
       safe_id <- gsub(":", "_", uid)
@@ -571,40 +784,55 @@ make_bench_svg <- function(map_df, trt_colors, selected_units,
         '<rect class="vaso%s" id="v_%s" x="%.0f" y="%.0f" width="%.0f" height="%.0f"
          rx="%d" fill="%s" stroke="%s" stroke-width="2.5" style="cursor:pointer;transition:all .12s;"
          onclick="toggleVaso(\'%s\')"
-         data-unit="%s" data-trt="%s" data-sel="%s">
+         data-unit="%s" data-trt="%s" data-sel="%s" data-lbl="%s">
            <title>%s&#10;%s</title>
          </rect>',
         if (sel) " sel" else " excl",
         safe_id, x_svg, y_svg, cell_w-6, cell_h-6,
         rx, fill, strk,
-        safe_id, uid, trt, if (sel) "1" else "0",
+        safe_id, uid, trt, if (sel) "1" else "0", lbl,
         uid, trt))
       # Mini etichetta unit
       cells <- c(cells, sprintf(
         '<text id="t_%s" class="vaso-lbl" x="%.0f" y="%.0f" text-anchor="middle" font-size="11"
          fill="%s" font-family="system-ui" style="pointer-events:none;font-weight:600;">%s</text>',
         safe_id, x_svg + (cell_w-6)/2, y_svg + (cell_h-6)/2 + 4,
-        if (sel) "#FFFFFF" else "#9CA3AF",
+        if (sel) lbl else "#9CA3AF",
         uid))
     }
     y_end <- y0 + n_row * cell_h
     y_top <- y_end + 16
   }
-  svg_h  <- y_end + 16 + legend_h + 24
-
-  # Legenda trattamenti
-  trts    <- names(trt_colors)
-  item_w  <- 115
-  total_w <- length(trts) * item_w
-  lx0     <- max(4, (svg_w - total_w) / 2)
-  ly      <- y_end + 14
+  # Legenda trattamenti: va a capo se non entra nella larghezza della mappa.
+  # La larghezza del testo è stimata per eccesso (8 unità per carattere).
+  trts      <- names(trt_colors)
+  char_w    <- 8; swatch_w <- 20; gap_w <- 16; row_h <- 22
+  max_chars <- max(4, floor((svg_w - 8 - swatch_w) / char_w))
+  labels    <- ifelse(nchar(trts) > max_chars,
+                      paste0(substr(trts, 1, max_chars - 1), "\u2026"), trts)
+  item_w    <- swatch_w + nchar(labels) * char_w + gap_w
+  rows <- list(); cur <- integer(0); cur_w <- 0
   for (i in seq_along(trts)) {
-    col <- trt_colors[trts[i]]
-    lx  <- lx0 + (i-1)*item_w
-    cells <- c(cells, sprintf(
-      '<rect x="%.0f" y="%.0f" width="14" height="14" rx="3" fill="%s"/>
-       <text x="%.0f" y="%.0f" font-size="13" font-weight="600" fill="%s" font-family="system-ui">%s</text>',
-      lx, ly, col, lx+20, ly+11, fg, trts[i]))
+    if (length(cur) && cur_w + item_w[i] - gap_w > svg_w - 8) {
+      rows <- c(rows, list(cur)); cur <- integer(0); cur_w <- 0
+    }
+    cur <- c(cur, i); cur_w <- cur_w + item_w[i]
+  }
+  rows  <- c(rows, list(cur))
+  svg_h <- y_end + 16 + legend_h + 24 + (length(rows) - 1) * row_h
+
+  for (r in seq_along(rows)) {
+    idx <- rows[[r]]
+    lx  <- max(4, (svg_w - (sum(item_w[idx]) - gap_w)) / 2)
+    ly  <- y_end + 14 + (r - 1) * row_h
+    for (i in idx) {
+      cells <- c(cells, sprintf(
+        '<rect x="%.0f" y="%.0f" width="14" height="14" rx="3" fill="%s"/>
+         <text x="%.0f" y="%.0f" font-size="13" font-weight="600" fill="%s" font-family="system-ui">%s<title>%s</title></text>',
+        lx, ly, trt_colors[trts[i]], lx + swatch_w, ly + 11, fg,
+        htmltools::htmlEscape(labels[i]), htmltools::htmlEscape(trts[i])))
+      lx <- lx + item_w[i]
+    }
   }
 
   sprintf('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="100%%" preserveAspectRatio="xMidYMid meet" style="background:%s;border-radius:8px;display:block;">%s</svg>',
@@ -843,12 +1071,31 @@ fmt_dates <- function(df) {
 tr_error <- function(msg, tx) {
   if (startsWith(msg, "ERR_COLS|")) return(tx$err_cols(sub("^ERR_COLS\\|", "", msg)))
   switch(msg, ERR_DATE = tx$err_date, ERR_UNIT = tx$err_unit,
-         ERR_NOSEL = tx$chart_no_trt, ERR_NODATA = tx$err_nodata, msg)
+         ERR_NOSEL = tx$chart_no_trt, ERR_NODATA = tx$err_nodata,
+         ERR_NOPARAM = tx$err_noparam, ERR_TOOMANY = tx$err_toomany(MAX_CHART_PARAMS), msg)
 }
 
 get_available_chart_params <- function(df, selected_params) {
   cand <- selected_params[selected_params %in% colnames(df)]
   cand[vapply(cand, function(c) !all(is.na(suppressWarnings(as.numeric(df[[c]])))), logical(1))]
+}
+
+# Parametri da disegnare. NULL = nessuna scelta ancora fatta: solo i principali,
+# perché i bin di distribuzione possono essere decine. character(0) = l'utente
+# li ha deselezionati tutti, e quella scelta va rispettata.
+resolve_chart_params <- function(chart_params, avail, main) {
+  if (!is.null(chart_params)) return(intersect(avail, chart_params))
+  m <- intersect(avail, main)
+  if (length(m)) m else avail
+}
+
+# Oltre 42 pannelli (21 righe da 1500 px) il PNG supera il limite di 32767 px e
+# png() si ferma con "unable to start device".
+MAX_CHART_PARAMS <- 40
+chart_params_error <- function(params) {
+  if (!length(params)) "ERR_NOPARAM"
+  else if (length(params) > MAX_CHART_PARAMS) "ERR_TOOMANY"
+  else NULL
 }
 
 # ── UI ────────────────────────────────────────────────────────────────────────
@@ -908,6 +1155,17 @@ ui <- page_fluid(
     .warn-box { margin-top:.7rem; padding:.6rem 1rem; border-radius:6px; background:#FFFBEB; border:1px solid #FDE68A; color:#92400E; font-size:.92rem; font-weight:500; }
     .note-line { font-size:.88rem; color:#6B7280; margin:-.6rem 0 1rem; }
     .map-wrap { width:100%; max-width:900px; margin:0 auto; padding:.5rem 0; }
+    /* Con la scala di grigi il colore da solo non distingue i vasi esclusi */
+    .vaso.excl { stroke-dasharray:5 4; }
+    #example_btn { display:block; width:fit-content; margin-top:.6rem; font-size:.92rem; font-weight:600; color:#2D6A4F; }
+    .palette-lbl { font-size:.9rem; color:#6B7280; font-weight:600; margin:1.2rem 0 .5rem; }
+    .palette-grid { display:flex; flex-wrap:wrap; gap:.6rem; }
+    .palette-card { flex:1; min-width:150px; padding:.6rem .9rem; text-align:left; border:1.5px solid #C5D4C2; border-radius:8px; background:#fff; cursor:pointer; transition:all .12s; }
+    .palette-card.active { border-color:#0E7490; background:#E0F4F8; box-shadow:0 0 0 1px #0E7490; }
+    .palette-title { font-size:.9rem; font-weight:700; color:#0C4A5C; }
+    .palette-sub { font-size:.78rem; color:#6B7280; margin-top:.1rem; }
+    .palette-swatches { display:flex; gap:3px; margin-top:.4rem; }
+    .palette-swatch { width:1rem; height:.7rem; border-radius:2px; border:1px solid rgba(0,0,0,.25); }
     .map-hint { font-size:.9rem; color:#6B7280; margin-bottom:.8rem; }
     .map-stats { display:flex; gap:1.5rem; margin-top:.8rem; font-size:.92rem; }
     .map-stat-sel  { color:#2D6A4F; font-weight:600; }
@@ -923,6 +1181,7 @@ ui <- page_fluid(
     .pivot-sub   { font-size:.88rem; color:#6B7280; margin-top:.15rem; }
     .chart-param-grid { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:1rem; }
     .chart-param-toggle { display:inline-flex; align-items:center; gap:.4rem; padding:.42rem .9rem; border-radius:999px; border:1.5px solid #C5D4C2; background:#fff; font-size:.92rem; font-weight:500; color:#374151; cursor:pointer; transition:all .12s; user-select:none; }
+    .chart-param-toggle.dist { border-style:dashed; }
     .chart-param-toggle.active { border-color:#0E7490; background:#E0F4F8; color:#0C4A5C; }
     .chart-param-toggle.active::before { content:'✓'; font-size:.82rem; color:#0E7490; font-weight:700; }
     .chart-param-toggle.excluded { border-color:#DDE5DB; background:#F9FAF9; color:#9CA3AF; }
@@ -965,6 +1224,14 @@ ui <- page_fluid(
     body.dark .preview-wrap thead th { background:#253023; color:#C5D8C2; border-color:#334430; }
     body.dark .preview-wrap tbody td { background:#1E261D; color:#B8D0B5; border-color:#2A3528; }
     body.dark .map-hint { color:#7A9975; }
+    body.dark #example_btn { color:#6FCF7F; }
+    /* Il nome del file dopo il cambio lingua è un placeholder: deve restare leggibile */
+    body.dark .shiny-input-container input[readonly]::placeholder { color:#A8BFA4; opacity:1; }
+    body.dark .palette-lbl { color:#7A9975; }
+    body.dark .palette-card { background:#1E261D; border-color:#334430; }
+    body.dark .palette-card.active { border-color:#22B8CF; background:#122A30; box-shadow:0 0 0 1px #22B8CF; }
+    body.dark .palette-title { color:#67E8F9; }
+    body.dark .palette-sub { color:#7A9975; }
     body.dark .err-box { background:#3D1A1A; border-color:#7F1D1D; color:#FCA5A5; }
     body.dark .warn-box { background:#3A2E12; border-color:#78590F; color:#FCD34D; }
     body.dark .note-line { color:#7A9975; }
@@ -1042,7 +1309,6 @@ ui <- page_fluid(
       var sel=[];
       document.querySelectorAll('.col-toggle.active').forEach(function(t){ sel.push(t.getAttribute('data-col')); });
       Shiny.setInputValue('selected_params', sel, {priority:'event'});
-      Shiny.setInputValue('active_col_count', sel.length, {priority:'event'});
       var cnt = document.getElementById('col-count-active');
       if (cnt) cnt.textContent = sel.length;
     }
@@ -1070,7 +1336,8 @@ ui <- page_fluid(
     }
     function setVasoLabel(safe_id, on) {
       var lab = document.getElementById('t_'+safe_id);
-      if (lab) lab.setAttribute('fill', on ? '#FFFFFF' : '#9CA3AF');
+      var pot = document.getElementById('v_'+safe_id);
+      if (lab) lab.setAttribute('fill', on ? (pot.getAttribute('data-lbl') || '#FFFFFF') : '#9CA3AF');
     }
     function selectAllVasos() {
       document.querySelectorAll('.vaso').forEach(function(el) {
@@ -1176,13 +1443,14 @@ server <- function(input, output, session) {
   rv <- reactiveValues(
     df_raw=NULL, df_daily=NULL, df_final=NULL,
     params=NULL, trt_colors=NULL, map_df=NULL,
-    error=NULL, error_step=NULL, base_name=NULL,
-    chart_png_b64=NULL, chart_png_range=NULL, chart_png_box=NULL,
+    error=NULL, error_step=NULL, base_name=NULL, file_name=NULL,
+    chart_png_b64=NULL, chart_png_box=NULL,
     # Stato delle scelte dell'utente, conservato quando i pannelli vengono
     # ridisegnati (cambio lingua, dark mode, rielaborazione)
     sel_units=NULL, sel_params=NULL, chart_params=NULL,
     date_range=NULL, box_idx=NULL, multi_sensor=FALSE,
-    load_notes=NULL, nonnum=NULL
+    load_notes=NULL, nonnum=NULL,
+    is_example=FALSE, example_n=0L, palette=DEFAULT_PALETTE
   )
   set_err <- function(step, msg) { rv$error <- msg; rv$error_step <- step }
 
@@ -1198,8 +1466,26 @@ server <- function(input, output, session) {
     if (length(rv$sel_units) && identical(rv$error, "ERR_NOSEL")) rv$error <- NULL
   }, ignoreNULL = FALSE, ignoreInit = TRUE)
   observeEvent(input$pivot_long, { rv$df_final <- NULL }, ignoreInit = TRUE)
-  observeEvent(input$selected_params, { rv$sel_params   <- unlist(input$selected_params) }, ignoreNULL = FALSE, ignoreInit = TRUE)
-  observeEvent(input$chart_params,    { rv$chart_params <- unlist(input$chart_params)    }, ignoreNULL = FALSE, ignoreInit = TRUE)
+  # La mappa cambia subito; i grafici già generati restano finché non li rigeneri
+  observeEvent(input$palette, {
+    rv$palette <- input$palette
+    if (!is.null(rv$df_raw)) rv$trt_colors <- make_trt_colors(rv$df_raw$treatment, rv$palette)
+  }, ignoreInit = TRUE)
+  # Solo gli errori dello stesso passo: la selezione dello step 2 viene rimandata
+  # anche al cambio lingua e non deve cancellare un errore dei grafici
+  clear_param_err <- function(sel, steps) {
+    if (length(sel) && isTRUE(rv$error %in% c("ERR_NOPARAM", "ERR_TOOMANY")) &&
+        isTRUE(rv$error_step %in% steps)) rv$error <- NULL
+  }
+  observeEvent(input$selected_params, {
+    rv$sel_params <- unlist(input$selected_params)
+    clear_param_err(rv$sel_params, "clean")
+  }, ignoreNULL = FALSE, ignoreInit = TRUE)
+  observeEvent(input$chart_params, {
+    # character(0), non NULL: "ho deselezionato tutto" è diverso da "non ho ancora scelto"
+    rv$chart_params <- as.character(unlist(input$chart_params))
+    clear_param_err(rv$chart_params, c("chart", "box"))
+  }, ignoreNULL = FALSE, ignoreInit = TRUE)
   observeEvent(list(input$range_start_idx, input$range_end_idx), {
     if (!is.null(input$range_start_idx) && !is.null(input$range_end_idx))
       rv$date_range <- c(input$range_start_idx, input$range_end_idx)
@@ -1252,26 +1538,33 @@ server <- function(input, output, session) {
   # ── Step 1 ──────────────────────────────────────────────────────────────────
   output$step1_panel <- renderUI({
     tx <- t()
+    # Il pannello viene ridisegnato al cambio lingua e fileInput perderebbe il nome.
+    # Ridisegno anche con i dati di esempio, che non passano da fileInput.
+    rv$example_n
+    fn <- isolate(rv$file_name)
     div(class="sx-card", p(class="section-label", tx$step1),
       fileInput("file_in", label=NULL, accept=c(".csv","text/csv"),
-                placeholder=tx$file_ph, buttonLabel=tx$file_btn),
+                placeholder=if (is.null(fn)) tx$file_ph else fn, buttonLabel=tx$file_btn),
+      actionLink("example_btn", tx$example_btn, icon=icon("seedling")),
       uiOutput("file_info_chip"),
       uiOutput("err_load"))
   })
 
-  observeEvent(input$file_in, {
+  load_data <- function(path, file_name, is_example = FALSE) {
+    rv$file_name <- file_name
+    rv$is_example <- is_example
     rv$df_raw <- rv$df_daily <- rv$df_final <- rv$params <- rv$trt_colors <-
-      rv$map_df <- rv$error <- rv$error_step <- rv$chart_png_b64 <- rv$chart_png_range <- rv$chart_png_box <- NULL
+      rv$map_df <- rv$error <- rv$error_step <- rv$chart_png_b64 <- rv$chart_png_box <- NULL
     rv$sel_units <- rv$sel_params <- rv$chart_params <- rv$date_range <- rv$box_idx <- NULL
     rv$multi_sensor <- FALSE
     rv$load_notes <- rv$nonnum <- NULL
     tryCatch({
-      df <- parse_planteye(input$file_in$datapath)
+      df <- parse_planteye(path)
       p  <- classify_params(df)
-      rv$base_name  <- sub("\\.csv$","", input$file_in$name, ignore.case=TRUE)
+      rv$base_name  <- sub("\\.csv$","", file_name, ignore.case=TRUE)
       rv$params     <- p
       rv$sel_params <- p$main
-      rv$trt_colors <- make_trt_colors(df$treatment)
+      rv$trt_colors <- make_trt_colors(df$treatment, rv$palette)
       rv$load_notes <- attr(df, "pe_notes")
       md <- unique(df[, c("unit","treatment","posA","posX","posY")])
       rv$map_df     <- md[!duplicated(md$unit), , drop=FALSE]
@@ -1282,6 +1575,16 @@ server <- function(input, output, session) {
       }
       rv$df_raw <- df
     }, error=function(e) set_err("load", conditionMessage(e)))
+  }
+
+  observeEvent(input$file_in, load_data(input$file_in$datapath, input$file_in$name))
+
+  observeEvent(input$example_btn, {
+    f <- tempfile(fileext = ".csv")
+    writeLines(EXAMPLE_PLANTEYE, f)
+    load_data(f, "example_planteye.csv", is_example = TRUE)
+    unlink(f)
+    rv$example_n <- rv$example_n + 1L
   })
 
   output$file_info_chip <- renderUI({
@@ -1295,6 +1598,7 @@ server <- function(input, output, session) {
       div(class="file-chip" ,
           style="display:inline-block;font-size:.78rem;background:#EAF4EF;border:1px solid #C6E8D6;border-radius:4px;padding:.2rem .6rem;color:#2D6A4F;font-weight:600;margin-top:.5rem;",
           tx$file_info(nrow(rv$df_raw), n_plants, n_trts, n_days)),
+      if (rv$is_example) p(class="note-line", style="margin:.4rem 0 0;", tx$example_note),
       if (isTRUE(nt$bad_dates > 0)) div(class="warn-box", tx$note_bad_dates(nt$bad_dates)),
       if (isTRUE(nt$ambiguous))     div(class="warn-box", tx$note_ambig_dates)
     )
@@ -1347,7 +1651,7 @@ server <- function(input, output, session) {
     rv$chart_params <- rv$date_range <- rv$box_idx <- NULL
     tryCatch({
       sel <- rv$sel_params
-      if (is.null(sel)||!length(sel)) sel <- rv$params$main
+      if (!length(sel)) stop("ERR_NOPARAM", call.=FALSE)
       dd <- daily_mean_per_plant(rv$df_raw, sel)
       if (!nrow(dd) || !length(get_available_chart_params(dd, sel))) stop("ERR_NODATA", call.=FALSE)
       rv$nonnum   <- count_non_numeric(rv$df_raw, sel)
@@ -1391,7 +1695,7 @@ server <- function(input, output, session) {
     req(rv$df_daily)
     df <- rv$df_daily
     disp_cols <- c("unit","date","treatment","posX","posY","n_scans",
-                   intersect(rv$params$main[1:min(4,length(rv$params$main))], colnames(df)))
+                   utils::head(setdiff(colnames(df), ID_COLS_DAILY), 4))
     fmt_dates(df[, disp_cols[disp_cols %in% colnames(df)], drop=FALSE])
   }, striped=FALSE, hover=TRUE, bordered=FALSE, spacing="xs", na="", digits=3)
 
@@ -1406,6 +1710,14 @@ server <- function(input, output, session) {
                                 selected_units = sel,
                                 is_dark = is_dark, bench_label = tx$map_bench)
     js_arr <- function(x) paste0("[", paste0('"', x, '"', collapse=","), "]")
+    pal_card <- function(name, title, sub) {
+      tags$button(type="button", class=paste("palette-card", if (identical(name, rv$palette)) "active"),
+        onclick=sprintf("Shiny.setInputValue('palette', '%s', {priority:'event'});", name),
+        div(class="palette-title", title),
+        div(class="palette-sub", sub),
+        div(class="palette-swatches", lapply(get_palette(name, 6), function(col)
+          span(class="palette-swatch", style=paste0("background:", col, ";")))))
+    }
     init_js <- tags$script(HTML(paste0(
       "setTimeout(function(){\n",
       paste(sprintf("  var e=document.getElementById('v_%s'); if(e) e.setAttribute('data-col','%s');",
@@ -1427,28 +1739,33 @@ server <- function(input, output, session) {
       div(class="map-stats",
         span(class="map-stat-sel", id="map-stat-sel", length(sel)), " ", tx$map_selected, " · ",
         span(class="map-stat-excl", id="map-stat-excl", nrow(mdf) - length(sel)), " ", tx$map_excluded
+      ),
+      p(class="palette-lbl", tx$palette_lbl),
+      div(class="palette-grid",
+        pal_card("npg",   "NPG",            tx$palette_npg_sub),
+        pal_card("okabe", "Okabe-Ito",      tx$palette_okabe_sub),
+        pal_card("gray",  tx$palette_gray,  tx$palette_gray_sub)
       )
     )
   })
 
   # ── Step 5: Grafico temporale ───────────────────────────────────────────────
   output$chart_panel <- renderUI({
-    req(rv$df_daily, rv$trt_colors)
+    req(rv$df_daily)
     tx    <- t()
     df    <- rv$df_daily
     dates <- sort(unique(df$date))
     n     <- length(dates)
-    avail <- get_available_chart_params(df, rv$params$main)
+    avail <- get_available_chart_params(df, c(rv$params$main, rv$params$dist))
     if (!length(avail)) return(NULL)
-    cp  <- isolate(rv$chart_params)
-    act <- if (is.null(cp)) avail else intersect(avail, cp)
-    if (!length(act)) act <- avail
+    act <- resolve_chart_params(isolate(rv$chart_params), avail, rv$params$main)
     rg  <- isolate(rv$date_range); if (length(rg) != 2) rg <- c(1, n)
     r0  <- max(1, min(as.integer(rg[1]), n)); r1 <- max(1, min(as.integer(rg[2]), n))
     rib <- isolate(input$show_ribbon); rib_on <- is.null(rib) || isTRUE(rib)
 
     pills <- lapply(avail, function(p)
-      tags$span(class=paste("chart-param-toggle", if (p %in% act) "active" else "excluded"),
+      tags$span(class=paste("chart-param-toggle", if (p %in% rv$params$dist) "dist",
+                            if (p %in% act) "active" else "excluded"),
                 `data-param`=p, onclick="toggleChartParam(this);", p))
 
     div(class="sx-card",
@@ -1511,10 +1828,10 @@ server <- function(input, output, session) {
     rv$chart_png_b64 <- rv$error <- NULL
     sel_units <- rv$sel_units
     if (!length(sel_units)) { set_err("chart", "ERR_NOSEL"); return() }
-    avail <- get_available_chart_params(rv$df_daily, rv$params$main)
-    sel_params <- intersect(rv$chart_params, avail)
-    if (!length(sel_params)) sel_params <- avail
-    if (!length(sel_params)) return()
+    avail <- get_available_chart_params(rv$df_daily, c(rv$params$main, rv$params$dist))
+    sel_params <- resolve_chart_params(rv$chart_params, avail, rv$params$main)
+    sel_err <- chart_params_error(sel_params)
+    if (!is.null(sel_err)) { set_err("chart", sel_err); return() }
     tryCatch({
       dates <- sort(unique(rv$df_daily$date))
       i0    <- max(1, min(as.integer(input$range_start_idx %||% 1),         length(dates)))
@@ -1562,7 +1879,7 @@ server <- function(input, output, session) {
 
   # ── Step 5b: Boxplot su data singola ─────────────────────────────────────────
   output$box_panel <- renderUI({
-    req(rv$df_daily, rv$trt_colors)
+    req(rv$df_daily)
     tx    <- t()
     dates <- sort(unique(rv$df_daily$date))
     n     <- length(dates)
@@ -1619,9 +1936,10 @@ server <- function(input, output, session) {
       sel_units <- rv$sel_units
       if (!length(sel_units)) stop("ERR_NOSEL", call.=FALSE)
       sub <- rv$df_daily[rv$df_daily$unit %in% sel_units, , drop=FALSE]
-      avail <- get_available_chart_params(rv$df_daily, rv$params$main)
-      sel_params <- intersect(rv$chart_params, avail)
-      if (!length(sel_params)) sel_params <- avail
+      avail <- get_available_chart_params(rv$df_daily, c(rv$params$main, rv$params$dist))
+      sel_params <- resolve_chart_params(rv$chart_params, avail, rv$params$main)
+      sel_err <- chart_params_error(sel_params)
+      if (!is.null(sel_err)) stop(sel_err, call.=FALSE)
       sel_params <- sel_params[vapply(sel_params, function(p)
         any(!is.na(suppressWarnings(as.numeric(sub[[p]][sub$date == sel_date])))), logical(1))]
       if (!length(sel_params)) stop("ERR_NODATA", call.=FALSE)
