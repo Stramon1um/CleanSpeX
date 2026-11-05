@@ -41,7 +41,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7c69b197886ae2a34062761d21e44731.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-209258432f336cc574c0f847bd0a7210.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-313e70511722e717ea040d60d30b5fd6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <meta name="shinylive:serviceworker_dir" content=".">
 <script src="site_libs/quarto-contrib/shinylive-0.10.12/shinylive/load-shinylive-sw.js" type="module"></script>
 <script src="site_libs/quarto-contrib/shinylive-0.10.12/shinylive/run-python-blocks.js" type="module"></script>
@@ -62,15 +62,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-GEXKYETG1W"></script>
-
-<script type="text/plain" cookie-consent="tracking">
-
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-GEXKYETG1W', { 'anonymize_ip': true});
-</script>
 
 <script type="text/javascript" charset="UTF-8">
 document.addEventListener('DOMContentLoaded', function () {
@@ -139,6 +130,19 @@ cookieconsent.run({
       });
     }
   });
+</script>
+
+<script type="text/plain" cookie-consent="tracking">
+  (function() {
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=G-GEXKYETG1W';
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function() { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', 'G-GEXKYETG1W', { 'anonymize_ip': true });
+  })();
 </script>
 
 
@@ -267,6 +271,10 @@ TR &lt;- list(
     err_unit       = "La colonna 'unit' deve avere il formato a:x:y (es. 1:3:5) per ricavare la posizione dei vasi sul bench.",
     err_nodata     = "Nessun dato numerico disponibile per i parametri selezionati.",
     scans_note     = function(a, b) paste0("Scansioni mediate per pianta e giorno: ", if (a == b) a else paste0(a, "-", b), "."),
+    note_bad_dates = function(n) paste0("Righe escluse perché senza una data leggibile: ", n, "."),
+    note_ambig_dates = "Queste date si possono leggere sia come GG/MM/AAAA sia come MM/GG/AAAA: sono state lette come GG/MM/AAAA. Controlla che sia corretto.",
+    nonnum_note    = function(n, cols) paste0("Valori non numerici trattati come mancanti: ", n, " (", paste(utils::head(cols, 5), collapse = ", "), if (length(cols) &gt; 5) ", …", "). I decimali devono usare il punto."),
+    map_bench      = "Bench",
     sensor_note    = "Lo stesso vaso è stato letto da più sensori: i valori sono stati mediati per pianta e giorno, quindi ogni pianta conta una sola volta (replica biologica).",
     credits        = list(pre="Applicazione creata da ", bug=" · Segnala problemi su ", or=" o via ", mail="mail")
   ),
@@ -333,6 +341,10 @@ TR &lt;- list(
     err_unit       = "The 'unit' column must have the form a:x:y (e.g. 1:3:5) to derive pot positions on the bench.",
     err_nodata     = "No numeric data available for the selected parameters.",
     scans_note     = function(a, b) paste0("Scans averaged per plant and day: ", if (a == b) a else paste0(a, "-", b), "."),
+    note_bad_dates = function(n) paste0("Rows excluded because they have no readable date: ", n, "."),
+    note_ambig_dates = "These dates can be read as either DD/MM/YYYY or MM/DD/YYYY: they were read as DD/MM/YYYY. Please check that this is correct.",
+    nonnum_note    = function(n, cols) paste0("Non-numeric values treated as missing: ", n, " (", paste(utils::head(cols, 5), collapse = ", "), if (length(cols) &gt; 5) ", …", "). Decimals must use a dot."),
+    map_bench      = "Bench",
     sensor_note    = "The same pot was read by more than one sensor: values were averaged per plant and day, so each plant counts once (biological replicate).",
     credits        = list(pre="Application developed by ", bug=" · Report issues on ", or=" or via ", mail="email")
   ),
@@ -399,6 +411,10 @@ TR &lt;- list(
     err_unit       = "La columna 'unit' debe tener el formato a:x:y (p. ej. 1:3:5) para obtener la posición de las macetas en el banco.",
     err_nodata     = "No hay datos numéricos disponibles para los parámetros seleccionados.",
     scans_note     = function(a, b) paste0("Escaneos promediados por planta y día: ", if (a == b) a else paste0(a, "-", b), "."),
+    note_bad_dates = function(n) paste0("Filas excluidas por no tener una fecha legible: ", n, "."),
+    note_ambig_dates = "Estas fechas pueden leerse como DD/MM/AAAA o como MM/DD/AAAA: se han leído como DD/MM/AAAA. Compruebe que sea correcto.",
+    nonnum_note    = function(n, cols) paste0("Valores no numéricos tratados como ausentes: ", n, " (", paste(utils::head(cols, 5), collapse = ", "), if (length(cols) &gt; 5) ", …", "). Los decimales deben usar el punto."),
+    map_bench      = "Banco",
     sensor_note    = "La misma maceta fue leída por más de un sensor: los valores se promediaron por planta y día, de modo que cada planta cuenta una sola vez (réplica biológica).",
     credits        = list(pre="Aplicación desarrollada por ", bug=" · Reportar problemas en ", or=" o por ", mail="correo")
   ),
@@ -465,6 +481,10 @@ TR &lt;- list(
     err_unit       = "La colonne 'unit' doit avoir la forme a:x:y (ex. 1:3:5) pour déduire la position des pots sur le banc.",
     err_nodata     = "Aucune donnée numérique disponible pour les paramètres sélectionnés.",
     scans_note     = function(a, b) paste0("Scans moyennés par plante et par jour : ", if (a == b) a else paste0(a, "-", b), "."),
+    note_bad_dates = function(n) paste0("Lignes exclues car sans date lisible : ", n, "."),
+    note_ambig_dates = "Ces dates peuvent se lire JJ/MM/AAAA ou MM/JJ/AAAA : elles ont été lues comme JJ/MM/AAAA. Vérifiez que cela est correct.",
+    nonnum_note    = function(n, cols) paste0("Valeurs non numériques traitées comme manquantes : ", n, " (", paste(utils::head(cols, 5), collapse = ", "), if (length(cols) &gt; 5) ", …", "). Les décimales doivent utiliser le point."),
+    map_bench      = "Banc",
     sensor_note    = "Le même pot a été lu par plusieurs capteurs : les valeurs ont été moyennées par plante et par jour, chaque plante compte donc une seule fois (réplicat biologique).",
     credits        = list(pre="Application développée par ", bug=" · Signaler des problèmes sur ", or=" ou par ", mail="e-mail")
   )
@@ -472,25 +492,54 @@ TR &lt;- list(
 
 # ── Colonne di metadati ───────────────────────────────────────────────────────
 META_COLS     &lt;- c("unit","timestamp","sensor","genotype","g_alias","treatment",
-                   "date","posX","posY")
+                   "date","posA","posX","posY")
 ID_COLS_DAILY &lt;- c("unit","date","treatment","posX","posY","genotype","n_scans")
+# Etichetta per i vasi senza trattamento: "" non può fare da nome di un colore
+NO_TREATMENT  &lt;- "(none)"
+# Unità riconosciute nell'ultima parola del nome di un parametro
+UNIT_TOKENS   &lt;- c("nm","mm","cm","dm","m","mm2","cm2","dm2","m2","mm3","cm3","dm3","m3",
+                   "mm\u00b2","cm\u00b2","dm\u00b2","m\u00b2","mm\u00b3","cm\u00b3","dm\u00b3","m\u00b3",
+                   "g","mg","kg","\u00b5g","\u00b0","deg","px")
+param_unit &lt;- function(p) {
+  p   &lt;- trimws(p)
+  tok &lt;- gsub("^\\(|\\)$", "", sub("^.*\\s", "", p))
+  if (grepl("\\s", p) &amp;&amp; tok %in% UNIT_TOKENS) tok else ""
+}
 
 # ── Date: ISO o formati europei, anche con l'ora in coda ─────────────────────
 parse_pe_date &lt;- function(x) {
   s  &lt;- trimws(as.character(x)); ok &lt;- !is.na(s) &amp; nzchar(s)
-  if (!any(ok)) return(as.Date(rep(NA, length(s))))
-  for (f in c("%Y-%m-%d","%Y/%m/%d","%d/%m/%Y","%d.%m.%Y","%d-%m-%Y","%m/%d/%Y")) {
-    d &lt;- as.Date(s, format = f)
-    y &lt;- as.integer(format(d[ok], "%Y"))
-    if (all(!is.na(d[ok])) &amp;&amp; all(y &gt;= 1990 &amp; y &lt;= 2100)) return(d)
+  fmts &lt;- c("%Y-%m-%d","%Y/%m/%d","%d/%m/%Y","%d.%m.%Y","%d-%m-%Y","%m/%d/%Y")
+  read_fmt &lt;- function(f) {
+    d &lt;- as.Date(rep(NA, length(s)))
+    d[ok] &lt;- as.Date(s[ok], format = f)
+    y &lt;- as.integer(format(d, "%Y"))
+    d[!is.na(y) &amp; (y &lt; 1990 | y &gt; 2100)] &lt;- NA
+    d
   }
-  as.Date(rep(NA, length(s)))
+  # Vale il formato che legge più righe: una data rovinata non scarta tutto il file
+  parsed &lt;- lapply(fmts, read_fmt)
+  n_ok   &lt;- vapply(parsed, function(d) sum(!is.na(d)), 0L)
+  best   &lt;- which.max(n_ok)
+  list(date = parsed[[best]],
+       ambiguous = fmts[best] == "%d/%m/%Y" &amp;&amp; n_ok[best] &gt; 0 &amp;&amp;
+                   n_ok[fmts == "%m/%d/%Y"] == n_ok[best])
 }
 
 # ── Parsing PlantEye ──────────────────────────────────────────────────────────
 parse_planteye &lt;- function(filepath) {
+  # Tutto come testo: read.csv altrimenti trasforma i metadati (T/F -&gt; TRUE/FALSE,
+  # 01 -&gt; 1, NA -&gt; mancante). I parametri diventano numeri in fase di aggregazione.
   df &lt;- read.csv(filepath, check.names = FALSE, stringsAsFactors = FALSE,
-                 encoding = "UTF-8")
+                 encoding = "UTF-8", colClasses = "character", na.strings = character(0))
+  # File non UTF-8 (es. Latin-1 salvato da Excel)
+  to_utf8 &lt;- function(x) {
+    bad &lt;- !validUTF8(x)
+    if (any(bad)) x[bad] &lt;- iconv(x[bad], "latin1", "UTF-8")
+    x
+  }
+  names(df) &lt;- to_utf8(names(df))
+  df[] &lt;- lapply(df, to_utf8)
   # BOM UTF-8 all'inizio del file (byte EF BB BF, anche se letto come "ï»¿")
   b1 &lt;- charToRaw(names(df)[1])
   for (bom in list(as.raw(c(0xef,0xbb,0xbf)), as.raw(c(0xc3,0xaf,0xc2,0xbb,0xc2,0xbf))))
@@ -499,19 +548,21 @@ parse_planteye &lt;- function(filepath) {
   names(df) &lt;- trimws(names(df))
   miss &lt;- setdiff(c("unit","timestamp","treatment"), names(df))
   if (length(miss)) stop("ERR_COLS|", paste(miss, collapse = ", "), call. = FALSE)
-  # Metadati sempre come testo: una colonna vuota viene letta come NA logico
-  # e farebbe sparire tutte le righe nell'aggregazione
-  for (m in intersect(META_COLS, names(df))) {
-    v &lt;- as.character(df[[m]]); v[is.na(v)] &lt;- ""; df[[m]] &lt;- trimws(v)
-  }
-  df$date &lt;- parse_pe_date(df$timestamp)
+  for (m in intersect(META_COLS, names(df))) df[[m]] &lt;- trimws(df[[m]])
+  for (m in c("unit","timestamp")) df[[m]][df[[m]] == "NA"] &lt;- ""
+  df$treatment[!nzchar(df$treatment)] &lt;- NO_TREATMENT
+  pd &lt;- parse_pe_date(df$timestamp)
+  df$date &lt;- pd$date
   if (all(is.na(df$date))) stop("ERR_DATE", call. = FALSE)
+  n_bad &lt;- sum(is.na(df$date))
   df &lt;- df[!is.na(df$date) &amp; nzchar(df$unit), , drop = FALSE]
   parts  &lt;- strsplit(df$unit, ":")
   getpos &lt;- function(i) suppressWarnings(as.integer(vapply(parts,
               function(p) if (length(p) &gt;= 3) p[i] else NA_character_, "")))
   df$posX &lt;- getpos(2); df$posY &lt;- getpos(3)
   if (!nrow(df) || any(is.na(df$posX) | is.na(df$posY))) stop("ERR_UNIT", call. = FALSE)
+  df$posA &lt;- vapply(parts, function(p) p[1], "")
+  attr(df, "pe_notes") &lt;- list(bad_dates = n_bad, ambiguous = pd$ambiguous)
   df
 }
 
@@ -542,6 +593,17 @@ daily_mean_per_plant &lt;- function(df, params) {
   out &lt;- out[order(out$date, out$posX, out$posY), , drop = FALSE]
   rownames(out) &lt;- NULL
   out
+}
+
+# Valori presenti ma non numerici (es. decimale con la virgola), che diventano NA
+count_non_numeric &lt;- function(df, params) {
+  params &lt;- params[params %in% colnames(df)]
+  n &lt;- vapply(params, function(p) {
+    s &lt;- trimws(as.character(df[[p]]))
+    sum(nzchar(s) &amp; !(toupper(s) %in% c("NA","NAN")) &amp;
+          is.na(suppressWarnings(as.numeric(s))))
+  }, 0L)
+  n[n &gt; 0]
 }
 
 # ── Aggregazione media±SE per trattamento × giorno ───────────────────────────
@@ -577,68 +639,84 @@ make_trt_colors &lt;- function(treatments) {
 make_bench_svg &lt;- function(map_df, trt_colors, selected_units,
                             cell_w = 60, cell_h = 60,
                             pad_x = 52, pad_y = 44, legend_h = 40,
-                            is_dark = FALSE) {
+                            is_dark = FALSE, bench_label = "Bench") {
   fg     &lt;- if (is_dark) "#D8E8D5" else "#374151"
   bg     &lt;- if (is_dark) "#1E261D" else "#FFFFFF"
   n_col  &lt;- max(map_df$posX)
-  n_row  &lt;- max(map_df$posY)
   svg_w  &lt;- n_col * cell_w + pad_x * 2
-  svg_h  &lt;- n_row * cell_h + pad_y + 16 + legend_h + 24
   rx     &lt;- 10
+  # Valori diversi di "a" in a:x:y possono riusare le stesse coordinate:
+  # ogni "a" ha il suo blocco, altrimenti i vasi si sovrappongono
+  benches &lt;- unique(map_df$posA)
+  benches &lt;- benches[order(suppressWarnings(as.numeric(benches)), benches)]
+  title_h &lt;- if (length(benches) &gt; 1) 24 else 0
 
   cells &lt;- character(0)
-  # Etichette assi
-  for (x in seq_len(n_col)) {
-    cx &lt;- pad_x + (x-1)*cell_w + cell_w/2
-    cells &lt;- c(cells, sprintf(
-      '&lt;text x="%.0f" y="%.0f" text-anchor="middle" font-size="11" fill="%s" font-family="system-ui"&gt;%d&lt;/text&gt;',
-      cx, pad_y - 8, fg, x))
-  }
-  for (y in seq_len(n_row)) {
-    cy &lt;- pad_y + (y-1)*cell_h + cell_h/2 + 4
-    cells &lt;- c(cells, sprintf(
-      '&lt;text x="%.0f" y="%.0f" text-anchor="end" font-size="11" fill="%s" font-family="system-ui"&gt;%d&lt;/text&gt;',
-      pad_x - 6, cy, fg, y))
-  }
+  y_top &lt;- 0
+  for (b in benches) {
+    md    &lt;- map_df[map_df$posA == b, , drop = FALSE]
+    n_row &lt;- max(md$posY)
+    if (title_h &gt; 0) cells &lt;- c(cells, sprintf(
+      '&lt;text x="%.0f" y="%.0f" font-size="13" font-weight="700" fill="%s" font-family="system-ui"&gt;%s %s&lt;/text&gt;',
+      pad_x, y_top + 16, fg, bench_label, htmltools::htmlEscape(b)))
+    y0 &lt;- y_top + title_h + pad_y
 
-  # Vasi
-  for (i in seq_len(nrow(map_df))) {
-    uid  &lt;- map_df$unit[i]
-    trt  &lt;- map_df$treatment[i]
-    sel  &lt;- uid %in% selected_units
-    col  &lt;- trt_colors[trt]
-    fill &lt;- if (sel) col else "#D1D5DB"
-    strk &lt;- if (sel) col else "#9CA3AF"
-    x_svg &lt;- pad_x + (map_df$posX[i]-1)*cell_w + 3
-    y_svg &lt;- pad_y + (map_df$posY[i]-1)*cell_h + 3
-    safe_id &lt;- gsub(":", "_", uid)
-    cells &lt;- c(cells, sprintf(
-      '&lt;rect class="vaso%s" id="v_%s" x="%.0f" y="%.0f" width="%.0f" height="%.0f"
-       rx="%d" fill="%s" stroke="%s" stroke-width="2.5" style="cursor:pointer;transition:all .12s;"
-       onclick="toggleVaso(\'%s\')"
-       data-unit="%s" data-trt="%s" data-sel="%s"&gt;
-         &lt;title&gt;%s&amp;#10;%s&lt;/title&gt;
-       &lt;/rect&gt;',
-      if (sel) " sel" else " excl",
-      safe_id, x_svg, y_svg, cell_w-6, cell_h-6,
-      rx, fill, strk,
-      safe_id, uid, trt, if (sel) "1" else "0",
-      uid, trt))
-    # Mini etichetta unit
-    cells &lt;- c(cells, sprintf(
-      '&lt;text id="t_%s" class="vaso-lbl" x="%.0f" y="%.0f" text-anchor="middle" font-size="11"
-       fill="%s" font-family="system-ui" style="pointer-events:none;font-weight:600;"&gt;%s&lt;/text&gt;',
-      safe_id, x_svg + (cell_w-6)/2, y_svg + (cell_h-6)/2 + 4,
-      if (sel) "#FFFFFF" else "#9CA3AF",
-      uid))
+    # Etichette assi
+    for (x in seq_len(n_col)) {
+      cx &lt;- pad_x + (x-1)*cell_w + cell_w/2
+      cells &lt;- c(cells, sprintf(
+        '&lt;text x="%.0f" y="%.0f" text-anchor="middle" font-size="11" fill="%s" font-family="system-ui"&gt;%d&lt;/text&gt;',
+        cx, y0 - 8, fg, x))
+    }
+    for (y in seq_len(n_row)) {
+      cy &lt;- y0 + (y-1)*cell_h + cell_h/2 + 4
+      cells &lt;- c(cells, sprintf(
+        '&lt;text x="%.0f" y="%.0f" text-anchor="end" font-size="11" fill="%s" font-family="system-ui"&gt;%d&lt;/text&gt;',
+        pad_x - 6, cy, fg, y))
+    }
+
+    # Vasi
+    for (i in seq_len(nrow(md))) {
+      uid  &lt;- md$unit[i]
+      trt  &lt;- md$treatment[i]
+      sel  &lt;- uid %in% selected_units
+      col  &lt;- trt_colors[trt]
+      fill &lt;- if (sel) col else "#D1D5DB"
+      strk &lt;- if (sel) col else "#9CA3AF"
+      x_svg &lt;- pad_x + (md$posX[i]-1)*cell_w + 3
+      y_svg &lt;- y0 + (md$posY[i]-1)*cell_h + 3
+      safe_id &lt;- gsub(":", "_", uid)
+      cells &lt;- c(cells, sprintf(
+        '&lt;rect class="vaso%s" id="v_%s" x="%.0f" y="%.0f" width="%.0f" height="%.0f"
+         rx="%d" fill="%s" stroke="%s" stroke-width="2.5" style="cursor:pointer;transition:all .12s;"
+         onclick="toggleVaso(\'%s\')"
+         data-unit="%s" data-trt="%s" data-sel="%s"&gt;
+           &lt;title&gt;%s&amp;#10;%s&lt;/title&gt;
+         &lt;/rect&gt;',
+        if (sel) " sel" else " excl",
+        safe_id, x_svg, y_svg, cell_w-6, cell_h-6,
+        rx, fill, strk,
+        safe_id, uid, trt, if (sel) "1" else "0",
+        uid, trt))
+      # Mini etichetta unit
+      cells &lt;- c(cells, sprintf(
+        '&lt;text id="t_%s" class="vaso-lbl" x="%.0f" y="%.0f" text-anchor="middle" font-size="11"
+         fill="%s" font-family="system-ui" style="pointer-events:none;font-weight:600;"&gt;%s&lt;/text&gt;',
+        safe_id, x_svg + (cell_w-6)/2, y_svg + (cell_h-6)/2 + 4,
+        if (sel) "#FFFFFF" else "#9CA3AF",
+        uid))
+    }
+    y_end &lt;- y0 + n_row * cell_h
+    y_top &lt;- y_end + 16
   }
+  svg_h  &lt;- y_end + 16 + legend_h + 24
 
   # Legenda trattamenti
   trts    &lt;- names(trt_colors)
   item_w  &lt;- 115
   total_w &lt;- length(trts) * item_w
   lx0     &lt;- max(4, (svg_w - total_w) / 2)
-  ly      &lt;- pad_y + n_row * cell_h + 14
+  ly      &lt;- y_end + 14
   for (i in seq_along(trts)) {
     col &lt;- trt_colors[trts[i]]
     lx  &lt;- lx0 + (i-1)*item_w
@@ -684,9 +762,7 @@ draw_time_chart &lt;- function(trt_day_df, params, trt_colors, show_ribbon = TRU
     if (diff(ylim) == 0) ylim &lt;- ylim + c(-0.5, 0.5) * max(abs(ylim[1]), 1)
     ylim &lt;- ylim + diff(ylim) * c(-0.05, 0.08)
 
-    p_clean &lt;- gsub("\\s*$", "", p)
-    last_tok &lt;- regmatches(p_clean, regexpr("[^ ]+$", p_clean))
-    unit_m &lt;- if (length(last_tok) &amp;&amp; grepl(" ", p_clean) &amp;&amp; !grepl("^[[:digit:]%\\[]", last_tok)) last_tok else ""
+    unit_m &lt;- param_unit(p)
 
     plot.new()
     plot.window(xlim=range(all_dates), ylim=ylim)
@@ -707,6 +783,14 @@ draw_time_chart &lt;- function(trt_day_df, params, trt_colors, show_ribbon = TRU
                 col=rib_col, border=NA)
       }
       lines(d$date, d$mean, col=col, lwd=2.2)
+      # Con un solo giorno non esiste una linea né una banda: punto e barra di SE
+      if (nrow(d) == 1) {
+        if (show_ribbon &amp;&amp; isTRUE(d$se &gt; 0)) {
+          lo &lt;- if (nonneg) max(d$mean - d$se, 0) else d$mean - d$se
+          segments(d$date, lo, d$date, d$mean + d$se, col=col, lwd=2.2)
+        }
+        points(d$date, d$mean, col=col, pch=19, cex=1.3)
+      }
     }
 
     axis(2, las=1, cex.axis=1.1, col="#1A1A1A", col.axis="#1A1A1A",
@@ -769,9 +853,7 @@ draw_boxplot_day &lt;- function(daily_df, params, trt_colors, selected_date,
     bp_data &lt;- bp_data[non_empty]
     cols    &lt;- trt_colors[names(bp_data)]
 
-    p_clean  &lt;- gsub("\\s*$", "", p)
-    last_tok &lt;- regmatches(p_clean, regexpr("[^ ]+$", p_clean))
-    unit_m   &lt;- if (length(last_tok) &amp;&amp; grepl(" ", p_clean) &amp;&amp; !grepl("^[[:digit:]%\\[]", last_tok)) last_tok else ""
+    unit_m   &lt;- param_unit(p)
     ylab_full &lt;- if (nchar(unit_m) &gt; 0) paste0(ylab, " [", trimws(unit_m), "]") else ylab
 
     all_vals &lt;- unlist(bp_data); all_vals &lt;- all_vals[!is.na(all_vals)]
@@ -942,6 +1024,7 @@ ui &lt;- page_fluid(
     .preview-wrap table { font-size:.95rem !important; margin-bottom:0; white-space:nowrap; }
     .preview-wrap tbody td { padding:.45rem .8rem; color:#4B5563; border-bottom:1px solid #F0F1F3; }
     .err-box { margin-top:1rem; padding:.7rem 1rem; border-radius:6px; background:#FEF2F2; border:1px solid #FECACA; color:#991B1B; font-size:.95rem; font-weight:500; }
+    .warn-box { margin-top:.7rem; padding:.6rem 1rem; border-radius:6px; background:#FFFBEB; border:1px solid #FDE68A; color:#92400E; font-size:.92rem; font-weight:500; }
     .note-line { font-size:.88rem; color:#6B7280; margin:-.6rem 0 1rem; }
     .map-wrap { width:100%; max-width:900px; margin:0 auto; padding:.5rem 0; }
     .map-hint { font-size:.9rem; color:#6B7280; margin-bottom:.8rem; }
@@ -1002,6 +1085,7 @@ ui &lt;- page_fluid(
     body.dark .preview-wrap tbody td { background:#1E261D; color:#B8D0B5; border-color:#2A3528; }
     body.dark .map-hint { color:#7A9975; }
     body.dark .err-box { background:#3D1A1A; border-color:#7F1D1D; color:#FCA5A5; }
+    body.dark .warn-box { background:#3A2E12; border-color:#78590F; color:#FCD34D; }
     body.dark .note-line { color:#7A9975; }
     body.dark .map-stat-sel  { color:#6FCF7F; }
     body.dark .map-stat-excl { color:#5A6B58; }
@@ -1216,7 +1300,8 @@ server &lt;- function(input, output, session) {
     # Stato delle scelte dell'utente, conservato quando i pannelli vengono
     # ridisegnati (cambio lingua, dark mode, rielaborazione)
     sel_units=NULL, sel_params=NULL, chart_params=NULL,
-    date_range=NULL, box_idx=NULL, multi_sensor=FALSE
+    date_range=NULL, box_idx=NULL, multi_sensor=FALSE,
+    load_notes=NULL, nonnum=NULL
   )
   set_err &lt;- function(step, msg) { rv$error &lt;- msg; rv$error_step &lt;- step }
 
@@ -1224,9 +1309,14 @@ server &lt;- function(input, output, session) {
   t    &lt;- reactive({ TR[[lang()]] })
 
   observeEvent(input$selected_units, {
-    rv$sel_units &lt;- unlist(input$selected_units)
+    new_units &lt;- unlist(input$selected_units)
+    # Il file finale già generato non rispecchierebbe più la mappa. La mappa
+    # rimanda la selezione a ogni ridisegno: conta solo se è davvero cambiata.
+    if (!setequal(new_units, rv$sel_units)) rv$df_final &lt;- NULL
+    rv$sel_units &lt;- new_units
     if (length(rv$sel_units) &amp;&amp; identical(rv$error, "ERR_NOSEL")) rv$error &lt;- NULL
   }, ignoreNULL = FALSE, ignoreInit = TRUE)
+  observeEvent(input$pivot_long, { rv$df_final &lt;- NULL }, ignoreInit = TRUE)
   observeEvent(input$selected_params, { rv$sel_params   &lt;- unlist(input$selected_params) }, ignoreNULL = FALSE, ignoreInit = TRUE)
   observeEvent(input$chart_params,    { rv$chart_params &lt;- unlist(input$chart_params)    }, ignoreNULL = FALSE, ignoreInit = TRUE)
   observeEvent(list(input$range_start_idx, input$range_end_idx), {
@@ -1293,6 +1383,7 @@ server &lt;- function(input, output, session) {
       rv$map_df &lt;- rv$error &lt;- rv$error_step &lt;- rv$chart_png_b64 &lt;- rv$chart_png_range &lt;- rv$chart_png_box &lt;- NULL
     rv$sel_units &lt;- rv$sel_params &lt;- rv$chart_params &lt;- rv$date_range &lt;- rv$box_idx &lt;- NULL
     rv$multi_sensor &lt;- FALSE
+    rv$load_notes &lt;- rv$nonnum &lt;- NULL
     tryCatch({
       df &lt;- parse_planteye(input$file_in$datapath)
       p  &lt;- classify_params(df)
@@ -1300,7 +1391,8 @@ server &lt;- function(input, output, session) {
       rv$params     &lt;- p
       rv$sel_params &lt;- p$main
       rv$trt_colors &lt;- make_trt_colors(df$treatment)
-      md &lt;- unique(df[, c("unit","treatment","posX","posY")])
+      rv$load_notes &lt;- attr(df, "pe_notes")
+      md &lt;- unique(df[, c("unit","treatment","posA","posX","posY")])
       rv$map_df     &lt;- md[!duplicated(md$unit), , drop=FALSE]
       rv$sel_units  &lt;- rv$map_df$unit
       if ("sensor" %in% names(df)) {
@@ -1317,9 +1409,14 @@ server &lt;- function(input, output, session) {
     n_plants &lt;- length(unique(rv$df_raw$unit))
     n_trts   &lt;- length(unique(rv$df_raw$treatment))
     n_days   &lt;- length(unique(rv$df_raw$date))
-    div(class="file-chip" ,
-        style="display:inline-block;font-size:.78rem;background:#EAF4EF;border:1px solid #C6E8D6;border-radius:4px;padding:.2rem .6rem;color:#2D6A4F;font-weight:600;margin-top:.5rem;",
-        tx$file_info(nrow(rv$df_raw), n_plants, n_trts, n_days))
+    nt &lt;- rv$load_notes
+    tagList(
+      div(class="file-chip" ,
+          style="display:inline-block;font-size:.78rem;background:#EAF4EF;border:1px solid #C6E8D6;border-radius:4px;padding:.2rem .6rem;color:#2D6A4F;font-weight:600;margin-top:.5rem;",
+          tx$file_info(nrow(rv$df_raw), n_plants, n_trts, n_days)),
+      if (isTRUE(nt$bad_dates &gt; 0)) div(class="warn-box", tx$note_bad_dates(nt$bad_dates)),
+      if (isTRUE(nt$ambiguous))     div(class="warn-box", tx$note_ambig_dates)
+    )
   })
 
   # ── Step 2: Selezione parametri ─────────────────────────────────────────────
@@ -1365,13 +1462,14 @@ server &lt;- function(input, output, session) {
 
   observeEvent(input$clean_btn, {
     req(rv$df_raw)
-    rv$df_daily &lt;- rv$df_final &lt;- rv$chart_png_b64 &lt;- rv$chart_png_box &lt;- rv$error &lt;- NULL
+    rv$df_daily &lt;- rv$df_final &lt;- rv$chart_png_b64 &lt;- rv$chart_png_box &lt;- rv$error &lt;- rv$nonnum &lt;- NULL
     rv$chart_params &lt;- rv$date_range &lt;- rv$box_idx &lt;- NULL
     tryCatch({
       sel &lt;- rv$sel_params
       if (is.null(sel)||!length(sel)) sel &lt;- rv$params$main
       dd &lt;- daily_mean_per_plant(rv$df_raw, sel)
       if (!nrow(dd) || !length(get_available_chart_params(dd, sel))) stop("ERR_NODATA", call.=FALSE)
+      rv$nonnum   &lt;- count_non_numeric(rv$df_raw, sel)
       rv$df_daily &lt;- dd
     }, error=function(e) set_err("clean", conditionMessage(e)))
   })
@@ -1403,6 +1501,8 @@ server &lt;- function(input, output, session) {
       ),
       p(class="note-line", tx$scans_note(min(df$n_scans), max(df$n_scans)),
         if (isTRUE(rv$multi_sensor)) tagList(" ", tx$sensor_note)),
+      if (length(rv$nonnum)) div(class="warn-box", style="margin:0 0 1rem;",
+        tx$nonnum_note(sum(rv$nonnum), names(rv$nonnum))),
       div(class="preview-wrap", tableOutput("preview_tbl"))
     )
   })
@@ -1423,7 +1523,7 @@ server &lt;- function(input, output, session) {
     is_dark &lt;- isTRUE(input$dark_mode)
     svg_html &lt;- make_bench_svg(mdf, rv$trt_colors,
                                 selected_units = sel,
-                                is_dark = is_dark)
+                                is_dark = is_dark, bench_label = tx$map_bench)
     js_arr &lt;- function(x) paste0("[", paste0('"', x, '"', collapse=","), "]")
     init_js &lt;- tags$script(HTML(paste0(
       "setTimeout(function(){\n",
@@ -1730,7 +1830,7 @@ server &lt;- function(input, output, session) {
       hr(class="section-divider"),
       div(class="stats-strip",
         div(class="stat-item", span(class="stat-val", nrow(rv$df_final)), span(class="stat-lbl", tx$stat_rows)),
-        div(class="stat-item", span(class="stat-val", ncol(rv$df_final)), span(class="stat-lbl", tx$stat_params)),
+        div(class="stat-item", span(class="stat-val", length(setdiff(colnames(rv$df_daily), ID_COLS_DAILY))), span(class="stat-lbl", tx$stat_params)),
         div(class="stat-item", span(class="stat-val", if(isTRUE(input$pivot_long))"long" else "wide"), span(class="stat-lbl", tx$stat_format))
       ),
       p(class="section-label", tx$final_preview),

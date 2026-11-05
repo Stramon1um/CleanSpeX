@@ -1,5 +1,26 @@
 # Changelog
 
+## Unreleased
+
+### Data integrity
+- **Final export always matches the selection.** In v1.1, pots excluded after generating the final file were still in the downloaded CSV. Changing the pots or the wide/long format now discards the generated file, which has to be generated again.
+- **Metadata are kept exactly as written.** In v1.1, treatments `T`/`F` became `TRUE`/`FALSE`, `01` became `1`, genotype `001` became `1` and a treatment named `NA` became empty.
+- Pots with an empty treatment are shown as `(none)`. In v1.1 they had an invalid colour in the map and no line in the chart.
+- Values that are not valid numbers (e.g. the decimal comma in `1,5`) are counted in a warning. In v1.1 they silently became missing.
+- One unreadable date no longer rejects the whole file: those rows are excluded and counted in a warning.
+- A warning appears when dates could be read as either `DD/MM/YYYY` or `MM/DD/YYYY`.
+- Files that are not UTF-8 are read as Latin-1. In v1.1 they stopped with a technical error.
+
+### Bench map and charts
+- Pots with the same `x:y` but a different `a` no longer overlap: each value of `a` has its own block in the map.
+- The time-series chart with a single day shows a point and an SE bar. In v1.1 it was empty.
+- The unit on the Y axis is shown only for recognised units. In v1.1 `NDVI average` was labelled `[average]`.
+- Step 6 shows the number of parameters. In v1.1 it showed the number of columns, including identifiers.
+
+### Privacy
+- Google Analytics loads only after consent. In v1.1 `gtag.js` was requested from Google before the visitor answered the cookie banner.
+- Montserrat is no longer loaded from Google Fonts: the page title and navigation bar use the system font.
+
 ## v1.1 (2026-10-18)
 
 ### Statistics

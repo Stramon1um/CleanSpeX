@@ -10,7 +10,6 @@ website:
   favicon: icon.png
   twitter-card: true
   cookie-consent: true
-  google-analytics: "G-GEXKYETG1W"
   open-graph: true
   search: false
   page-navigation: false
@@ -25,7 +24,9 @@ website:
 format:
   html:
     smooth-scroll: true
-    theme: Minty
+    theme:
+      - minty
+      - theme.scss
     toc: false
     embed-resources: false
 

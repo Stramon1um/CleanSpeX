@@ -14,6 +14,8 @@ CleanSpeX addresses a recurring need in spectral phenotyping workflows: the raw 
 
 Your data never leave your computer. The file you load is processed locally by R compiled to WebAssembly (WebR); nothing is sent to a server. The first launch may take a few seconds while the R environment loads.
 
+The website uses Google Analytics to count visits only if you accept cookies in the banner; without consent the page sends no requests to Google. Analytics never receives your data file.
+
 ## Workflow
 
 1. **Load** the `.csv` file exported from PlantEye.
@@ -21,7 +23,7 @@ Your data never leave your computer. The file you load is processed locally by R
 3. **Process**: all scans of the same pot on the same day are averaged, giving one row per plant and day. Download the cleaned file.
 4. **Inspect the bench map**: pots are drawn at their position on the bench and coloured by treatment. Click a pot to exclude it from charts and export (e.g. a dead plant or a border effect); click again to include it.
 5. **Explore** with a time-series chart (daily mean ± SE per treatment, adjustable date range, optional SE ribbon) and a boxplot for a single scan day (optional individual points). Both are downloadable as PNG at 300 dpi.
-6. **Export** the final dataset in wide or long format (`parameter`, `value`), restricted to the selected pots.
+6. **Export** the final dataset in wide or long format (`parameter`, `value`), restricted to the selected pots. Changing the pots or the format discards the generated file, so it has to be generated again.
 
 ## Biological vs technical replicates
 
@@ -35,13 +37,13 @@ A comma-separated `.csv` exported from the PlantEye/Phenospex software, with one
 
 | Column | Required | Content |
 |---|---|---|
-| `unit` | yes | pot identifier in the form `a:x:y`; `x` and `y` give the column and row on the bench |
-| `timestamp` | yes | date and time of the scan (`YYYY-MM-DD hh:mm:ss`; `DD/MM/YYYY` and `DD.MM.YYYY` are also accepted) |
-| `treatment` | yes | treatment name |
+| `unit` | yes | pot identifier in the form `a:x:y`; `x` and `y` give the column and row on the bench. Different values of `a` are drawn as separate blocks in the map |
+| `timestamp` | yes | date and time of the scan (`YYYY-MM-DD hh:mm:ss`; `DD/MM/YYYY`, `DD.MM.YYYY` and `DD-MM-YYYY` are also accepted). `MM/DD/YYYY` is used only when the dates cannot be `DD/MM/YYYY`; a warning appears when both readings are possible. Rows without a readable date are excluded and counted in a warning |
+| `treatment` | yes | treatment name, kept exactly as written (`T`, `01`, `NA`). Empty values are shown as `(none)` |
 | `sensor`, `genotype`, `g_alias` | no | metadata; empty columns are fine |
-| any other column | | treated as a parameter; names containing `[...]` are treated as distribution bins |
+| any other column | | treated as a parameter; names containing `[...]` are treated as distribution bins. Decimals must use a dot: values that are not valid numbers (e.g. `1,5`) become missing and are counted in a warning |
 
-The unit shown on the Y axis is taken from the last word of the parameter name (e.g. `Height mm` gives `[mm]`). A UTF-8 byte order mark at the start of the file is handled.
+The unit shown on the Y axis is taken from the last word of the parameter name when it is a recognised unit such as `mm`, `cm2` or `g` (e.g. `Height mm` gives `[mm]`, while `NDVI average` shows no unit). A UTF-8 byte order mark at the start of the file is handled; files that are not UTF-8 are read as Latin-1.
 
 ## Output
 
