@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.3 (2026-11-11)
 
 ### New
 - **Group by genotype.** When the file has at least two genotypes, step 4 offers *Group by* treatment, genotype or treatment × genotype. The bench map, both charts and the outlier check follow the choice. In v1.2 the charts always grouped by treatment only, so in a genotype × treatment experiment the genotypes were averaged together and the SE included the differences between them.
