@@ -178,7 +178,7 @@ ex <- parse_planteye(ex_file)
 pr <- classify_params(ex)
 ok("esempio: parametri riconosciuti", length(pr$main) == 5 && length(pr$dist) == 4)
 dd <- daily_mean_per_plant(ex, pr$all)
-ok("esempio: una riga per pianta e giorno", nrow(dd) == 12 * 6 && all(dd$n_scans == 2))
+ok("esempio: una riga per pianta e giorno", nrow(dd) == 48 * 6 && all(dd$n_scans == 2))
 ok("esempio: nessun avviso", length(count_non_numeric(ex, pr$all)) == 0 && attr(ex, "pe_notes")$bad_dates == 0)
 tc <- make_trt_colors(ex$treatment)
 tp <- c("Height mm", "PSRI", "Hue [0-20]")
@@ -219,6 +219,90 @@ ok("un tipo MIME per formato", identical(names(CHART_MIME), c("png", "pdf", "svg
 
 lg <- pivot_long_pe(dd, pr$all)
 ok("esempio: formato long", nrow(lg) == nrow(dd) * length(pr$all))
+
+# ── Raggruppamento per genotipo ──────────────────────────────────────────────
+ok("esempio: due genotipi", has_genotypes(ex) && setequal(unique(ex$genotype), c("G1", "G2")))
+ok("un solo genotipo: niente raggruppamento", !has_genotypes(data.frame(genotype = c("A", "A"))) &&
+     !has_genotypes(data.frame(treatment = "C")) && !has_genotypes(NULL))
+gx <- data.frame(treatment = c("C", "C", "D"), genotype = c("G1", "", NA))
+ok("etichette dei gruppi", identical(group_labels(gx, "genotype"), c("G1", "(none)", "(none)")) &&
+     identical(group_labels(gx, "both"), c("C × G1", "C × (none)", "D × (none)")) &&
+     identical(group_labels(gx), c("C", "C", "D")))
+ok("trattamento: dati invariati", identical(apply_grouping(gx, "treatment"), gx))
+ok("senza colonna genotype", identical(group_labels(data.frame(treatment = "C"), "genotype"), "(none)"))
+gdd <- apply_grouping(dd, "both")
+a6 <- agg_trt_day(gdd, "Height mm", unique(gdd$unit))
+ok("trattamento x genotipo: 6 gruppi da 8 piante", length(unique(a6$treatment)) == 6 && all(a6$n == 8))
+ok("i dati originali restano con il trattamento", setequal(unique(dd$treatment), c("Control", "Drought", "Salt")))
+drawn <- tryCatch({
+  pdf(NULL); tcg <- make_trt_colors(gdd$treatment)
+  draw_time_chart(a6, "Height mm", tcg); draw_boxplot_day(gdd, "Height mm", tcg, selected_date = max(gdd$date))
+  dev.off(); TRUE }, error = function(e) conditionMessage(e))
+ok("grafici per trattamento x genotipo", drawn)
+x <- parse_planteye(csv_file(c("unit,timestamp,treatment,genotype,g_alias,Height mm", "1:1:1,2024-03-01,C,001,Linea A,1")))
+dg <- daily_mean_per_plant(x, "Height mm")
+ok("g_alias resta nel file pulito", identical(dg$g_alias, "Linea A") && identical(setdiff(names(dg), ID_COLS_DAILY), "Height mm"))
+ok("g_alias resta nel formato long", "g_alias" %in% names(pivot_long_pe(dg, "Height mm")))
+
+# ── Mappa per parametro ──────────────────────────────────────────────────────
+md <- data.frame(unit = c("a", "b", "c", "d"), date = as.Date("2024-03-01"), treatment = c("A", "A", "B", "B"),
+                 v = c(10, 20, 5, NA))
+mv <- map_values(md, "v", as.Date("2024-03-01"), c("a", "b", "c", "d"))
+ok("scarto dalla media del gruppo", identical(mv$resid, c(-5, 5, 0, NA)))
+mv <- map_values(md, "v", as.Date("2024-03-01"), c("a", "c"))
+ok("la media usa solo i vasi selezionati", identical(mv$resid, c(0, 10, 0, NA)))
+ok("gruppo senza vasi selezionati: nessuno scarto", all(is.na(map_values(md, "v", as.Date("2024-03-01"), "c")$resid[1:2])))
+ok("giorno senza dati", nrow(map_values(md, "v", as.Date("2024-03-09"), "a")) == 0)
+mc <- map_colors(c(1, 2, 3, NA), "value")
+ok("scala valori: estremi e mancanti", mc$col[1] == MAP_SEQ[1] && mc$col[3] == MAP_SEQ[101] && mc$col[4] == MAP_NA && identical(mc$lim, c(1, 3)))
+ok("scala senza NA nei colori", !anyNA(MAP_SEQ) && !anyNA(MAP_DIV) && length(mc$swatches) == 9)
+mc <- map_colors(c(-2, 0, 2), "resid")
+ok("scala scarti simmetrica, zero al centro", identical(mc$lim, c(-2, 2)) && mc$col[2] == MAP_DIV[51])
+ok("un outlier non schiaccia la scala", resid_cap(c(-1, -0.5, 0, 0.5, 1, -100)) < 10)
+ok("valori tutti uguali", map_colors(c(5, 5), "value")$col[1] == MAP_SEQ[51] && resid_cap(c(0, 0)) == 1)
+ok("numeri brevi", identical(fmt_num(c(4394.2, -0.0516, NA, 12.345, 0), signed = TRUE), c("+4390", "−0.0516", "NA", "+12.3", "0")))
+m6 <- pots(c("1:1:1", "1:2:1")); m6$treatment <- c("A", "B")
+sv6 <- make_bench_svg(m6, make_trt_colors(m6$treatment), m6$unit,
+                      pot_fill = c("1:1:1" = "#FF0000"), pot_label = c("1:1:1" = "12.3"),
+                      pot_tip = c("1:1:1" = "Height: 12 & più"), flagged = c("1:2:1" = "possibile outlier"),
+                      scale = list(title = "Height mm", swatches = MAP_SEQ[1:9], labels = c("1", "", "9 mm")))
+ok("mappa: colore del valore, bordo del gruppo", grepl('fill="#FF0000"', sv6) && grepl('data-col="#FF0000" data-stroke="', sv6, fixed = TRUE))
+ok("mappa: senza pot_fill per un vaso resta il gruppo", grepl(sprintf('data-col="%s"', make_trt_colors(c("A", "B"))[["B"]]), sv6, fixed = TRUE))
+ok("mappa: etichetta e tooltip protetti", grepl(">12.3</text>", sv6, fixed = TRUE) && grepl("12 &amp; più", sv6, fixed = TRUE))
+ok("mappa: segno outlier", grepl('id="f_1_2_1"', sv6, fixed = TRUE) && !grepl('id="f_1_1_1"', sv6, fixed = TRUE))
+ok("mappa: nessun segno sui vasi esclusi", !grepl('id="f_', make_bench_svg(m6, make_trt_colors(m6$treatment), "1:1:1", flagged = c("1:2:1" = "x")), fixed = TRUE))
+sw <- regmatches(sv6, gregexpr('class="scale-sw" x="[0-9.]+" y="[0-9.]+" width="22"', sv6))[[1]]
+sw_x <- as.numeric(sub('.*x="([0-9.]+)".*', "\\1", sw)); sw_y <- as.numeric(sub('.*y="([0-9.]+)".*', "\\1", sw))
+ok("mappa: legenda della scala dentro l'immagine", length(sw) == 9 && min(sw_x) >= 0 &&
+     max(sw_x) + 22 <= viewbox(sv6)[3] && max(sw_y) + 30 <= viewbox(sv6)[4])
+ok("mappa: geometria invariata senza scala", identical(viewbox(make_bench_svg(m1, make_trt_colors(m1$treatment), m1$unit, pot_fill = c("1:1:1" = "#FF0000"))), c(0, 0, 284, 188)))
+m7 <- pots("1:1:1"); m7$unit <- "1:1:1'x"
+ok("mappa: id sicuro per JavaScript", grepl("toggleVaso('1_1_1_x')", make_bench_svg(m7, make_trt_colors("A"), m7$unit), fixed = TRUE))
+
+# ── Outlier ──────────────────────────────────────────────────────────────────
+sick <- "1:6:3"
+for (gb in GROUP_BY) {
+  fl <- find_outliers(apply_grouping(dd, gb), "Height mm", unique(dd$unit))
+  ok(paste("esempio: la pianta malata è il primo outlier dell'altezza,", gb), nrow(fl) > 0 && fl$unit[1] == sick)
+  ok(paste("esempio: nessun altro outlier dell'altezza,", gb), all(fl$unit == sick))
+  ok(paste("esempio: segnalata solo dopo che si è ammalata,", gb), all(fl$date >= as.Date("2026-03-05")))
+}
+fl <- find_outliers(gdd, "Height mm", unique(dd$unit))
+ok("esempio: valore e variazione anomali", setequal(fl$type, c("level", "jump")) && all(fl$z < 0))
+ok("esempio: vaso escluso, niente outlier", nrow(find_outliers(gdd, "Height mm", setdiff(unique(dd$unit), sick))) == 0)
+ok("parametro assente", nrow(find_outliers(gdd, "boh", unique(dd$unit))) == 0)
+ok("nessun vaso selezionato", nrow(find_outliers(gdd, "Height mm", character(0))) == 0)
+ok("parametri negativi (PSRI)", any(find_outliers(gdd, "PSRI", unique(dd$unit))$unit == sick))
+od <- expand.grid(unit = sprintf("u%02d", 1:12), date = as.Date("2024-03-01") + 0:1, stringsAsFactors = FALSE)
+od$treatment <- rep(rep(c("A", "B", "C"), each = 4), 2)
+od$v <- 100 + rep(c(0, 1, 2, 3), 6); od$v[od$unit == "u01" & od$date == as.Date("2024-03-02")] <- 160
+fo <- find_outliers(od, "v", unique(od$unit))
+ok("outlier sintetico: valore e salto", setequal(fo$type, c("level", "jump")) && all(fo$unit == "u01"))
+ok("gruppi troppo piccoli non controllati", nrow(find_outliers(od, "v", c("u01", "u02", "u05", "u06", "u09", "u10"))) == 0)
+od$v <- 100; od$v[od$unit == "u01"] <- 150
+ok("MAD nulla: si usa lo scarto medio", "u01" %in% find_outliers(od, "v", unique(od$unit))$unit)
+od$v <- 100
+ok("valori tutti uguali: nessun outlier", nrow(find_outliers(od, "v", unique(od$unit))) == 0)
 
 cat("\nFalliti:", fails, "\n")
 if (fails > 0) quit(status = 1)
